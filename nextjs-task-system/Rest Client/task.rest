@@ -1,0 +1,55 @@
+### Obtener las tareas (ADMIN todas, USUARIO REGULAR las asignadas)
+GET http://localhost:3000/api/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
+
+### Registrar nuevo tarea (ADMIN)
+POST http://localhost:3000/api/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
+
+{
+    "title": "tarea 1",
+    "description": "description tarea 1",
+    "assignedTo": [6],
+    "dueDate": "2024-07-17T15:47:50.449+00:00",
+    // Opcional default(low)
+    "priority":"low", 
+    // Opcional default(pending)
+    "status":"pending" 
+}
+
+
+### Actualizar tarea por ID (ADMIN)
+PUT http://localhost:3000/api/task/1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
+
+{
+    "title": "tarea 1",
+    "description": "description tarea 1",
+    "assignedTo": ["1"],
+    "dueDate": "2024-07-17T15:47:50.449+00:00",
+    "priority":"low",
+    "status":"pending"
+}
+
+### Actualizar tarea por ID (USER regular)
+PUT http://localhost:3000/api/task/1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
+
+{
+    // Opcional default(pending)
+    "status":"pending" 
+}
+
+### Eliminar tarea por ID (ADMIN)
+DELETE http://localhost:3000/api/task/1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q

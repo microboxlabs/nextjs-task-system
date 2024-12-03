@@ -1,0 +1,19 @@
+### Obtener todos usuarios
+GET http://localhost:3000/api/user
+Accept: application/json
+Content-Type: application/json
+
+### Registrar nuevo usuario
+POST http://localhost:3000/api/auth/register/
+Accept: application/json
+Content-Type: application/json
+
+{
+    "username": "user1",
+    "password": "password123"
+}
+
+### Autenticar usuario
+GET http://localhost:3000/api/auth/login
+Accept: application/vnd.api+json
+Authorization: Basic user1 password123
