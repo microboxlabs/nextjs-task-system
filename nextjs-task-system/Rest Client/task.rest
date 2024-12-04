@@ -1,19 +1,19 @@
 ### Obtener las tareas (ADMIN todas, USUARIO REGULAR las asignadas)
-GET http://localhost:3000/api/task/
+GET http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
 
 ### Registrar nuevo tarea (ADMIN)
-POST http://localhost:3000/api/task/
+POST http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hbWUiOiJ1c2VyMSIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzMzMzM2ODUyLCJleHAiOjE3MzkzMzY3OTJ9.dezgncpVjilmqK55UT050pCxl28S10cU9UVAARH64-s
 
 {
     "title": "tarea 1",
     "description": "description tarea 1",
-    "assignedTo": [6],
+    "assignedTo": ["1"],
     "dueDate": "2024-07-17T15:47:50.449+00:00",
     // Opcional default(low)
     "priority":"low", 
@@ -23,12 +23,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZ
 
 
 ### Actualizar tarea por ID (ADMIN)
-PUT http://localhost:3000/api/task/1
+PUT http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
 
 {
+    "id": "1",
     "title": "tarea 1",
     "description": "description tarea 1",
     "assignedTo": ["1"],
@@ -38,18 +39,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZ
 }
 
 ### Actualizar tarea por ID (USER regular)
-PUT http://localhost:3000/api/task/1
+PUT http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
 
 {
     // Opcional default(pending)
+    "id": "1",
     "status":"pending" 
 }
 
 ### Eliminar tarea por ID (ADMIN)
-DELETE http://localhost:3000/api/task/1
+DELETE http://localhost:3000/api/task?id=1
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ1c2VyMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczMzI3NzY1MywiZXhwIjoxNzM5Mjc3NTkzfQ.kaOtR_Mx-Ew3moHm62HpQuVcI83OLZ4YVY-ghOND7s0
