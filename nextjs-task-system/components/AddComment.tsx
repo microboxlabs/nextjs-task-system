@@ -2,6 +2,9 @@ import { loadingStore, useAuthStore, useTheme } from "@/store";
 import { Back, Forward } from "./Icons";
 import { updateTask } from "@/libs/axios";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
+import io from 'socket.io-client';
+let socket: any;
 
 export default function AddComment({
   setAddComment,
@@ -16,6 +19,12 @@ export default function AddComment({
 
   const onSubmit = async (formData) => {
     setLoading(true);
+
+    socket.emit('input-change', {
+      assignedTo: watch("assignedTo"),
+      message: `Se ha añadido comentario tarea de titulo: ${watch("title")}`
+    });
+
     try {
       await updateTask({
         id: watch("id"),
@@ -38,6 +47,20 @@ export default function AddComment({
     setLoading(false);
     return;
   };
+
+  useEffect(() => {
+    const socketInitializer = async () => {
+      await fetch('/api/socket');
+      socket = io();
+      socket.on('connect', () => {
+        console.log('Conectado al servidor WebSocket');
+      });
+    };
+    socketInitializer();
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, []);
 
   return (
     <div className="absolute left-0 top-0 flex h-full w-full justify-center p-10">
