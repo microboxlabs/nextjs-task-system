@@ -1,12 +1,11 @@
 "use client";
-import { useState } from "react";
 import { Search } from "./Icons";
 import { useForm } from "react-hook-form";
 
 import { Priority, Role, Status } from "@prisma/client";
 import { useAuthStore, useTheme } from "@/store";
 
-export default function FilterTasks({ setFilter, filter }) {
+export default function FilterTasks({ setFilter }) {
   const { t } = useTheme((state) => state);
   const { role } = useAuthStore((state) => state);
 
@@ -35,15 +34,6 @@ export default function FilterTasks({ setFilter, filter }) {
       onSubmit={handleSubmit(onSubmit)}
       className="flex h-fit w-full flex-col items-center justify-between gap-[20px] rounded-md bg-[--bg-color3] px-[30px] py-[20px] md:flex-row"
     >
-      {/* <div className="flex w-full flex-col items-start gap-1">
-        <p className="text-xs">ID</p>
-        <input
-          placeholder="--"
-          {...register("id")}
-          className="w-full rounded-md p-3 text-black focus:outline-none"
-        />
-      </div> */}
-
       {role == Role.admin && (
         <div className="flex w-full flex-col items-start gap-1">
           <p className="text-xs">{t.users}</p>

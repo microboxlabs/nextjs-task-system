@@ -4,6 +4,8 @@ import { createTask, getAllUsers, updateTask } from "@/libs/axios";
 import { useEffect, useState } from "react";
 import { Priority, Role, Status } from "@prisma/client";
 import Swal from "sweetalert2";
+import io from 'socket.io-client';
+let socket: any
 
 export default function ModalTask({
   fetchData,
@@ -46,14 +48,34 @@ export default function ModalTask({
     })();
   }, []);
 
+  useEffect(() => {
+    const socketInitializer = async () => {
+      await fetch('/api/socket');
+      socket = io();
+      socket.on('connect', () => {
+        console.log('Conectado al servidor WebSocket');
+      });
+    };
+    socketInitializer();
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, []);
+
   const onSubmit = async (formData) => {
     setLoading(true);
+   
+    socket.emit('input-change', {
+      assignedTo: Object.keys(user).filter(step=>user[step].checked),
+      message: `Se ha creado o acualizado tarea de titulo: ${formData.title}`
+    });
+
     try {
       const payload = {
         title: formData.title,
         description: formData.description,
         dueDate: formData.dueDate,
-        assignedTo: Object.keys(user),
+        assignedTo: Object.keys(user).filter(step=>user[step].checked),
         priority: formData.priority,
         status: formData.status,
       };

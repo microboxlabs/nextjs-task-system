@@ -6,10 +6,10 @@ export default function Header({ setView, view}) {
   const { isDarkMode, toggleDarkMode, setLanguage, t } = useTheme();
   
   return (
-    <nav className="flex flex-col lg:flex-row justify-between items-center gap-7 p-4 bg-black text-white">
+    <nav className="flex flex-col items-center justify-between gap-7 bg-black p-4 text-white lg:flex-row">
       <div className="flex space-x-4 items-center">
         <p className="text-2xl font-bold">{username}</p>
-        {token != "" && role == Role.admin &&
+        {role == Role.admin &&
           
           <button
             onClick={() => setView("TableUser")}
