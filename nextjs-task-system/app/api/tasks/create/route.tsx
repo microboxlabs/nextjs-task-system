@@ -41,21 +41,25 @@ export async function POST(req: NextRequest) {
                     group: {
                         select: {
                             name: true, 
+                            id: true
                         },
                     },
                     user: {
                         select: {
                             name: true,
+                            id: true
                         },
                     },
                     priority: {
                         select: {
                             name: true,
+                            id: true
                         },
                     },
                     status: {
                         select: {
                             name: true,
+                            id: true
                         },
                     },
                 },
@@ -63,11 +67,12 @@ export async function POST(req: NextRequest) {
             const formattedTask: Task = {
                 id: task.id,
                 title: task.title,
-                status: task.status.name,
-                user: task.user ? task.user.name : undefined,
-                group: task.group ? task.group.name : undefined,
+                status: task.status,
+                user: task.user ? task.user : null,
+                group: task.group ? task.group : null,
                 dueDate: task.dueDate,
-                priority: task.priority.name,
+                priority: task.priority,
+                description: task.description
             };
             return NextResponse.json({
                 message: "Task created successfully",

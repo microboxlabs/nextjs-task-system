@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
   const token = cookieStore.get("tokenLogin")?.value;
 
   if (token && pathname === "/") {
-    return NextResponse.redirect(new URL("/home", req.url));
+    return NextResponse.redirect(new URL("/tasks", req.url));
   }
 
   if (!token && protectedRoutes.includes(pathname)) {

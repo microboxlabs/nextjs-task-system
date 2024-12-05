@@ -2,23 +2,27 @@
 import { createTask } from "@/actions/tasks/task-actions";
 import { DynamicBanner } from "@/components/layout/bannerMessage";
 
-import { ResponseSelectAssigned } from "@/types/tasks-types";
+import { ResponseSelectAssigned, ResponseTaskGet } from "@/types/tasks-types";
 import { Button, Label, Modal, Select, Textarea, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 interface props {
     createOpen: boolean
     setCreateOpen: React.Dispatch<React.SetStateAction<boolean>>
+    setTasksData: React.Dispatch<React.SetStateAction<ResponseTaskGet>>;
+    setShowToast: React.Dispatch<React.SetStateAction<{ show: boolean, message: string, icon: 'alert' | 'warning' | 'success' | '' }>>
 }
-export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
+export default function ModalCreateTask({ createOpen, setCreateOpen, setTasksData, setShowToast }: props) {
     const [typeOfAssigned, setTypeOfAssigned] = useState<string>('');
     const [dataAssigned, setDataAssigned] = useState<ResponseSelectAssigned>()
     const cacheRef = useRef<{ [key: string]: ResponseSelectAssigned }>({});
-    const [showToast, setShowToast] = useState<{ show: boolean, message: string, icon: 'alert' | 'warning' | 'success' | '' }>({ show: false, message: "", icon: "" });
+    const [loading, setLoading] = useState<boolean>(true);
 
     //useffect to load the data in the select section
     useEffect(() => {
         const fetchData = async () => {
+
+            setLoading(true)
             if (cacheRef.current[typeOfAssigned]) {
                 setDataAssigned(cacheRef.current[typeOfAssigned]);
             } else {
@@ -33,17 +37,21 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
                     setDataAssigned(data);
                 } catch (error) {
                     console.error("Error fetching data:", error);
+                } finally {
+                    setLoading(false)
                 }
             }
         };
 
-        fetchData();
-    }, [createOpen]);
+        if (loading) {
+            fetchData();
+        }
+    }, [loading]);
 
 
-    if (dataAssigned?.status != 200) {
+    if (dataAssigned?.status != 200 && !loading) {
         return (
-            <Modal show={createOpen} size="md" onClose={() => setCreateOpen(false)} popup>
+            <Modal className="min-h-screen" show={createOpen} size="md" onClose={() => setCreateOpen(false)} popup>
                 <Modal.Header />
                 <Modal.Body>
                     <div className="text-center">
@@ -57,9 +65,11 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
             </Modal>
         )
     }
+
     return (
         <>
-            <Modal show={createOpen} size="lg" onClose={() => setCreateOpen(false)} popup>
+            {/* Modals with form to create a new task */}
+            <Modal className="min-h-screen" show={createOpen} size="lg" onClose={() => setCreateOpen(false)} popup>
                 <Modal.Header>Create Task</Modal.Header>
                 <Modal.Body>
                     <div className="space-y-6">
@@ -67,7 +77,14 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
                             const response = await createTask(formData)
                             setCreateOpen(false)
                             setShowToast({ message: response.message, icon: response.status == 200 ? "success" : "warning", show: true })
+
                             setTypeOfAssigned("")
+                            if (response.status == 200) {
+                                setTasksData(prevData => ({
+                                    ...prevData, // copy the previous state
+                                    data: [...(prevData?.data ?? []), response.data] // Add the new task to the array
+                                }));
+                            }
                         }}>
                             <div className="grid grid-cols-2 gap-4">
 
@@ -88,7 +105,7 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
                                     </div>
                                     <Select id="Priority" name="Priority" required>
                                         <option value="">Select a value</option>
-                                        {dataAssigned?.data.priorities.map((priority, index) => (
+                                        {dataAssigned?.data?.priorities.map((priority, index) => (
                                             <option key={index} value={priority.id}>{priority.name} </option>
                                         ))}
                                     </Select>
@@ -118,7 +135,7 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
                                             {typeOfAssigned == 'person' ? (
                                                 <>
                                                     <option value="">Select a value</option>
-                                                    {dataAssigned?.data.users.map((person, index) => (
+                                                    {dataAssigned?.data?.users.map((person, index) => (
                                                         <option key={index} value={person.id}>{person.name} </option>
                                                     ))}
 
@@ -127,7 +144,7 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
                                             ) : (
                                                 <>
                                                     <option value="">Select a value</option>
-                                                    {dataAssigned?.data.groups.map((group, index) => (
+                                                    {dataAssigned?.data?.groups.map((group, index) => (
                                                         <option key={index} value={group.id}>{group.name} </option>
                                                     ))}
 
@@ -156,7 +173,7 @@ export default function ModalCreateTask({ createOpen, setCreateOpen }: props) {
                     </div>
                 </Modal.Body>
             </Modal>
-            <DynamicBanner icon={showToast.icon} message={showToast.message} setShowToast={setShowToast} showToast={showToast.show} />
+
         </>
     )
 }

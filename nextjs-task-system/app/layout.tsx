@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
-import { NavbarPage } from "@/components/layout/navbar";
+import { SidebarComponent } from "@/components/layout/sideBar";
 import { cookies } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -17,7 +17,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  //Shows navbar only if the user is logged
+  // Shows navbar only if the user is logged
   const cookieStore = cookies();
   const tokenExists = cookieStore.get("tokenLogin")?.value;
   return (
@@ -25,10 +25,12 @@ export default function RootLayout({
       <head>
         <ThemeModeScript />
       </head>
-      <body className={`${inter.className}  `}>
-        
-        {tokenExists ? <NavbarPage   >{children} </NavbarPage> : <>{children}</>}
-
+      <body className={`${inter.className} min-h-screen bg-gray-50`}>
+        {tokenExists ? (
+          <SidebarComponent>{children}</SidebarComponent>
+        ) : (
+          <>{children}</>
+        )}
       </body>
     </html>
   );

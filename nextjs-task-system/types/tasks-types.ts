@@ -1,40 +1,43 @@
 import { Response } from "./global-types";
 
-enum Status {
-  Pending = "Pending",
-  "In Progress" = "In Progress",
-  Completed = "Completed",
+interface Status {
+  id: number;
+  name: string;
 }
 
-enum Priority {
-  Low = "Low",
-  Medium = "Medium",
-  High = "High",
+export interface relationResponse {
+  id: number;
+  name: string;
 }
 export interface Task {
   id: number;
   title: string;
-  status: string | Status;
-  user?: string;
-  group?: string;
+  description: string;
+  status: relationResponse;
+  user?: relationResponse | null;
+  group?: relationResponse | null;
   dueDate: string | Date;
-  priority: string | Priority;
+  priority: relationResponse;
 }
 
 export interface TaskReponse {
   id: number;
   title: string;
   status: {
+    id: number;
     name: string;
   };
   user?: {
+    id: number;
     name: string;
   };
   group?: {
+    id: number;
     name: string;
   };
   dueDate: string;
   priority: {
+    id: number;
     name: string;
   };
 }
@@ -56,7 +59,7 @@ interface SelectFormAssigned {
 }
 
 export interface ResponseSelectAssigned extends Response {
-  data: SelectFormAssigned;
+  data: SelectFormAssigned | undefined;
 }
 export interface ResponseTaskGetBackend extends Response {
   data: TaskReponse[];

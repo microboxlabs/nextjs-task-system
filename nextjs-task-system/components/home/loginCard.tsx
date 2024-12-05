@@ -33,7 +33,7 @@ export default function LoginCard() {
                   "Error: Incorrect email or password. Please try again",
               });
             } else {
-              router.push("/home");
+              router.push("/tasks");
             }
           }}
         >
