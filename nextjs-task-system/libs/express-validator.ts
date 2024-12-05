@@ -1,7 +1,16 @@
-import { validationResult, checkSchema, ValidationChain } from "express-validator";
+import {
+  validationResult,
+  checkSchema,
+  ValidationChain,
+} from "express-validator";
 import prisma from "@/libs/prisma";
+import { Role } from "@prisma/client";
 
-export const expressValidator = async (req:any, res:any, validation: ValidationChain[]) => {
+export const expressValidator = async (
+  req: any,
+  res: any,
+  validation: ValidationChain[],
+) => {
   // Ejecutar las validaciones
   await Promise.all(validation.map((step) => step.run(req)));
   const errors = validationResult(req);
@@ -160,15 +169,24 @@ validator.taskExist = checkSchema({
     in: "body",
     isString: { errorMessage: "Input debe ser un string" },
     custom: {
-      options: async (id) => {
+      options: async (id, { req }) => {
         if (id) {
           const task = await prisma.task.findFirst({
             where: {
               id: parseInt(id),
+              ...(req.user.role !== Role.admin
+                ? {
+                    assignedTo: {
+                      some: {
+                        username: req.user.username,
+                      },
+                    },
+                  }
+                : null),
             },
           });
           if (!task) {
-            return Promise.reject("El id no existe");
+            return Promise.reject("El id no existe o no tiene acceso");
           }
         }
       },

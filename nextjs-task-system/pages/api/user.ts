@@ -11,7 +11,7 @@ const user = async (req: any, res: Response): Promise<Response> => {
   // Validación y manejo de la solicitud GET para obtener usuarios
   if (req.method === "GET" && ["admin"].includes(req.user.role)) {
     try {
-      const { page, limit } = req.query as GetUsersQuery;
+      const { page="1", limit="10" } = req.query as GetUsersQuery;
 
       const data = await prisma.user.findMany({
         skip: (parseInt(page) - 1) * parseInt(limit),

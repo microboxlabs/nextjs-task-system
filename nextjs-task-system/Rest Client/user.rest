@@ -2,6 +2,7 @@
 GET http://localhost:3000/api/user
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczMzQ0MDI2NSwiZXhwIjoxNzkzNDQwMjA1fQ.dy1eBje3z8qGsbhOD0oPusjbbGXcW12h28W88sFHVqk
 
 ### Registrar nuevo usuario
 POST http://localhost:3000/api/auth/register/
@@ -9,8 +10,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "username": "admin1",
-    "password": "pass123",
+    "username": "admin",
+    "password": "password123",
     // Si no se envie role queda como Role.regular
     "role": "admin"
 }
@@ -18,4 +19,4 @@ Content-Type: application/json
 ### Autenticar usuario
 GET http://localhost:3000/api/auth/login
 Accept: application/vnd.api+json
-Authorization: Basic admin1 pass123
+Authorization: Basic user1 password123

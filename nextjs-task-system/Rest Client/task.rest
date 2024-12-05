@@ -2,13 +2,13 @@
 GET http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczMzQ0MDI2NSwiZXhwIjoxNzkzNDQwMjA1fQ.dy1eBje3z8qGsbhOD0oPusjbbGXcW12h28W88sFHVqk
 
 ### Registrar nuevo tarea (ADMIN)
 POST http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hbWUiOiJ1c2VyMSIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzMzMzM2ODUyLCJleHAiOjE3MzkzMzY3OTJ9.dezgncpVjilmqK55UT050pCxl28S10cU9UVAARH64-s
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
 
 {
     "title": "tarea 1",
@@ -42,7 +42,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZ
 PUT http://localhost:3000/api/task
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ1c2VyMSIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzMzNDQwOTcwLCJleHAiOjE3OTM0NDA5MTB9.ylD6Uj5dNzRFYJPKmrf2g5BfQidue19YaSG-PvWCC4E
 
 {
     "id": "1",

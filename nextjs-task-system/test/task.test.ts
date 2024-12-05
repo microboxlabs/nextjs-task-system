@@ -8,7 +8,7 @@ describe("Register, Login, and Token Setup", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: usernameRandom,
-          password: "pass1234",
+          password: "password123",
           role: "admin",
         }),
       });
@@ -17,7 +17,7 @@ describe("Register, Login, and Token Setup", () => {
 
   it("Iniciar sesión con el usuario registrado", async () => {
     const username = usernameRandom;
-    const password = "pass1234";
+    const password = "password123";
   
     const credentials = btoa(`${username}:${password}`);
   

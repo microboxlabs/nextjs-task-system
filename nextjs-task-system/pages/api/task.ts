@@ -84,7 +84,7 @@ const task = async (req: any, res: Response): Promise<Response> => {
   // Validación y manejo de la solicitud POST para crear una tarea
   if (req.method === "POST" && ["admin"].includes(req.user.role)) {
     try {
-      await expressValidator(req, res, validator.createUpdateTask);
+      await expressValidator(req, res, validator.createTask);
       const {
         title,
         description,

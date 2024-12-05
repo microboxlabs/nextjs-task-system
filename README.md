@@ -68,7 +68,7 @@ Aplica las migraciones para sincronizar el esquema de la base de datos:
 Para insertar datos iniciales en la base de datos, ejecuta el script de seed:
 
    ```bash
-   npx ts-node prisma/seed.ts
+   npx prisma db seed
    ```
 
 ## Uso
