@@ -10,14 +10,13 @@ import { useEffect, useState } from "react";
 import io, { Socket } from 'socket.io-client';
 import Swal from "sweetalert2";
 
+let socket: Socket | null = null;
 interface UpdateInputMessage {
   assignedTo: string[];
   message: string;
 }
 
 export type ViewState = "Register" | "Login" | "TableUser" | "TableTask" | "";
-
-let socket: Socket | null = null;
 
 export default function Home() {
   const { loading, setLoading } = loadingStore((state) => state);
@@ -27,11 +26,10 @@ export default function Home() {
 
   useEffect(() => {
     const socketInitializer = async () => {
-      await fetch('/api/socket');
       socket = io();
       socket.on('connect', () => {console.log('Conectado al WebSocket');});
       socket.on('update-input', (msg: UpdateInputMessage) => {
-        if (msg.assignedTo.includes(id)) {
+        if (msg.assignedTo.includes(id.toString())) {
           Swal.fire({
             icon: "info",
             title: t.update,
@@ -40,7 +38,7 @@ export default function Home() {
         }
       });
     };
-    socketInitializer();
+    if (typeof window !== "undefined" && id !== ""){ socketInitializer();}
     return () => {
       if (socket) socket.disconnect();
     };

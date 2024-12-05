@@ -41,7 +41,7 @@ export default function FilterTasks({ setFilter }: FilterTasksProps) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex h-fit w-full flex-col items-center justify-between gap-[20px] rounded-md bg-[--bg-color3] px-[30px] py-[20px] md:flex-row"
+      className="flex h-fit w-full flex-col items-center justify-between gap-[20px] rounded-md bg-[--bg-color3] px-[30px] py-[20px] xl:flex-row"
     >
       {role === Role.admin && (
         <div className="flex w-full flex-col items-start gap-1">
@@ -81,12 +81,12 @@ export default function FilterTasks({ setFilter }: FilterTasksProps) {
         </select>
       </div>
 
-      <div className="flex flex-col items-start gap-1 self-end">
+      <div className="flex w-full flex-col items-start gap-1">
         <p className="text-xs">{t.sorbBy}</p>
         <select
           {...register("order")}
           defaultValue=""
-          className="min-w-[100px] rounded-md p-3 text-black focus:outline-none"
+          className="w-full rounded-md p-3 text-black focus:outline-none"
         >
           <option value="">--</option>
           <option value={"oldestCreated"}>{t.oldestCreated}</option>

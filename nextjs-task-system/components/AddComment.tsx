@@ -2,11 +2,9 @@ import { loadingStore, useAuthStore, useTheme } from "@/store";
 import { Back, Forward } from "./Icons";
 import { updateTask } from "@/libs/axios";
 import Swal from "sweetalert2";
-import { useEffect } from "react";
-import io, { Socket } from 'socket.io-client';
+import io from 'socket.io-client';
 
-let socket: Socket | null = null;
-
+const socket = io();
 interface AddCommentProps {
   setAddComment: (value: boolean) => void;
   register: any;
@@ -32,18 +30,19 @@ export default function AddComment({
   const { setLoading } = loadingStore((state) => state);
   const { t } = useTheme((state) => state);
 
+
   const onSubmit = async (formData: FormData) => {
     setLoading(true);
 
     // Emit event to WebSocket
     socket?.emit('input-change', {
-      assignedTo: watch("assignedTo"),
+      assignedTo: watch("assignedTo").map((i:any) => i.id.toString() ),
       message: `${t.titleTaskCommentAdded} ${watch("title")}`,
     });
 
     try {
       await updateTask({
-        id: watch("id"),
+        id: watch("id").toString(),
         message: formData.message,
       });
       Swal.fire({
@@ -57,25 +56,14 @@ export default function AddComment({
     } catch (error) {
       Swal.fire({
         position: "center",
+        icon: "error",
         title: t.anErrorHasOccurred,
       });
     }
     setLoading(false);
   };
 
-  useEffect(() => {
-    const socketInitializer = async () => {
-      await fetch('/api/socket');
-      socket = io();
-      socket.on('connect', () => {
-        console.log('Conectado al servidor WebSocket');
-      });
-    };
-    socketInitializer();
-    return () => {
-      if (socket) socket.disconnect();
-    };
-  }, []);
+ 
 
   return (
     <div className="absolute left-0 top-0 flex h-full w-full justify-center p-10">

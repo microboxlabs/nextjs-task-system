@@ -74,7 +74,7 @@ const Language = ({ setLanguage }: LanguageProps) => {
       <button
         onClick={() => { setLanguage("es"); }}
         className={`${
-          t.tableTask === "Lista de tareas" ? "rounded-md border border-white p-1" : ""
+          t.tableTask === "Tabla de tarea" ? "rounded-md border border-white p-1" : ""
         }`}
       >
         Español
@@ -82,7 +82,7 @@ const Language = ({ setLanguage }: LanguageProps) => {
       <button
         onClick={() => { setLanguage("en"); }}
         className={`${
-          t.tableTask === "Table task" ? "rounded-md border border-white p-1" : ""
+          t.tableTask === "Task table" ? "rounded-md border border-white p-1" : ""
         }`}
       >
         English
