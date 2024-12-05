@@ -1,19 +1,30 @@
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Forward, Person } from "./Icons";
 import { loadingStore, useTheme } from "@/store";
 import { registerUser } from "@/libs/axios"; 
 import Swal from "sweetalert2";
+import { Dispatch, SetStateAction } from "react";
+import { ViewState } from "@/app/page";
 
-export default function Register({ setView }) {
+interface FormData {
+  username: string;
+  password: string;
+}
+
+interface RegisterProps {
+  setView: Dispatch<SetStateAction<ViewState>>;
+}
+
+const Register: React.FC<RegisterProps> = ({ setView }) => {
   const { setLoading } = loadingStore((state) => state);
   const { t } = useTheme((state) => state);
 
   const {
     register,
     handleSubmit
-  } = useForm();
+  } = useForm<FormData>();
 
-  const onSubmit = async (formData) => {
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
     setLoading(true);
     try {
       await registerUser(formData.username, formData.password);
@@ -32,7 +43,6 @@ export default function Register({ setView }) {
       });
     }
     setLoading(false);
-    return;
   };
 
   return (
@@ -59,16 +69,16 @@ export default function Register({ setView }) {
             className="flex flex-col gap-4 w-full m-8"
           >
             <input
-              type="username"
+              type="text"
               placeholder="username"
-              required={true}
+              required
               {...register("username")}
               className="w-full p-3 rounded-md focus:outline-none bg-[var(--bg-color3)] text-[var(--text-color)] placeholder-[var(--text-color)]"
             />
             <input
               type="password"
               placeholder="Password"
-              required={true}
+              required
               {...register("password")}
               className="w-full p-3 rounded-md focus:outline-none bg-[var(--bg-color3)] text-[var(--text-color)] placeholder-[var(--text-color)]"
             />
@@ -85,4 +95,6 @@ export default function Register({ setView }) {
       </div>
     </div>
   );
-}
+};
+
+export default Register;

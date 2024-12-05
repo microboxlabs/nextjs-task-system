@@ -5,16 +5,30 @@ import ListSkeleton from "./ListSkeleton";
 import { format } from "date-fns";
 import { useTheme } from "@/store";
 
+export interface User {
+  id: string;
+  username: string;
+  role: string;
+  updatedAt: Date;
+  tasks: { length: number };
+}
+
+export interface UsersResponse {
+  totalItems: number;
+  totalPages: number;
+  data: User[];
+}
+
 export default function TableUser() {
   const { t } = useTheme((state) => state);
   const limit = 10;
-  const [users, setUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = (newPage: number): void => {
     setCurrentPage(newPage);
   };
 
@@ -22,12 +36,12 @@ export default function TableUser() {
     filter(currentPage);
   }, [currentPage]);
 
-  const filter = async (page: number) => {
+  const filter = async (page: number): Promise<void> => {
     setIsLoading(true);
-    const resp = await getAllUsers(`page=${page}&limit=${limit}`);
-    setTotalItems(resp.totalItems);
-    setTotalPages(resp.totalPages);
-    setUsers(resp.data);
+    const resp: UsersResponse | null = await getAllUsers(`page=${page}&limit=${limit}`);
+    if(resp && resp.totalItems) setTotalItems(resp.totalItems);
+    if(resp && resp.totalPages) setTotalPages(resp.totalPages);
+    if(resp && resp.data) setUsers(resp.data);
     setIsLoading(false);
   };
 
@@ -58,12 +72,12 @@ export default function TableUser() {
                 {users.map((step) => (
                   <tr
                     key={step.id}
-                    className=" mb-[2px] rounded-md border-2  border-[--bg-color5] bg-[--bg-color3]"
+                    className="mb-[2px] rounded-md border-2  border-[--bg-color5] bg-[--bg-color3]"
                   >
                     <td className="pl-[30px]">{step.id}</td>
                     <td>{step.username}</td>
                     <td>
-                      <p className="text-white bg-[#4b24db] w-fit rounded-full px-5 py-1 my-1">
+                      <p className="my-1 w-fit rounded-full bg-[#4b24db] px-5 py-1 text-white">
                         {step.role}
                       </p>
                     </td>
@@ -80,32 +94,26 @@ export default function TableUser() {
                 key={i}
                 className="fhd:hidden flex h-fit w-full flex-col rounded-md bg-[--bg-color3] p-[20px]"
               >
-                <div className="flex w-full items-center justify-between border-b-[1px] border-[--inputsBorder] py-[10px]">
+                <div className="flex w-full items-center justify-between border-b border-[--inputsBorder] py-[10px]">
                   <p className="text-xs">ID</p>
                   <p>{step.id}</p>
                 </div>
-                <div className="flex w-full items-center justify-between border-b-[1px] border-[--inputsBorder] py-[10px]">
+                <div className="flex w-full items-center justify-between border-b border-[--inputsBorder] py-[10px]">
                   <p className="text-xs">{t.username}</p>
                   <p>{step.username}</p>
                 </div>
 
-                <div className="flex w-full items-center justify-between border-b-[1px] border-[--inputsBorder] py-[10px]">
+                <div className="flex w-full items-center justify-between border-b border-[--inputsBorder] py-[10px]">
                   <p className="text-xs">{t.role}</p>
-                  <p className="text-alertSuccess bg-alertSuccessBg w-fit rounded-full px-5 py-1">
-                    {step.role}
-                  </p>
+                  <p>{step.role}</p>
                 </div>
-                <div className="flex w-full items-center justify-between border-b-[1px] border-[--inputsBorder] py-[10px]">
+                <div className="flex w-full items-center justify-between border-b border-[--inputsBorder] py-[10px]">
                   <p className="text-xs">{t.updatedAt}</p>
-                  <p className="text-alertSuccess bg-alertSuccessBg w-fit rounded-full px-5 py-1">
-                    {step.updatedAt}
-                  </p>
+                  <p>{format(step.updatedAt, "dd/MM/yyyy pp")}</p>
                 </div>
-                <div className="flex w-full items-center justify-between border-b-[1px] border-[--inputsBorder] py-[10px]">
+                <div className="flex w-full items-center justify-between border-b py-[10px]">
                   <p className="text-xs">{t.numberTasks}</p>
-                  <p className="text-alertSuccess bg-alertSuccessBg w-fit rounded-full px-5 py-1">
-                    {step.tasks.length}
-                  </p>
+                  <p>{step.tasks.length}</p>
                 </div>
               </div>
             ))}

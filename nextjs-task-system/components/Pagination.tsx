@@ -1,22 +1,29 @@
 import { useTheme } from '@/store';
 import React from 'react';
 
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void; // Función para cambiar de página
+}
+
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   const { t } = useTheme();
-  const goToPage = (page) => {
+
+  const goToPage = (page: number) => {
     if (page !== currentPage && page > 0 && page <= totalPages) {
       onPageChange(page);
     }
   };
 
-  const pagesToShow = [];
+  const pagesToShow: number[] = [];
   if (currentPage > 1) pagesToShow.push(currentPage - 1);
   pagesToShow.push(currentPage);
   if (currentPage < totalPages) pagesToShow.push(currentPage + 1);
 
   return (
     <nav aria-label="Pagination">
-      <ul className="inline-flex items-center space-x-2 justify-center w-full ">
+      <ul className="inline-flex w-full items-center justify-center space-x-2">
         <li>
           <button
             disabled={currentPage === 1}
