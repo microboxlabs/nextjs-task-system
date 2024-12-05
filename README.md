@@ -1,122 +1,116 @@
-### MicroboxLabs Fullstack Challenge: Task Management System
-This technical test requires you to design and implement a **Task Management System** using **Next.js**, **Tailwind CSS**, and **Flowbite**. The system will help MicroboxLabs assign and manage tasks efficiently, with capabilities for assigning tasks to users or groups.
 
-#### **Before You Begin**
-Fork this repository and invite the provided collaborators: `@korutx`, `@odtorres`. Should you have any questions, contact `devtest@microboxlabs.com`.  
+# Next.js App Documentation
 
-#### **Problem Description**
-MicroboxLabs needs a simple task management solution to help organize internal work and track the progress of tasks assigned to employees. This system will be used by both Admins to manage tasks and by employees to view and update their assigned work.
+Aplicación diseñada para gestionar tareas internas, facilitando la organización del trabajo y el seguimiento del progreso de las tareas asignadas. Los administradores pueden asignar y gestionar tareas, mientras que los empleados pueden visualizar y actualizar el estado de su trabajo asignado.
 
-The application will allow **Admin** users to create tasks and assign them to either individual users or groups, and **Regular** users to manage their assigned tasks.
+## Funcionalidades
 
-#### **Guidelines**
-- We provide a basic Flowbite + Next.js template to get you started.
-- You can use any additional libraries you see fit, but make sure to justify your choices.
-- Flowbite documentation is available [here](https://flowbite-react.com/docs/getting-started/introduction).
-- Tailwind CSS documentation is available [here](https://tailwindcss.com/docs/utility-first).
-- Next.js documentation is available [here](https://nextjs.org/docs).
+- **Gestión de Usuarios**: Registro, inicio de sesión y autenticación de usuarios.
+- **Gestión de Tareas**: Creación, actualización y eliminación de tareas.
+- **Comunicación en Tiempo Real**: Uso de WebSockets para sincronización en tiempo real.
+- **Validación de Entradas**: Validaciones en el backend usando `express-validator`.
+- **Seguridad**: Manejo de contraseñas con `bcrypt` y autenticación con JWT.
 
-#### **Core Requirements**
-The goal is to create a web application where users can **create**, **assign**, **view**, and **update** tasks. The key features are as follows:
+## Tecnologías Utilizadas
 
-### **User Roles**
-1. **Admin User**: 
-   - Can create, assign, edit, and delete tasks.
-   - Can view and manage all tasks.
-2. **Regular User**: 
-   - Can view tasks assigned to them or their group.
-   - Can mark tasks as complete.
+- **Next.js**: Framework principal para la construcción de la aplicación.
+- **Prisma**: ORM para interactuar con la base de datos.
+- **Socket.IO**: Comunicación en tiempo real.
+- **bcrypt**: Encriptación de contraseñas.
+- **jsonwebtoken**: Manejo de tokens para autenticación.
+- **express-validator**: Validación de datos enviados al backend.
 
-### **Features**
-1. **Task Creation and Assignment (Admin Only)**
-   - **Admin** users can create tasks with the following fields:
-     - **Title**: The name of the task.
-     - **Description**: Details of the task.
-     - **Assigned To**: Either a specific **user** or a **group** of users.
-     - **Due Date**: The date by which the task must be completed.
-     - **Priority**: Low, Medium, High.
-   - Tasks can be assigned to an individual user or a group (e.g., "Frontend Team").
+## Requisitos previos
 
-2. **Viewing Tasks**
-   - **Admin** users can view **all tasks**, filter by **user**, **group**, or **status** (e.g., completed, pending).
-   - **Regular** users can only view tasks assigned to them or their group.
+- Node.js (v16 o superior)
+- npm o yarn instalado
+- Base de datos configurada (PostgreSQL es recomendada)
 
-3. **Managing Tasks (Regular Users)**
-   - Users can mark their assigned tasks as **complete**.
-   - Users can add **comments** to a task for better communication (e.g., "Started working on this").
+## Instalación
 
-4. **Task Status Tracking**
-   - Tasks can have statuses such as:
-     - **Pending**: Task is newly created.
-     - **In Progress**: Task is being worked on.
-     - **Completed**: Task has been finished by the assignee.
+1. Clona el repositorio:
 
-5. **Filtering and Sorting Tasks**
-   - Users can filter tasks by **status**, **priority**, or **assigned user/group**.
-   - Admin users can also **sort tasks** by **due date**, **priority**, or **creation date**.
+   ```bash
+   git clone <repo_url>
+   cd <project_directory>
+   ```
 
-6. **Responsive User Interface**
-   - Use **Tailwind CSS** and **Flowbite** components to create a simple and responsive UI.
-   - The application should have:
-     - A **navbar** to navigate between different sections.
-     - A **dashboard** page for viewing and filtering tasks.
-     - A **task creation page** for Admin users.
+2. Instala las dependencias:
 
-7. **Basic Authorization**
-   - Admin users should be able to access the task creation and management pages, while regular users should only have access to the task list assigned to them.
+   ```bash
+   npm install
+   ```
 
-8. **Database**
-   - Use a lightweight database (e.g., SQLite) to store tasks.
-   - Each task should be stored as a record in the database, with fields for **title**, **description**, **assigned to**, **due date**, **priority**, **status**, and **comments**.
+## Configuración
 
-### **Use Cases**
-1. **Admin Creates and Assigns a Task**:
-   - An **Admin** logs in and navigates to the **Create Task** page.
-   - They fill in the task details, select a **user** or **group** to assign it to, and click **Create**.
-   - The task is now assigned and visible to the appropriate users.
+### Prisma
 
-2. **Viewing Assigned Tasks**:
-   - A **Regular User** logs in and navigates to the **Task Dashboard**.
-   - They see a list of tasks assigned to them and their group, with details like **due date**, **priority**, and **status**.
+1. Copia el archivo .env.example y renómbralo a .env:
 
-3. **Marking a Task as Complete**:
-   - A **Regular User** starts working on a task and marks it as **In Progress**.
-   - Once finished, they mark the task as **Completed** and add a comment ("Finished and uploaded the required document").
+   ```bash
+   cp .env.example .env
+   ```
 
-#### **Technologies to Use**
-- **Frontend**: Next.js, Tailwind CSS, Flowbite.
-- **Backend**: Next.js API routes for handling task creation, assignment, and updates.
-- **Database**: SQLite or an in-memory solution to store tasks.
+2. Genera los clientes de Prisma:
 
-#### **Aspects to Be Evaluated**
-1. **Functionality**:
-   - Does the solution meet all the core requirements?
-   - Are users able to create, view, and manage tasks effectively?
-2. **Software Design**: 
-   - Logical organization of files, components, and API routes.
-   - Clean separation between frontend and backend logic.
-3. **Code Quality**:
-   - Readable, maintainable code with clear comments.
-   - Good use of modern JavaScript and TypeScript features.
-4. **Testing**:
-   - Simple unit tests for API routes.
-   - Basic UI tests for task viewing and management.
-5. **UI/UX**:
-   - Effective use of **Tailwind CSS** and **Flowbite** to create a user-friendly, clean, and responsive interface.
+   ```bash
+   npx prisma generate
+   ```
 
-#### **Aspects to Ignore**
-- **Advanced Visual Design**: Focus on functionality rather than intricate visual styling.
-- **Scalability and Performance Optimization**: The emphasis is on demonstrating core capabilities, not handling massive volumes of data.
+###  Migraciones
+Aplica las migraciones para sincronizar el esquema de la base de datos:
 
-#### **Optional Bonus Points**
-- **Real-Time Updates**: Add functionality for real-time updates using Server-Sent Events (SSE) or WebSockets to notify users when new tasks are assigned.
-- **Role-Based Authentication**: Implement simple role-based access control for Admin vs. Regular User capabilities.
-- **Drag-and-Drop Task Management**: Implement a feature that allows users to change task status using drag-and-drop.
+   ```bash
+   npx prisma migrate dev
+   ```
 
-#### **Getting Started**
-1. **Fork/Clone** the repository.
-2. Set up the project using **Next.js**, **Tailwind CSS**, and **Flowbite**.
-3. Implement the **Task Management System** scenario as described.
-4. Use any tools or resources, including AI (e.g., ChatGPT or GitHub Copilot), to assist you.
+### Seed
+Para insertar datos iniciales en la base de datos, ejecuta el script de seed:
 
-This task is designed to test your ability to work on a small fullstack application, focusing on managing tasks, handling CRUD operations, and understanding user roles and permissions. We look forward to seeing your solution!
+   ```bash
+   npx ts-node prisma/seed.ts
+   ```
+
+## Uso
+### Desarrollo
+Para iniciar el servidor de desarrollo:
+
+   ```bash
+   npm run dev
+   ```
+Accede a la aplicación en: http://localhost:3000.
+
+
+### Test
+Este proyecto incluye tests básicos para tareas. Para ejecutarlos levanta la app y luego corre:
+
+   ```bash
+   npm test
+   ```
+### Probar endpoints
+
+Para probar los endpoints, se ha proporcionado un folder de REST Client en el directorio raíz del proyecto. (Debe tener instalado extension REST Client en Visual Studio Code)
+
+#### 1. Autenticación:
+- POST /api/auth/login: Inicia sesión.
+- POST /api/auth/register: Registra un usuario.
+
+#### 2. Usuarios:
+- GET /api/user: Lista usuarios.
+
+#### 3. Tareas:
+- GET /api/task: Lista tareas.
+- POST /api/task: Crea una nueva tarea.
+- PUT /api/task: Actualiza una tarea.
+- DELETE /api/task: Elimina una tarea.
+
+
+## Estructura del Proyecto
+- /components: Componentes .tsx para interfaz de usuario
+- /libs: Librerías y configuraciones auxiliares (bcrypt, jsonwebtoken, prisma, etc.).
+- /middleware: Middlewares personalizados para manejo de autenticación.
+- /pages/api: Rutas API de Next.js.
+- /prisma: Configuración y scripts de Prisma.
+- /Rest Client: Archivos para probar endpoint.
+- /store: Manejo de estados globales de la interfaz de usuario
+- /test: Tests automatizados.
