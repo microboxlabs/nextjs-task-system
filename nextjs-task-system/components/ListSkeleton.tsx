@@ -1,59 +1,77 @@
 import { useTheme } from "@/store";
 
-export default function ListSkeleton ({ loading, children, totalItems, columns = 4, rows = 4}) {
-  const { t } = useTheme();
+interface ListSkeletonProps {
+  loading: boolean;
+  children: React.ReactNode;
+  totalItems: number;
+  columns?: number;
+  rows?: number;
+}
 
-  return loading ?
+export default function ListSkeleton({
+  loading,
+  children,
+  totalItems,
+  columns = 4,
+  rows = 4,
+}: ListSkeletonProps) {
+  const { t } = useTheme(state => state);
+
+  return loading ? (
     <>
-      <div className="hidden xl:flex w-full animate-pulse">
-        <table className="table-auto w-full my-[20px]">
+      <div className="hidden w-full animate-pulse xl:flex">
+        <table className="my-[20px] w-full table-auto">
           <thead className="text-xs">
             <tr>
-            {Array.from({ length: columns }).map((_, index) => (
-              <td  key={index}>
-                <div className="h-[10px] w-[40px] bg-[--text-color] rounded my-[20px]" />
-              </td> 
-            ))}
+              {Array.from({ length: columns }).map((_, index) => (
+                <td key={index}>
+                  <div className="my-[20px] h-[10px] w-[40px] rounded bg-[--text-color]" />
+                </td>
+              ))}
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: rows }).map((_, index) => (
               <tr
                 key={index}
-                className="bg-[--bg-color3] rounded-md  border-2 border-[--bg-color5]"
+                className="rounded-md border-2 border-[--bg-color5] bg-[--bg-color3]"
               >
                 {Array.from({ length: columns }).map((_, index) => (
-                  <td  key={index}>
-                    <div className="h-[10px] w-[100px] bg-[--text-color] rounded my-[20px]" />
-                  </td> 
+                  <td key={index}>
+                    <div className="my-[20px] h-[10px] w-[100px] rounded bg-[--text-color]" />
+                  </td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="flex xl:hidden flex-col gap-3 animate-pulse ">
+      <div className="flex animate-pulse flex-col gap-3 xl:hidden">
         {Array.from({ length: rows }).map((_, index) => (
           <div
             key={index}
-            className="flex flex-col w-full h-fit bg-[--bg-color3] rounded-md p-[20px] border-[1px] border-[--text-color]"
+            className="flex h-fit w-full flex-col rounded-md border-DEFAULT border-[--text-color] bg-[--bg-color3] p-[20px]"
           >
             {Array.from({ length: columns }).map((_, index) => (
-              <div key={index} className="flex justify-between items-center py-[10px] border-b-[1px] border-[--text-color] w-full">
-                <div className="h-[10px] w-[40px] bg-[--text-color] rounded" />
-                <div className="h-[10px] w-[100px] bg-[--text-color] rounded my-[5px]" />
+              <div
+                key={index}
+                className="flex w-full items-center justify-between border-b border-[--text-color] py-[10px]"
+              >
+                <div className="h-[10px] w-[40px] rounded bg-[--text-color]" />
+                <div className="my-[5px] h-[10px] w-[100px] rounded bg-[--text-color]" />
               </div>
             ))}
-
           </div>
         ))}
       </div>
     </>
-      :
+  ) : (
     <>
-        {totalItems > 0 ? 
-              children : 
-            <p className="text-center mt-[20px]">{t.noRecordFound}</p>
-        }
+      {totalItems > 0 ? (
+        children
+      ) : (
+        <p className="mt-[20px] text-center">{t.noRecordFound}</p>
+      )}
     </>
+  );
 }

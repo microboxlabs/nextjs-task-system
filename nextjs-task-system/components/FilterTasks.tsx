@@ -1,24 +1,33 @@
 "use client";
 import { Search } from "./Icons";
-import { useForm } from "react-hook-form";
-
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Priority, Role, Status } from "@prisma/client";
 import { useAuthStore, useTheme } from "@/store";
 
-export default function FilterTasks({ setFilter }) {
+// Define types for the form data
+interface FormData {
+  assignedTo?: string;
+  priority?: string;
+  status?: string;
+  order?: string;
+}
+
+interface FilterTasksProps {
+  setFilter: (filter: string) => void;
+}
+
+export default function FilterTasks({ setFilter }: FilterTasksProps) {
   const { t } = useTheme((state) => state);
   const { role } = useAuthStore((state) => state);
 
   const {
     register,
     handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const onSubmit = async (formData) => {
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
     let result = Object.entries(formData)
-      .filter(([, value]) => value != "")
+      .filter(([, value]) => value !== "")
       .map(([key, value]) => {
         return `${key}=${value}`;
       })
@@ -34,7 +43,7 @@ export default function FilterTasks({ setFilter }) {
       onSubmit={handleSubmit(onSubmit)}
       className="flex h-fit w-full flex-col items-center justify-between gap-[20px] rounded-md bg-[--bg-color3] px-[30px] py-[20px] md:flex-row"
     >
-      {role == Role.admin && (
+      {role === Role.admin && (
         <div className="flex w-full flex-col items-start gap-1">
           <p className="text-xs">{t.users}</p>
           <input

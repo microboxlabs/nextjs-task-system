@@ -19,6 +19,7 @@ export default function Login({ setView }) {
       if (response.token) {
         setToken({
           token: response.token,
+          id: response.id,
           username: response.username,
           role: response.role
         });

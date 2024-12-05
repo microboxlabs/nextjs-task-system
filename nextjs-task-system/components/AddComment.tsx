@@ -3,8 +3,23 @@ import { Back, Forward } from "./Icons";
 import { updateTask } from "@/libs/axios";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
-import io from 'socket.io-client';
-let socket: any;
+import io, { Socket } from 'socket.io-client';
+
+let socket: Socket | null = null;
+
+interface AddCommentProps {
+  setAddComment: (value: boolean) => void;
+  register: any;
+  handleSubmit: any;
+  watch: any;
+  fetchData: (currentPage: number) => Promise<void>;
+  currentPage: number;
+}
+
+interface FormData {
+  id: string;
+  message: string;
+}
 
 export default function AddComment({
   setAddComment,
@@ -13,16 +28,17 @@ export default function AddComment({
   watch,
   fetchData,
   currentPage,
-}) {
+}: AddCommentProps) {
   const { setLoading } = loadingStore((state) => state);
-  const { t } = useTheme((state) => state)
+  const { t } = useTheme((state) => state);
 
-  const onSubmit = async (formData) => {
+  const onSubmit = async (formData: FormData) => {
     setLoading(true);
 
-    socket.emit('input-change', {
+    // Emit event to WebSocket
+    socket?.emit('input-change', {
       assignedTo: watch("assignedTo"),
-      message: `Se ha añadido comentario tarea de titulo: ${watch("title")}`
+      message: `${t.titleTaskCommentAdded} ${watch("title")}`,
     });
 
     try {
@@ -36,7 +52,7 @@ export default function AddComment({
         title: t.messageCreated,
         showConfirmButton: false,
       });
-      setAddComment(false)
+      setAddComment(false);
       await fetchData(currentPage);
     } catch (error) {
       Swal.fire({
@@ -45,7 +61,6 @@ export default function AddComment({
       });
     }
     setLoading(false);
-    return;
   };
 
   useEffect(() => {
