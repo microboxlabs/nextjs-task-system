@@ -162,7 +162,6 @@ validator.taskExist = checkSchema({
     custom: {
       options: async (id) => {
         if (id) {
-          console.log({id})
           const task = await prisma.task.findFirst({
             where: {
               id: parseInt(id),
@@ -189,6 +188,27 @@ validator.taskExist = checkSchema({
           });
           if (!user) {
             return Promise.reject(`El usuario con este id ${id} no existe`);
+          }
+        }
+      },
+    },
+  },
+});
+
+validator.taskExistQuery = checkSchema({
+  id: {
+    in: "query",
+    isString: { errorMessage: "Input debe ser un string" },
+    custom: {
+      options: async (id) => {
+        if (id) {
+          const task = await prisma.task.findFirst({
+            where: {
+              id: parseInt(id),
+            },
+          });
+          if (!task) {
+            return Promise.reject("El id no existe");
           }
         }
       },

@@ -1,25 +1,37 @@
 import { loadingStore, useAuthStore, useTheme } from "../store";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Forward, Person } from "./Icons";
 import { login } from "@/libs/axios"; 
 import Swal from "sweetalert2";
+import { Dispatch, SetStateAction } from "react";
+import { ViewState } from "@/app/page";
 
-export default function Login({ setView }) {
+interface FormData {
+  username: string;
+  password: string;
+}
+interface RegisterProps {
+  setView: Dispatch<SetStateAction<ViewState>>;
+}
+
+const Login: React.FC<RegisterProps> = ({ setView }) => {
   const { setLoading } = loadingStore((state) => state);
   const { setToken } = useAuthStore((state) => state);
   const { t } = useTheme();
 
+  const {
+    register,
+    handleSubmit
+  } = useForm<FormData>();
 
-  const { register, handleSubmit } = useForm();
-
-  const onSubmit = async (formData) => {
+  const onSubmit : SubmitHandler<FormData> = async (formData) => {
     setLoading(true);
     try {
       const response = await login(formData.username, formData.password);
       if (response.token) {
         setToken({
           token: response.token,
-          id: response.id,
+          id: response.id.toString(),
           username: response.username,
           role: response.role
         });
@@ -94,3 +106,5 @@ export default function Login({ setView }) {
     </div>
   );
 }
+
+export default Login;

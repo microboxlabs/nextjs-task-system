@@ -23,7 +23,7 @@ interface UserState {
   };
 }
 
-let socket: Socket;
+const socket = io();
 
 const ModalTask: React.FC<ModalTaskProps> = ({
   fetchData,
@@ -66,24 +66,9 @@ const ModalTask: React.FC<ModalTaskProps> = ({
     })();
   }, [watch, role]);
 
-  useEffect(() => {
-    const socketInitializer = async () => {
-      await fetch("/api/socket");
-      socket = io();
-      socket.on("connect", () => {
-        console.log("Conectado al servidor WebSocket");
-      });
-    };
-    socketInitializer();
-    return () => {
-      if (socket) socket.disconnect();
-    };
-  }, []);
-
   const onSubmit = async (formData: any) => {
     setLoading(true);
-   
-    socket.emit("input-change", {
+    socket?.emit("input-change", {
       assignedTo: Object.keys(user).filter((step) => user[step].checked),
       message: `${t.titleTaskCreatedUpdated} ${formData.title}`,
     });
@@ -103,7 +88,7 @@ const ModalTask: React.FC<ModalTaskProps> = ({
       } else {
         response = await updateTask({
           ...payload,
-          id: watch("id"),
+          id: watch("id").toString(),
         });
       }
 
