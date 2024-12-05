@@ -9,7 +9,7 @@ export const loginUser = async (formData: FormData) => {
     email: userEmail as string,
     password: btoa(userPassword as string).trim(),
   };
-  const res = await fetch(process.env.URL_PAGE + "/api/signup", {
+  const res = await fetch(process.env.NEXT_PUBLIC_URL_PAGE + "/api/signup", {
     method: "POST",
     body: JSON.stringify(userLogin),
     headers: {
@@ -25,7 +25,7 @@ export const loginUser = async (formData: FormData) => {
   if (data.status != 200) {
     return { status, message: data.message };
   }
-  const cookieStore = await cookies();
+  const cookieStore =  cookies();
   cookieStore.set({
     name: "tokenLogin",
     value: data.token,

@@ -3,6 +3,7 @@ import { loginUser } from "@/actions/authentication/login-actions";
 import { Card, Label, TextInput, Button, Alert } from "flowbite-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ResponseLogin } from "@/types/login-types";
 
 export default function LoginCard() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function LoginCard() {
         <form
           className="flex h-full flex-col gap-6 "
           action={async (formData) => {
-            const response: responseLogin = await loginUser(formData);
+            const response: ResponseLogin = await loginUser(formData);
             if (response.status !== 200) {
               setLoginToast({
                 showToast: true,

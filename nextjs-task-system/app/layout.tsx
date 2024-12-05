@@ -17,6 +17,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  //Shows navbar only if the user is logged
   const cookieStore = cookies();
   const tokenExists = cookieStore.get("tokenLogin")?.value;
   return (
@@ -24,9 +25,10 @@ export default function RootLayout({
       <head>
         <ThemeModeScript />
       </head>
-      <body className={`${inter.className} min-h-screen overflow-hidden`}>
-        {tokenExists && <NavbarPage />}
-        {children}
+      <body className={`${inter.className}  `}>
+        
+        {tokenExists ? <NavbarPage   >{children} </NavbarPage> : <>{children}</>}
+
       </body>
     </html>
   );

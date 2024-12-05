@@ -1,5 +1,6 @@
-type responseLogin = {
-  message: string;
+import { Response } from "./global-types";
+export interface ResponseLogin extends Response {
+
   token?: string;
-  status: number;
+
 };
