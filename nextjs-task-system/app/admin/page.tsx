@@ -106,7 +106,9 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-4 text-3xl font-bold">Task Management Dashboard</h1>
+      <h1 className="mb-6 mt-12 text-3xl font-bold md:mt-0">
+        Task Management Dashboard
+      </h1>
       <Button onClick={() => openModal()} className="mb-4">
         Add New Task
       </Button>

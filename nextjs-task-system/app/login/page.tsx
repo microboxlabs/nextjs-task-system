@@ -11,23 +11,28 @@ const Home = () => {
   const handleLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (response.ok) {
-      const { user } = await response.json();
-      if (user.role === "admin") {
-        router.push("/admin");
+      if (response.ok) {
+        const { user } = await response.json();
+        if (user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/user");
+        }
       } else {
-        router.push("/user");
+        alert("Invalid credentials");
       }
-    } else {
-      alert("Invalid credentials");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login");
     }
   };
 
