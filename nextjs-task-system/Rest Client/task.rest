@@ -15,9 +15,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hb
     "description": "description tarea 1",
     "assignedTo": ["1"],
     "dueDate": "2024-07-17T15:47:50.449+00:00",
-    // Opcional default(low)
+    // priority Opcional default(low)
     "priority":"low", 
-    // Opcional default(pending)
+    // status Opcional default(pending)
     "status":"pending" 
 }
 
@@ -29,7 +29,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
 
 {
-    "id": "1",
+    "id": "2",
     "title": "tarea 1",
     "description": "description tarea 1",
     "assignedTo": ["1"],
@@ -45,8 +45,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwicm9sZSI6InJlZ3VsYXIiLCJpYXQiOjE3MzMxODY4MjAsImV4cCI6MTczMzE4NjgyMH0.a6iBaz2IyAF7w2jaGc86IAo072CXHq6zq1a570XR95Q
 
 {
-    // Opcional default(pending)
     "id": "1",
+    // status Opcional default(pending)
     "status":"pending" 
 }
 

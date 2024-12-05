@@ -7,28 +7,35 @@ import TableTask from "@/components/TableTask";
 import TableUser from "@/components/TableUsers";
 import { useAuthStore, useTheme, loadingStore } from "@/store";
 import { useEffect, useState } from "react";
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import Swal from "sweetalert2";
-let socket:any;
+
+interface UpdateInputMessage {
+  assignedTo: string[];
+  message: string;
+}
+
+export type ViewState = "Register" | "Login" | "TableUser" | "TableTask" | "";
+
+let socket: Socket | null = null;
 
 export default function Home() {
   const { loading, setLoading } = loadingStore((state) => state);
-  const { isDarkMode } = useTheme((state) => state);
-  const { id, role } = useAuthStore((state) => state)
-  const [view, setView] = useState("");
-  
-  
+  const { isDarkMode, t } = useTheme((state) => state);
+  const { id } = useAuthStore((state) => state);
+  const [view, setView] = useState<ViewState>("");
+
   useEffect(() => {
     const socketInitializer = async () => {
       await fetch('/api/socket');
       socket = io();
       socket.on('connect', () => {console.log('Conectado al WebSocket');});
-      socket.on('update-input', (msg:{ assignedTo: string[]; message: string }) => {
-        if( msg.assignedTo.includes(username)){
+      socket.on('update-input', (msg: UpdateInputMessage) => {
+        if (msg.assignedTo.includes(id)) {
           Swal.fire({
-          icon: "info",
-          title: "actualizacion",
-          text: msg.message
+            icon: "info",
+            title: t.update,
+            text: msg.message,
           });
         }
       });
@@ -37,41 +44,17 @@ export default function Home() {
     return () => {
       if (socket) socket.disconnect();
     };
-  }, []);
-
-
-  useEffect(() => {
-    const socketInitializer = async () => {
-      await fetch('/api/socket');
-      socket = io();
-      socket.on('connect', () => {console.log('Conectado al WebSocket');});
-      socket.on('update-input', (msg:{ assignedTo: string[]; message: string }) => {
-        if( msg.assignedTo.includes(id)){
-          Swal.fire({
-          icon: "info",
-          title: "actualizacion",
-          text: msg.message
-          });
-        }
-      });
-    };
-    socketInitializer();
-    return () => {
-      if (socket) socket.disconnect();
-    };
-  }, []);
-
+  }, [id]);
 
   useEffect(() => {
     setLoading(true);
-    if (id==""){
-      setView("Register")
-    }else{
-      setView("TableTask")
+    if (id === "") {
+      setView("Register");
+    } else {
+      setView("TableTask");
     }
     setLoading(false);
-  }, []);
-
+  }, [id]);
 
   return (
     <div
@@ -79,12 +62,12 @@ export default function Home() {
       className="min-h-screen bg-[--bg-color] text-[--text-color]"
     >
       <Header setView={setView} view={view} />
-      {loading && <Loading/>}
+      {loading && <Loading />}
       <div className="relative">
-        {view == "Register" && <Register setView={setView} />}
-        {view == "Login" && <Login setView={setView} />}
-        {view == "TableUser" && <TableUser />}
-        {view == "TableTask" && <TableTask />}
+        {view === "Register" && <Register setView={setView} />}
+        {view === "Login" && <Login setView={setView} />}
+        {view === "TableUser" && <TableUser />}
+        {view === "TableTask" && <TableTask />}
       </div>
     </div>
   );

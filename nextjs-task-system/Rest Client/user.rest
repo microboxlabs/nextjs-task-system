@@ -9,11 +9,13 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "username": "user1",
-    "password": "password123"
+    "username": "admin1",
+    "password": "pass123",
+    // Si no se envie role queda como Role.regular
+    "role": "admin"
 }
 
 ### Autenticar usuario
 GET http://localhost:3000/api/auth/login
 Accept: application/vnd.api+json
-Authorization: Basic user1 password123
+Authorization: Basic admin1 pass123
