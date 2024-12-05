@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
+import { Request } from "express";
 
-const SocketHandler = (req, res) => {
+const SocketHandler = (req: Request, res:any) => {
   if (res.socket.server.io) {
     console.log('Socket ya está corriendo');
   } else {
@@ -11,8 +12,14 @@ const SocketHandler = (req, res) => {
     io.on('connection', (socket) => {
       console.log('Cliente conectado');
 
+      // Escuchar cambios de input y emitir a otros clientes
       socket.on('input-change', (msg) => {
         socket.broadcast.emit('update-input', msg);
+      });
+
+      // Escuchar desconexión de un cliente
+      socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
       });
     });
   }

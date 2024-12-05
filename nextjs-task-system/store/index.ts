@@ -68,7 +68,7 @@ interface Translation {
 
 const translation: Record<Language, Translation> = {
   es: {
-    tableTask: "Tarea de tabla",
+    tableTask: "Tabla de tarea",
     title: "Título",
     description: "Descripción",
     priority: "Prioridad",
@@ -85,7 +85,7 @@ const translation: Record<Language, Translation> = {
     logout: "Cerrar sesión",
     login: "Iniciar sesión",
     register: "Registrarse",
-    tableUser: "Usuario de tabla",
+    tableUser: "Tabla de usuario",
     noRecordFound: "No se encontró ningún registro",
     continue: "Continuar",
     welcomeBacktoTask: "¡Bienvenido de nuevo a Quickbet Movies!",
@@ -102,7 +102,7 @@ const translation: Record<Language, Translation> = {
     pending: "Pendiente",
     inProgress: "En progreso",
     completed: "Completado",
-    sureToDeleteThisItem: "Asegúrese de eliminar este elemento",
+    sureToDeleteThisItem: "¿Seguro de eliminar este elemento?",
     deleteSuccessfully: "Eliminado correctamente",
     messageCreated: "Mensaje creado",
     back: "Atrás",
@@ -114,17 +114,17 @@ const translation: Record<Language, Translation> = {
     invalidUsernamePassword: "Nombre de usuario o contraseña no válidos",
     taskUpdatedCreated: "Tarea actualizada creada",
     userCreatedYouCanNowLogIn: "Usuario creado, ahora puede iniciar sesión",
-    oldestCreated: "Creación más antigua",
-    mostRecentCreated: "Creación más reciente",
+    oldestCreated: "Más antigua creada",
+    mostRecentCreated: "Más reciente creada",
     oldestExpirationDate: "Fecha de vencimiento más antigua",
     mostRecentExpirationDate: "Fecha de vencimiento más reciente",
     byPriority: "Por prioridad",
     sorbBy: "Ordenar por",
-    titleTaskCommentAdded: "Título del comentario de la tarea añadido: ",
-    titleTaskCreatedUpdated: "Título de la tarea creada o actualizada: "
+    titleTaskCommentAdded: "Título de tarea comentario añadido: ",
+    titleTaskCreatedUpdated: "Título de tarea creada o actualizada: "
   },
   en: {
-    tableTask: "Table task",
+    tableTask: "Task table",
     title: "Title",
     description: "Description",
     priority: "Priority",
@@ -141,7 +141,7 @@ const translation: Record<Language, Translation> = {
     logout: "Logout",
     login: "Login",
     register: "Register",
-    tableUser: "Table user",
+    tableUser: "User table",
     noRecordFound: "No record found",
     continue: "Continue",
     welcomeBacktoTask: "Welcome back to Quickbet Movies!",
@@ -158,7 +158,7 @@ const translation: Record<Language, Translation> = {
     pending: "Pending",
     inProgress: "In progress",
     completed: "completed",
-    sureToDeleteThisItem: "Sure to delete this item",
+    sureToDeleteThisItem: "Sure to delete this item?",
     deletedSuccessfully: "Deleted successfully",
     messageCreated: "Message created",
     back: "Back",
@@ -176,8 +176,8 @@ const translation: Record<Language, Translation> = {
     mostRecentExpirationDate: "Most recent expiration date",
     byPriority: "By priority",
     sorbBy: "Sorb by",
-    titleTaskCommentAdded: "Title task comment added: ",
-    titleTaskCreatedUpdated: "Title task created or updated: "
+    titleTaskCommentAdded: "Task title added comment : ",
+    titleTaskCreatedUpdated: "Task title  created or updated: "
   },
 };
 
