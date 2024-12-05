@@ -1,85 +1,99 @@
-import axios from 'axios';
-import {useAuthStore} from '@/store'
+import axios, { AxiosResponse } from 'axios';
+import { useAuthStore } from '@/store';
+import { FetchResponse } from '@/components/TableTask';
+import { UsersResponse } from '@/components/TableUsers';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const authApi = axios.create({ baseURL: API_URL});
-authApi.interceptors.request.use(async (config) => {
-  const token = useAuthStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+const authApi = axios.create({ baseURL: API_URL });
+
+authApi.interceptors.request.use(
+  async (config: any) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    config.headers["Content-Type"] = "application/json";
+    config.headers["access-control-allow-origin"] = "*";
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  config.headers.Authorization = `Bearer ${token}`;
-  config.headers["Content-Type"] = "application/json";
-  config.headers["access-control-allow-origin"] = "*";
-  return config;
-});
+);
 
-
-export const getAllUsers = async (query = "") => {
-    try {
-      const response = await authApi.get(`${API_URL}/user?${query}`);
-      return response.data;
-    } catch (error) {
-      return null;
-    }
-  };
-
-  export const registerUser = async (username: string, password: string) => {
-    try {
-      const response = await axios.post(`${API_URL}/auth/register`, {
-        username,
-        password
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error('Error en el registro');
-    }
-  };
-
-export const login = async (username: string, password: string) => {
+// Obtener todos los usuarios
+export const getAllUsers = async (query = ""): Promise< UsersResponse | null> => {
   try {
-    const response = await axios.get(`${API_URL}/auth/login`, {
-        auth: {
-            username,
-            password
-          },
-    });
+    const response: AxiosResponse<UsersResponse> = await authApi.get(`/user?${query}`);
     return response.data;
   } catch (error) {
     return null;
   }
 };
 
-export const getAllTasks = async (query = "") => {
+// Registrar usuario
+export const registerUser = async (username: string, password: string): Promise<any> => {
   try {
-    const response = await authApi.get(`${API_URL}/task?${query}`);
+    const response: AxiosResponse<any> = await axios.post(`${API_URL}/auth/register`, {
+      username,
+      password,
+    });
     return response.data;
   } catch (error) {
-    throw new Error('Error al crear la tarea');
+    throw new Error('Error en el registro');
   }
 };
 
-export const createTask = async (payload:any) => {
+// Iniciar sesión
+export const login = async (username: string, password: string): Promise<any | null> => {
   try {
-    const response = await authApi.post(`${API_URL}/task`, payload);
+    const response: AxiosResponse<any> = await axios.get(`${API_URL}/auth/login`, {
+      auth: {
+        username,
+        password,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al iniciar sesión", error);
+    return null;
+  }
+};
+
+// Obtener todas las tareas
+export const getAllTasks = async (query = ""): Promise<FetchResponse | null> => {
+  try {
+    const response: AxiosResponse<FetchResponse> = await authApi.get(`/task?${query}`);
     return response.data;
   } catch (error) {
     throw new Error('Error al obtener las tareas');
   }
 };
 
-export const updateTask = async (payload:any) => {
+// Crear tarea
+export const createTask = async (payload: any): Promise<any> => {
   try {
-    const response = await authApi.put(`${API_URL}/task`, payload);
+    const response: AxiosResponse<any> = await authApi.post(`/task`, payload);
+    return response.data;
+  } catch (error) {
+    throw new Error('Error al crear la tarea');
+  }
+};
+
+// Actualizar tarea
+export const updateTask = async (payload: any): Promise<any> => {
+  try {
+    const response: AxiosResponse<any> = await authApi.put(`/task`, payload);
     return response.data;
   } catch (error) {
     throw new Error('Error al actualizar la tarea');
   }
 };
 
-export const deleteTask = async (id:number) => {
+// Eliminar tarea
+export const deleteTask = async (id: string): Promise<any> => {
   try {
-    const response = await authApi.delete(`${API_URL}/task?id=${id}`)
+    const response: AxiosResponse<any> = await authApi.delete(`/task?id=${id}`);
     return response.data;
   } catch (error) {
     throw new Error('Error al eliminar la tarea');

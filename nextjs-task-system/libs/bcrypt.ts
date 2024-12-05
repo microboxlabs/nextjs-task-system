@@ -1,35 +1,35 @@
 import bcrypt from 'bcryptjs';
 const saltRounds = 10;
 
-/** Encrypt & validate strings. 
-*/
+/** Encripta y valida cadenas de texto. */
 export default class Encrypt {
+  private str: string;
 
   /**
    * @constructor
-   * @param {string} str - String to encrypt / compare.
-  */
-  constructor(str:string) {
+   * @param {string} str - Cadena a encriptar o comparar.
+   */
+  constructor(str: string) {
     this.str = str;
   }
-  
+
   /**
-     * Encrypt a string.
-     * @method
-     * @returns {string} -> Operation result.
-  */
-  encrypt_str = async()=> {
+   * Encripta una cadena de texto.
+   * @method
+   * @returns {Promise<string>} -> Resultado de la operación.
+   */
+  encrypt_str = async (): Promise<string> => {
     return await bcrypt.hash(this.str, saltRounds);
   }
 
   /**
-     * Compare a hash with a string.
-     * @method
-     * @param {string} currentHash - Hash to compare.
-     * @returns {boolean} -> Operation result.
-  */
-  compare_str = async(currentHash:string)=> {
-    return await bcrypt.compare(currentHash, this.str,);
+   * Compara un hash con una cadena de texto.
+   * @method
+   * @param {string} currentHash - Hash a comparar.
+   * @returns {Promise<boolean>} -> Resultado de la operación.
+   */
+  compare_str = async (currentHash: string): Promise<boolean> => {
+    return await bcrypt.compare(currentHash, this.str);
   }
-};
+}
 

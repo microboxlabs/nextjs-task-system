@@ -1,38 +1,38 @@
-import  jwt, { TokenExpiredError } from "jsonwebtoken";
+import jwt, { TokenExpiredError, JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
 
-/** Class represents a Json web token instance.
- */
+/** La clase representa una instancia de Json Web Token. */
 export default class JWToken {
   /**
-   * Check the validity of a token.
+   * Verifica la validez de un token.
    * @method
-   * @param {string} token - Token to validate.
-   * @returns {object} -> Operation result.
+   * @param {string} token - Token a validar.
+   * @returns {JwtPayload | { error: string }} -> Resultado de la operación o carga decodificada si es válida.
    */
-  verifyJwt = (token: object) => {
-    return jwt.verify(token, process.env.SECRET_JWT, (err, decoded) => {
-      if (err) {
-        if (err instanceof TokenExpiredError) {
-          return { error: "Sesion expired" };
-        } else {
-          return { error: "Invalid token" };
-        }
-      } else {
-        return decoded;
+  verifyJwt = (token: string): JwtPayload | { error: string } => {
+    try {
+      const decoded = jwt.verify(token, process.env.SECRET_JWT as string);
+      return decoded as JwtPayload;
+    } catch (err) {
+      if (err instanceof TokenExpiredError) {
+        return { error: "Sesión expirada" };
+      } if (err instanceof JsonWebTokenError) {
+        return { error: "Token con firma no válida" };
+      }else {
+        return { error: "Token inválido" };
       }
-    });
+    }
   };
 
   /**
-   * Check the validity of a token.
+   * Genera un nuevo JWT con una carga útil dada.
    * @method
-   * @param {object} payload - Payload to set in the jwt.
-   * @param {number|string} expiresInMinute - Minutes to expire the jwt.
-   * @returns {string} -> Json web token.
+   * @param {object} payload - Carga útil para establecer en el JWT.
+   * @returns {string} -> El JWT generado.
    */
-  parseJwt = (payload: object) => {
-    return jwt.sign(payload, process.env.SECRET_JWT, {
-        expiresIn: 60 * parseInt(process.env.SESION_TIME), 
+  parseJwt = (payload: object): string => {
+    const expireTime = 60 * parseInt(process.env.TIEMPO_SESION ?? '999999');
+    return jwt.sign(payload, process.env.SECRET_JWT as string, {
+      expiresIn: expireTime,
     });
   };
 }
