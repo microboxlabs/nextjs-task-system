@@ -70,14 +70,14 @@ const Register: React.FC<RegisterProps> = ({ setView }) => {
               placeholder="username"
               required
               {...register("username")}
-              className="w-full rounded-md bg-[var(--bg-color3)] p-3 focus:outline-none"
+              className="w-full rounded-md bg-[--bg-color3] p-3 text-[--text-color] focus:outline-none"
             />
             <input
               type="password"
               placeholder="Password"
               required
               {...register("password")}
-              className="w-full rounded-md bg-[var(--bg-color3)] p-3 focus:outline-none"
+              className="w-full rounded-md bg-[--bg-color3] p-3 text-[--text-color] focus:outline-none"
             />
             <button className="flex w-full items-center justify-center rounded-lg bg-yellow-500 py-3 text-white">
               {t.continue}

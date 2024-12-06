@@ -3,8 +3,7 @@ import { useAuthStore } from '@/store';
 import { FetchResponse } from '@/components/TableTask';
 import { UsersResponse } from '@/components/TableUsers';
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const authApi = axios.create({ baseURL: API_URL });
+const authApi = axios.create();
 
 authApi.interceptors.request.use(
   async (config: any) => {
@@ -24,7 +23,7 @@ authApi.interceptors.request.use(
 // Obtener todos los usuarios
 export const getAllUsers = async (query = ""): Promise< UsersResponse | null> => {
   try {
-    const response: AxiosResponse<UsersResponse> = await authApi.get(`/user?${query}`);
+    const response: AxiosResponse<UsersResponse> = await authApi.get(`api/user?${query}`);
     return response.data;
   } catch (error) {
     return null;
@@ -34,7 +33,7 @@ export const getAllUsers = async (query = ""): Promise< UsersResponse | null> =>
 // Registrar usuario
 export const registerUser = async (username: string, password: string): Promise<any> => {
   try {
-    const response: AxiosResponse<any> = await axios.post(`${API_URL}/auth/register`, {
+    const response: AxiosResponse<any> = await axios.post("api/auth/register", {
       username,
       password,
     });
@@ -47,7 +46,7 @@ export const registerUser = async (username: string, password: string): Promise<
 // Iniciar sesión
 export const login = async (username: string, password: string): Promise<any | null> => {
   try {
-    const response: AxiosResponse<any> = await axios.get(`${API_URL}/auth/login`, {
+    const response: AxiosResponse<any> = await axios.get("api/auth/login", {
       auth: {
         username,
         password,
@@ -63,7 +62,7 @@ export const login = async (username: string, password: string): Promise<any | n
 // Obtener todas las tareas
 export const getAllTasks = async (query = ""): Promise<FetchResponse | null> => {
   try {
-    const response: AxiosResponse<FetchResponse> = await authApi.get(`/task?${query}`);
+    const response: AxiosResponse<FetchResponse> = await authApi.get(`api/task?${query}`);
     return response.data;
   } catch (error) {
     throw new Error('Error al obtener las tareas');
@@ -73,7 +72,7 @@ export const getAllTasks = async (query = ""): Promise<FetchResponse | null> => 
 // Crear tarea
 export const createTask = async (payload: any): Promise<any> => {
   try {
-    const response: AxiosResponse<any> = await authApi.post(`/task`, payload);
+    const response: AxiosResponse<any> = await authApi.post(`api/task`, payload);
     return response.data;
   } catch (error) {
     throw new Error('Error al crear la tarea');
@@ -83,7 +82,7 @@ export const createTask = async (payload: any): Promise<any> => {
 // Actualizar tarea
 export const updateTask = async (payload: any): Promise<any> => {
   try {
-    const response: AxiosResponse<any> = await authApi.put(`/task`, payload);
+    const response: AxiosResponse<any> = await authApi.put(`api/task`, payload);
     return response.data;
   } catch (error) {
     throw new Error('Error al actualizar la tarea');
@@ -93,7 +92,7 @@ export const updateTask = async (payload: any): Promise<any> => {
 // Eliminar tarea
 export const deleteTask = async (id: string): Promise<any> => {
   try {
-    const response: AxiosResponse<any> = await authApi.delete(`/task?id=${id}`);
+    const response: AxiosResponse<any> = await authApi.delete(`api/task?id=${id}`);
     return response.data;
   } catch (error) {
     throw new Error('Error al eliminar la tarea');
