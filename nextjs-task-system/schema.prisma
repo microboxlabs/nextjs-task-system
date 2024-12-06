@@ -53,7 +53,8 @@ model Task {
   assignedToGroupId Int?
   user              User?    @relation("UserTasks", fields: [assignedToUserId], references: [id])
   group             Group?   @relation("GroupTasks", fields: [assignedToGroupId], references: [id])
-  dueDate           DateTime @default(now())
+  creationDate      DateTime @default(now())
+  dueDate           DateTime 
 
   priorityId Int
   priority   Priority @relation("PriorityTask", fields: [priorityId], references: [id])

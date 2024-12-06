@@ -8,36 +8,45 @@ import { NextRequest, NextResponse } from "next/server";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-export async function PUT(req: NextRequest) { 
-
-
-
-
-  if (req.method !== "PUT") {  
+export async function PUT(req: NextRequest) {
+  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+  if (req.method !== "PUT") {
     return NextResponse.json({ message: "Method not allowed", status: 405 });
   }
 
   try {
-    const { id, title, description, user, group, typeOfAssigned, priority,token } = await req.json();
+    const {
+      id,
+      title,
+      description,
+      user,
+      status,
+      group,
+      typeOfAssigned,
+      dueDate,
+      priority,
+    } = await req.json();
 
     if (!token) {
       return NextResponse.json(
         { message: "Token not found in cookies" },
-        { status: 401 }
+        { status: 401 },
       );
     }
     try {
-      
       const { payload } = await jwtVerify(token, secret);
       verifyToken(payload);
     } catch (error) {
-      if (error instanceof Error && "code" in error && error.code === "EXPIRED-TOKEN") {
+      if (
+        error instanceof Error &&
+        "code" in error &&
+        error.code === "EXPIRED-TOKEN"
+      ) {
         return NextResponse.json({ message: "Token has expired", status: 401 });
       }
       console.error(error);
       return NextResponse.json({ message: "Invalid token", status: 401 });
     }
-
 
     const task = await prisma.task.update({
       where: { id },
@@ -46,7 +55,9 @@ export async function PUT(req: NextRequest) {
         description,
         assignedToGroupId: typeOfAssigned !== "person" ? group : null,
         assignedToUserId: typeOfAssigned === "person" ? user : null,
+        statusId: status,
         priorityId: priority,
+        dueDate: dueDate,
       },
       include: {
         group: {
@@ -80,12 +91,9 @@ export async function PUT(req: NextRequest) {
       data: formattedTask,
       status: 200,
     });
-
   } catch (error) {
     console.error("Error updating task:", error);
 
-    return NextResponse.json(
-      { message: "Internal server error", status: 500 }
-    );
+    return NextResponse.json({ message: "Internal server error", status: 500 });
   }
 }

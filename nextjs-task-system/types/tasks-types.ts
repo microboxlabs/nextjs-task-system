@@ -41,7 +41,7 @@ export interface TaskReponse {
     name: string;
   };
 }
-interface GroupsAndPriorities {
+export interface GroupsAndPriorities {
   id: number;
   name: string;
 }
@@ -56,6 +56,7 @@ interface SelectFormAssigned {
   groups: GroupsAndPriorities[];
   users: User[];
   priorities: GroupsAndPriorities[];
+  status: GroupsAndPriorities[];
 }
 
 export interface ResponseSelectAssigned extends Response {
@@ -66,4 +67,8 @@ export interface ResponseTaskGetBackend extends Response {
 }
 export interface ResponseTaskGet extends Response {
   data: Task[];
+}
+
+export interface ResponseTaskGetWithoutArray extends Response {
+  data: Task;
 }

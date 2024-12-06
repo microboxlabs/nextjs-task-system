@@ -18,7 +18,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-
   if (!token) {
     const response = NextResponse.next();
     response.cookies.delete("tokenLogin");
@@ -29,5 +28,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/home", "/tasks"], 
+  matcher: ["/", "/home", "/tasks"],
 };

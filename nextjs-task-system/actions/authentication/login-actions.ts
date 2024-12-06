@@ -25,7 +25,7 @@ export const loginUser = async (formData: FormData) => {
   if (data.status != 200) {
     return { status, message: data.message };
   }
-  const cookieStore =  cookies();
+  const cookieStore = cookies();
   cookieStore.set({
     name: "tokenLogin",
     value: data.token,

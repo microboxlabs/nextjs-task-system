@@ -1,6 +1,5 @@
 "use server";
 
-
 import { Task } from "@/types/tasks-types";
 import { cookies } from "next/headers";
 
@@ -12,13 +11,16 @@ export const createTask = async (formData: FormData) => {
   const assigned = formData.get("Assigned") as string;
   const typeOfAssigned = formData.get("TypeOfAssigned") as string;
   const priority = formData.get("Priority") as string;
+  const dueDate = formData.get("DueDate") as string;
+
+  const formattedDueDate = new Date(dueDate).toISOString();
   const taskFormData = {
     title: title as string,
     description: description as string,
     assigned: Number(assigned) as number,
     typeOfAssigned: typeOfAssigned as string,
     priority: Number(priority) as number,
-    token: token as string,
+    dueDate: formattedDueDate,
   };
 
   const url = process.env.NEXT_PUBLIC_URL_PAGE + "/api/tasks/create";
@@ -27,6 +29,7 @@ export const createTask = async (formData: FormData) => {
     body: JSON.stringify(taskFormData),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
@@ -41,32 +44,35 @@ export const createTask = async (formData: FormData) => {
 
 export const updateTask = async (
   formData: Task & { typeOfAssigned: string },
+  valuesData: FormData,
 ) => {
   const url = process.env.NEXT_PUBLIC_URL_PAGE + "/api/tasks/update";
-  
+  const dueDate = valuesData.get("dueDate") as string;
   const cookieStore = cookies();
   const token = cookieStore.get("tokenLogin")?.value;
+  const formattedDueDate = new Date(dueDate).toISOString();
   const taskFormData = {
     id: Number(formData.id) as number,
     title: formData.title as string,
     description: formData.description as string,
     user: Number(formData.user?.id) as number,
     typeOfAssigned: formData.typeOfAssigned as string,
+    dueDate: formattedDueDate,
     priority: Number(formData.priority.id) as number,
+    status: Number(formData.status.id) as number,
     group: Number(formData.user?.id) as number,
-    token: token as string,
-
   };
   const response = await fetch(url, {
     method: "PUT",
     body: JSON.stringify(taskFormData),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     credentials: "include",
   });
 
-  const data = await response.json(); 
+  const data = await response.json();
 
   if (data.status !== 200) {
     return data;
@@ -75,10 +81,9 @@ export const updateTask = async (
   return data;
 };
 
-
 export const deleteTask = async (id: number) => {
   const url = process.env.NEXT_PUBLIC_URL_PAGE + "/api/tasks/delete";
-  
+
   const cookieStore = cookies();
   const token = cookieStore.get("tokenLogin")?.value;
   const taskFormData = {
@@ -91,24 +96,21 @@ export const deleteTask = async (id: number) => {
       body: JSON.stringify(taskFormData),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       credentials: "include",
     });
 
-
-
     const responseText = await response.text();
 
-
     if (!response.ok) {
-      console.error('Error response:', responseText);
+      console.error("Error response:", responseText);
       throw new Error(`Error deleting task: ${responseText}`);
     }
 
-    const data = JSON.parse(responseText);  
+    const data = JSON.parse(responseText);
     if (!data) {
-      throw new Error('Invalid JSON response');
+      throw new Error("Invalid JSON response");
     }
 
     if (data.status !== 200) {

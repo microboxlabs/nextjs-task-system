@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import { Sidebar } from "flowbite-react";
 import {
@@ -9,14 +9,18 @@ import {
 } from "react-icons/hi";
 import { logoutAction } from "@/actions/authentication/logout-actions";
 
-export function SidebarComponent({ children }: Readonly<{ children: React.ReactNode }>) {
+export function SidebarComponent({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const [isCollapsed, setCollapsed] = useState(true);
-  useEffect(() => {
 
-    if (typeof window !== 'undefined') {
-      setCollapsed(window.innerWidth < 720); 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCollapsed(window.innerWidth < 720);
     }
   }, []);
+  const [message, setMessage] = useState<string | null>(null);
+
   return (
     <div
       className="grid min-h-screen grid-cols-[200px_1fr]"
@@ -25,10 +29,10 @@ export function SidebarComponent({ children }: Readonly<{ children: React.ReactN
       }}
     >
       {/* Sidebar */}
-      <div className="text-white min-h-screen bg-gray-800 transition-all duration-300">
+      <div className="min-h-screen bg-gray-800 text-white transition-all duration-300">
         <button
           onClick={() => setCollapsed(!isCollapsed)}
-          className="p-2 m-2 bg-gray-700 rounded hover:bg-gray-600 flex items-center justify-center"
+          className="m-2 flex items-center justify-center rounded bg-gray-700 p-2 hover:bg-gray-600"
         >
           {isCollapsed ? <HiChevronDoubleRight /> : <HiChevronDoubleLeft />}
         </button>
@@ -50,11 +54,22 @@ export function SidebarComponent({ children }: Readonly<{ children: React.ReactN
                     type="submit"
                     className="group flex w-full items-center rounded-lg text-left text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                   >
-                    <Sidebar.Item href="#" icon={HiArrowSmRight} className="flex items-center gap-2">
+                    <Sidebar.Item
+                      href="#"
+                      icon={HiArrowSmRight}
+                      className="flex items-center gap-2"
+                    >
                       Sign Out
                     </Sidebar.Item>
                   </button>
                 </form>
+                <Sidebar.Item
+                  href="#"
+                  icon={HiArrowSmRight}
+                  className="flex items-center gap-2"
+                >
+                  {message}
+                </Sidebar.Item>
               </Sidebar.ItemGroup>
             </Sidebar.Items>
           </Sidebar>
@@ -62,9 +77,7 @@ export function SidebarComponent({ children }: Readonly<{ children: React.ReactN
       </div>
 
       {/* Main Content */}
-      <main className="p-4 bg-gray-100 overflow-auto">
-        {children}
-      </main>
+      <main className="overflow-auto bg-gray-100 p-4">{children}</main>
     </div>
   );
 }
