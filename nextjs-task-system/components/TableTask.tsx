@@ -118,7 +118,7 @@ export default function TableTask() {
   };
 
   return (
-    <div className="flex h-full min-h-screen w-full flex-col gap-[20px] p-[30px]">
+    <div className="flex flex-col gap-[20px] p-[30px] min-h-screen size-full">
       {modalTask && (
         <ModalTask
           setModalTask={setModalTask}

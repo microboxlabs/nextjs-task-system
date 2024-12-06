@@ -38,11 +38,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
           <li key={page}>
             <button
               onClick={() => goToPage(page)}
-              className={`px-4 py-2 rounded ${
-                currentPage === page
-                  ? 'bg-[var(--bg-color3)]'
-                  : 'bg-[var(--bg-color1)] hover:bg-[var(--bg-color3)]'
-              }`}
+              className={`px-4 py-2 rounded ${currentPage === page ? 'bg-[var(--bg-color3)]' : 'bg-[var(--bg-color1)] hover:bg-[var(--bg-color3)]'}`}
             >
               {page}
             </button>

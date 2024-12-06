@@ -46,7 +46,7 @@ export default function TableUser() {
   };
 
   return (
-    <div className="flex h-full min-h-screen w-full flex-col gap-[20px] p-[30px]">
+    <div className="flex size-full min-h-screen flex-col gap-[20px] p-[30px]">
       <div className="flex w-full flex-col gap-[20px] md:flex-row md:items-center md:justify-between md:gap-0">
         <p className="text-xl font-semibold md:text-[28px]">
           {t.users}

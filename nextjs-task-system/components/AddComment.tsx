@@ -66,9 +66,9 @@ export default function AddComment({
  
 
   return (
-    <div className="absolute left-0 top-0 flex h-full w-full justify-center p-10">
+    <div className="absolute left-0 top-0 flex size-full justify-center p-10">
       <div
-        className="absolute left-0 top-0 h-full w-full bg-gray-900 opacity-60"
+        className="absolute left-0 top-0 size-full bg-gray-900 opacity-60"
         onClick={() => setAddComment(false)}
       />
       <div className="z-10 flex h-fit w-full max-w-4xl flex-col items-center rounded-lg bg-[--bg-color3] p-10 text-center md:w-1/2">
@@ -91,7 +91,7 @@ export default function AddComment({
             placeholder="message"
             required={true}
             {...register("message")}
-            className="w-full rounded-md bg-[var(--bg-color3)] p-3 text-[var(--text-color)] placeholder-[var(--text-color)] focus:outline-none"
+            className="w-full rounded-md bg-[var(--bg-color3)] p-3 focus:outline-none"
           />
           <button className="flex w-full items-center justify-center rounded-lg bg-yellow-500 py-3 text-white">
             {t.continue} <Forward />
