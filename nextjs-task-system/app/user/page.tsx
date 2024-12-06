@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import TaskCard from "@/componentes/TaskComponents/TaskCard";
+import TaskCard from "@/componentes/UserComponents/TaskCard";
 
 type Task = {
   id: number;

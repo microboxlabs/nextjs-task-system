@@ -80,8 +80,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Sidebar.Item href="/admin/tasks" icon={HiInbox}>
                 Tasks
               </Sidebar.Item>
-              <Sidebar.Item href="/admin/users" icon={HiTable}>
-                Users
+              <Sidebar.Item href="/admin/create" icon={HiTable}>
+                Create task
               </Sidebar.Item>
             </Sidebar.ItemGroup>
 
