@@ -32,7 +32,7 @@ interface TaskWithAssignedToAndComments extends Task {
 }
 
 const task = async (req: any, res: Response): Promise<Response> => {
-  // Validación y manejo de la solicitud GET para obtener tareas
+  // Validación y manejo de la solicitud GET para obtener tareas (admin)
   if (req.method === "GET" && ["admin"].includes(req.user.role)) {
     await expressValidator(req, res, validator.getAllTasks);
 
@@ -77,6 +77,52 @@ const task = async (req: any, res: Response): Promise<Response> => {
         totalPages: Math.ceil(totalItems / parseInt(limit)),
       });
     } catch (error) {
+      return res.status(500).json({ error: "Error al obtener las tareas" });
+    }
+  }
+
+   // Validación y manejo de la solicitud GET para obtener tareas por el usuario regular
+   if (req.method === "GET" && ["regular"].includes(req.user.role)) {
+    await expressValidator(req, res, validator.getAllTasks);
+
+    const { page="1", limit="10", id, priority, status, order } = req.query as GetTasksQuery;
+
+    const where: any = {
+      ...(id ? { id: parseInt(id) } : null),
+      assignedTo: {
+        some: {
+          id: req.user.id,
+        },
+      },
+      ...(priority ? { priority } : null),
+      ...(status ? { status } : null),
+    };
+
+    try {
+      const data: TaskWithAssignedToAndComments[] = await prisma.task.findMany({
+        skip: (parseInt(page) - 1) * parseInt(limit),
+        take: parseInt(limit),
+        include: {
+          assignedTo: true,
+          comments: { include: { user: true } },
+        },
+        where,
+        orderBy: {
+          ...(order === "oldestCreated" ? { createdAt: "asc" } : null),
+          ...(order === "mostRecentCreated" ? { createdAt: "desc" } : null),
+          ...(order === "oldestExpirationDate" ? { dueDate: "asc" } : null),
+          ...(order === "mostRecentExpirationDate" ? { dueDate: "desc" } : null),
+          ...(order === "byPriority" ? { priority: "asc" } : null),
+        },
+      });
+      const totalItems = await prisma.task.count({ where });
+      return res.status(200).json({
+        data,
+        totalItems,
+        totalPages: Math.ceil(totalItems / parseInt(limit)),
+      });
+    } catch (error) {
+      console.log({error})
       return res.status(500).json({ error: "Error al obtener las tareas" });
     }
   }

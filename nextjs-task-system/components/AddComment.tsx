@@ -84,14 +84,14 @@ export default function AddComment({
           className="m-8 flex w-full flex-col gap-4"
         >
           <h2 className="text-2xl font-bold">
-            {`Añadir comentario a tarea ${watch("id")}`}
+            {`${t.addCommentTask} ${watch("id")}`}
           </h2>
           <input className="hidden" {...register("id")} />
           <textarea
             placeholder="message"
             required={true}
             {...register("message")}
-            className="w-full rounded-md bg-[--bg-color3] p-3 text-[--text-color] focus:outline-none"
+            className="w-full rounded-md p-3 text-black focus:outline-none"
           />
           <button className="flex w-full items-center justify-center rounded-lg bg-yellow-500 py-3 text-white">
             {t.continue} <Forward />

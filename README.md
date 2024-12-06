@@ -65,7 +65,7 @@ Aplica las migraciones para sincronizar el esquema de la base de datos:
    ```
 
 ### Seed
-Para insertar datos iniciales en la base de datos, ejecuta el script de seed:
+Para insertar datos iniciales en la base de datos, ejecuta el script de seed. Se crearan los usuarios de prisma/seed.ts. Puede acceder como (admin password123) para crear tareas o como (user1 hasta user4) para recibir tareas.
 
    ```bash
    npx prisma db seed

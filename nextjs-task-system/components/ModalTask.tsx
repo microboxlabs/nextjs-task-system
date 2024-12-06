@@ -167,7 +167,7 @@ const ModalTask: React.FC<ModalTaskProps> = ({
 
           {role === Role.admin && (
             <div className="flex w-full flex-col items-start gap-1">
-              <p className="text-xs">{t.users}</p>
+              <p className="text-xs">{t.usersCreate}</p>
               <div className="relative flex w-full flex-col gap-[10px]">
                 <button
                   className="mb-[10px] flex h-[50px] w-full cursor-pointer items-center justify-between rounded-l border-DEFAULT border-[--inputsBorder] bg-white px-[18px] py-[20px] outline-none"

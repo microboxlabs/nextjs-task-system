@@ -77,6 +77,7 @@ const translation: Record<Language, Translation> = {
     dueDate: "Fecha de vencimiento",
     actions: "acciones",
     newTask: "Nueva tarea",
+    updateTask: "Actualizar tarea: ",
     updateAt: "Actualizar a las",
     update: "Actualizar",
     username: "Nombre de usuario",
@@ -93,6 +94,7 @@ const translation: Record<Language, Translation> = {
     numberTasks: "Número de tareas",
     tasks: "Tareas",
     users: "Usuarios",
+    usersCreate: "Usuarios (Se notificaran de cambios)",
     inTotal: "En total",
     comments: "Comentarios",
     addComment: "Agregar comentario",
@@ -121,7 +123,8 @@ const translation: Record<Language, Translation> = {
     byPriority: "Por prioridad",
     sorbBy: "Ordenar por",
     titleTaskCommentAdded: "Título de tarea comentario añadido: ",
-    titleTaskCreatedUpdated: "Título de tarea creada o actualizada: "
+    titleTaskCreatedUpdated: "Título de tarea creada o actualizada: ",
+    addCommentTask: "Añadir comentario a tarea: "
   },
   en: {
     tableTask: "Task table",
@@ -133,6 +136,7 @@ const translation: Record<Language, Translation> = {
     dueDate: "Due date",
     actions: "actions",
     newTask: "New task",
+    updateTask: "Update task:",
     updatedAt: "Update at",
     update: "Update",
     username: "Username",
@@ -149,6 +153,7 @@ const translation: Record<Language, Translation> = {
     numberTasks: "Number of tasks",
     tasks: "Tasks",
     users: "Users",
+    usersCreate: "Users (They will be notified of changes)",
     inTotal: "In total",
     comments: "Comments",
     addComment: "Add comment",
@@ -176,8 +181,9 @@ const translation: Record<Language, Translation> = {
     mostRecentExpirationDate: "Most recent expiration date",
     byPriority: "By priority",
     sorbBy: "Sorb by",
-    titleTaskCommentAdded: "Task title added comment : ",
-    titleTaskCreatedUpdated: "Task title  created or updated: "
+    titleTaskCommentAdded: "Task title added comment: ",
+    titleTaskCreatedUpdated: "Task title created or updated: ",
+    addCommentTask: "Add comment to task: "
   },
 };
 
