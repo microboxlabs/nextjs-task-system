@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "title": "Initial Project Setup",
+    "description": "Configure the development environment, install dependencies, and ensure the application runs correctly at http://localhost:3000.",
+    "status": "completed",
+    "dueDate": "2024-12-01",
+    "assignedTo": "John Doe",
+    "priority": "high",
+    "comments": ["Install Next.js 14", "Set up Flowbite and Tailwind CSS"]
+  },
+  {
+    "id": 2,
+    "title": "Fix Security Vulnerabilities",
+    "description": "Update Next.js to version 14.2.20 to resolve security vulnerabilities reported by npm audit (Cache Poisoning, Denial of Service).",
+    "status": "completed",
+    "dueDate": "2024-12-01",
+    "assignedTo": "Jane Smith",
+    "priority": "high",
+    "comments": [
+      "Update Next.js",
+      "Verify application functionality after the update"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Create Test Data in JSON Format",
+    "description": "Generate the tasks.json file with sample data for the task management system.",
+    "status": "completed",
+    "dueDate": "2024-12-01",
+    "assignedTo": "Carlos Perez",
+    "priority": "medium",
+    "comments": ["Generate sample task data", "Use JSON format for data"]
+  },
+  {
+    "id": 4,
+    "title": "Complete Project Documentation",
+    "description": "Complete technical and user documentation, including setup, installation, and usage details for the application.",
+    "status": "completed",
+    "dueDate": "2024-12-01",
+    "assignedTo": "John Doe",
+    "priority": "low",
+    "comments": [
+      "Write installation steps",
+      "Explain how to configure and run the app"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Implement API Routes for Tasks",
+    "description": "Develop the API routes to manage tasks (create, read, update, delete).",
+    "status": "pending",
+    "dueDate": "2024-12-10",
+    "assignedTo": "Anna Lee",
+    "priority": "high",
+    "comments": [
+      "Create the POST route to create tasks",
+      "Develop the GET route to fetch all tasks"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Design User Interface for Tasks",
+    "description": "Create the basic components to display and manage tasks in the user interface.",
+    "status": "pending",
+    "dueDate": "2024-12-05",
+    "assignedTo": "Carlos Perez",
+    "priority": "medium",
+    "comments": [
+      "Create task list",
+      "Implement design with Flowbite and Tailwind"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Implement Unit Tests for Functionalities",
+    "description": "Write and run unit tests for functions related to tasks (CRUD operations).",
+    "status": "pending",
+    "dueDate": "2024-12-12",
+    "assignedTo": "David Kim",
+    "priority": "medium",
+    "comments": [
+      "Test the POST route for tasks",
+      "Verify error handling in routes"
+    ]
+  }
+]
