@@ -4,9 +4,10 @@ export type User = {
     name: string;
     email: string;
     password: string;
+    role: 'user' | 'adm'
 }
 
-export type UserInput = Omit<User, "password" | "email">
+export type UserInput = Omit<User, "password" | "email" | "role">
 
 export type UserGroup = {
     id: string;
@@ -24,7 +25,7 @@ export type Task = {
     dueDate: string;
     priority: "low" | "medium" | "high";
     status: "pending" | "in progress" | "completed";
-    comments: string[]
+    comments: Comment[]
 
 }
 
@@ -34,3 +35,10 @@ export type CombinedOptions = {
     type: 'user' | 'group';
     value: UserInput | UserGroup;
 };
+
+export interface Comment {
+    id: string;
+    content: string;
+    createdAt: Date;
+    userId: string;
+}

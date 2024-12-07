@@ -2,6 +2,8 @@ import Link from "next/link";
 import Search from "./search";
 import TableTask from "@/app/ui/tasks/Table";
 
+export const dynamic = "force-dynamic";
+
 export default async function Tasks({
   searchParams,
 }: {

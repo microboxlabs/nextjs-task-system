@@ -1,5 +1,6 @@
 import { groupUsers, tasks, userInputs, users } from "@/app/lib/data";
 import { Task } from "@/app/lib/definitions";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 let nextId = tasks.length + 1;
@@ -36,9 +37,11 @@ export async function GET(req: Request) {
     const filteredTasks = tasks.filter(
         (task) =>
             task.title.toLowerCase().includes(query) ||
-            task.assignedTo.name.toLowerCase().includes(query)
+            task.assignedTo.name.toLowerCase().includes(query) ||
+            task.status.toLocaleLowerCase().includes(query)
 
     )
+    revalidatePath('/dashboard/tasks')
 
     return NextResponse.json(filteredTasks, { status: 200 })
 }
