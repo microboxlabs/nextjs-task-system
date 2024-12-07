@@ -16,7 +16,7 @@ export const comparePassword = (password: string, hashedPassword: string) => {
 
 // Función para generar un JWT
 export const generateToken = (userId: number) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign({ userId }, JWT_SECRET);
 };
 
 // Función para verificar el JWT (esto se usa para proteger las rutas)

@@ -34,9 +34,18 @@ const login = (req: NextApiRequest, res: NextApiResponse) => {
 
       // Generar un token JWT
       const token = generateToken(user.id);
+      // Devolver el token y los datos del usuario
+      const userData = {
+        id: user.id,
+        username: user.username,
+        role: user.role, // Si usas roles para usuarios
+      };
 
-      // Devolver el token al usuario
-      return res.status(200).json({ message: "Login successful", token });
+      return res.status(200).json({
+        message: "Login successful",
+        token,
+        user: userData, // Aquí envías los datos del usuario
+      });
     },
   );
 };

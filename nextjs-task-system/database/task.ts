@@ -31,7 +31,7 @@ export const initializeDB = () => {
                 assigned_to INTEGER,
                 due_date TEXT,
                 priority TEXT,
-                status TEXT DEFAULT 'Pending',
+                status TEXT DEFAULT 'Pendiente',
                 comments TEXT,
                 FOREIGN KEY (assigned_to) REFERENCES users (id)
             )

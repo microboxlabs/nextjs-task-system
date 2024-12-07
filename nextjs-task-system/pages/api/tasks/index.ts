@@ -14,7 +14,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     case "DELETE":
       return protectRoute(deleteTask, "admin")(req, res);
     case "PATCH":
-      return protectRoute(markTaskAsCompleted)(req, res);
+      return protectRoute(updateTaskStatus)(req, res);
     default:
       return res.status(405).json({ message: "Method Not Allowed" });
   }
@@ -35,30 +35,38 @@ const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // Construir consulta dinámica
-    let query = "SELECT * FROM tasks";
+    let query = `
+      SELECT tasks.*, 
+             users.username AS assigned_user, 
+             groups.name AS assigned_group
+      FROM tasks
+      LEFT JOIN users ON tasks.assigned_to = users.id
+      LEFT JOIN user_groups ON tasks.assigned_to = user_groups.user_id
+      LEFT JOIN groups ON user_groups.group_id = groups.id
+    `;
     const conditions: string[] = [];
     const params: (string | number)[] = [];
 
     if (user.role !== "admin") {
       // Usuarios regulares solo ven sus tareas
-      conditions.push("assigned_to = ?");
-      params.push(userId!); //usamos ! para asegurar que userId no es undefined
+      conditions.push("tasks.assigned_to = ?");
+      params.push(userId!); // usamos ! para asegurar que userId no es undefined
     } else {
       // Admin puede aplicar filtros adicionales
       if (filterUserId) {
-        conditions.push("assigned_to = ?");
+        conditions.push("tasks.assigned_to = ?");
         params.push(Number(filterUserId));
       }
       if (groupId) {
         conditions.push(
-          "assigned_to IN (SELECT user_id FROM user_groups WHERE group_id = ?)",
+          "tasks.assigned_to IN (SELECT user_id FROM user_groups WHERE group_id = ?)",
         );
         params.push(Number(groupId));
       }
     }
 
     if (status) {
-      conditions.push("status = ?");
+      conditions.push("tasks.status = ?");
       params.push(status as string);
     }
 
@@ -68,7 +76,10 @@ const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
 
     db.all(query, params, (err, rows) => {
       if (err) {
-        return res.status(500).json({ error: "Error fetching tasks" });
+        console.error("Error executing query:", err); // Log the error
+        return res
+          .status(500)
+          .json({ error: "Error fetching tasks", details: err.message });
       }
       return res.status(200).json(rows);
     });
@@ -76,8 +87,7 @@ const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const createTask = (req: NextApiRequest, res: NextApiResponse) => {
-  const { title, description, assigned_to, due_date, priority, comments } =
-    req.body;
+  const { title, description, assigned_to, due_date, priority } = req.body;
 
   if (assigned_to && assigned_to.type === "group") {
     // Si el assigned_to es un grupo, asignamos la tarea a todos los usuarios del grupo
@@ -94,8 +104,8 @@ const createTask = (req: NextApiRequest, res: NextApiResponse) => {
         // Insertar la tarea para cada usuario del grupo
         users.forEach((user) => {
           db.run(
-            `INSERT INTO tasks (title, description, assigned_to, due_date, priority, comments) VALUES (?, ?, ?, ?, ?, ?)`,
-            [title, description, user.user_id, due_date, priority, comments],
+            `INSERT INTO tasks (title, description, assigned_to, due_date, priority) VALUES (?, ?, ?, ?, ?)`,
+            [title, description, user.user_id, due_date, priority],
             function (err) {
               if (err) {
                 return res
@@ -114,8 +124,8 @@ const createTask = (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     // Si no es un grupo, asignar la tarea a un solo usuario
     db.run(
-      `INSERT INTO tasks (title, description, assigned_to, due_date, priority, comments) VALUES (?, ?, ?, ?, ?, ?)`,
-      [title, description, assigned_to, due_date, priority, comments],
+      `INSERT INTO tasks (title, description, assigned_to, due_date, priority) VALUES (?, ?, ?, ?, ?)`,
+      [title, description, assigned_to, due_date, priority],
       function (err) {
         if (err) {
           return res.status(500).json({ error: "Error creating task " + err });
@@ -253,15 +263,15 @@ const deleteTask = (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-const markTaskAsCompleted = (req: NextApiRequest, res: NextApiResponse) => {
+const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.userId; // ID del usuario autenticado
-  const { id } = req.body; // ID de la tarea a actualizar
+  const { id, status } = req.body; // ID de la tarea y el nuevo estado
 
-  if (!id) {
-    return res.status(400).json({ error: "Task ID is required" });
+  if (!id || !status) {
+    return res.status(400).json({ error: "Task ID and status are required" });
   }
 
-  // Verificar si la tarea esta asignada al usuario o a su grupo
+  // Verificar si la tarea está asignada al usuario o a su grupo
   db.get(
     "SELECT assigned_to FROM tasks WHERE id = ?",
     [id],
@@ -276,10 +286,10 @@ const markTaskAsCompleted = (req: NextApiRequest, res: NextApiResponse) => {
           .json({ error: "Forbidden: Task not assigned to user" });
       }
 
-      // Actualizar el estado de la tarea a "completed"
+      // Actualizar el estado de la tarea
       db.run(
-        "UPDATE tasks SET status = 'Completed' WHERE id = ?",
-        [id],
+        "UPDATE tasks SET status = ? WHERE id = ?",
+        [status, id],
         function (err) {
           if (err) {
             return res
@@ -291,7 +301,11 @@ const markTaskAsCompleted = (req: NextApiRequest, res: NextApiResponse) => {
             return res.status(404).json({ error: "Task not found" });
           }
 
-          return res.status(200).json({ message: "Task marked as completed" });
+          return res.status(200).json({
+            message: "Task status updated successfully",
+            taskId: id,
+            newStatus: status,
+          });
         },
       );
     },

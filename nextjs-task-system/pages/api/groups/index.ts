@@ -4,9 +4,9 @@ import { protectRoute } from "@/utils/middleware";
 import { Group, User } from "@/types";
 
 interface GroupWithUsers {
-  group: string;
+  name: string;
   users: { id: number; username: string }[];
-  id_group: number;
+  id: number;
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -86,12 +86,12 @@ const getGroups = (req: NextApiRequest, res: NextApiResponse) => {
           }
 
           groupsWithUsers.push({
-            group: group.name,
+            name: group.name,
             users: users.map((user) => ({
               id: user.id,
               username: user.username,
             })),
-            id_group: group.id,
+            id: group.id,
           });
 
           // Cuando hemos agregado todos los grupos y sus usuarios, respondemos

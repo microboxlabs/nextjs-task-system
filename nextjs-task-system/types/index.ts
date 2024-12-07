@@ -7,14 +7,16 @@ export interface User {
 }
 
 export interface Task {
-  id: number;
+  id?: number;
   title: string;
   description: string;
-  assigned_to: number;
+  assigned_to: number | { type: string; id: number };
   due_date: string;
   priority: string;
-  status: string;
-  comments: string;
+  status?: string;
+  comments?: string;
+  assigned_user?: string;
+  assigned_group?: string;
 }
 
 export interface Group {
