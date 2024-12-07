@@ -23,7 +23,7 @@ export default function Card({ task, setShowToast, setTasksData }: props) {
 
   const {
     setTaskForModal,
-    setShowModal,
+    setUpdateModal,
     setIdForDelete,
     setShowDeleteModal,
     setViewModal,
@@ -32,7 +32,7 @@ export default function Card({ task, setShowToast, setTasksData }: props) {
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setTaskForModal({ task: task });
-    setShowModal(true);
+    setUpdateModal(true);
   };
 
   const handleDeleteClick = (e: React.MouseEvent, id: number) => {

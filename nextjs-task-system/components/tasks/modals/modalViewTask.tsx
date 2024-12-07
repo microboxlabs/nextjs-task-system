@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
-  Datepicker,
   Label,
   Modal,
   Select,
@@ -94,7 +93,7 @@ export default function ModalViewTask({ setTasksData, setShowToast }: props) {
       });
     }
   }, [taskForModal]);
-
+  //recieve the dynamics selects for the forms
   useEffect(() => {
     const fetchData = async () => {
       if (!viewModal) return;

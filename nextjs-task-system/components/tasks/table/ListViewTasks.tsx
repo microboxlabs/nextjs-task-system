@@ -28,7 +28,7 @@ export default function ListViewTasks({
 
   const {
     setTaskForModal,
-    setShowModal,
+    setUpdateModal,
     setIdForDelete,
     setShowDeleteModal,
     setViewModal,
@@ -36,7 +36,7 @@ export default function ListViewTasks({
 
   const handleEditClick = (task: Task) => {
     setTaskForModal({ task: task });
-    setShowModal(true);
+    setUpdateModal(true);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -102,7 +102,9 @@ export default function ListViewTasks({
                 className="bg-white dark:border-gray-700 dark:bg-gray-800"
               >
                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                  <Button onClick={(e) => handleTableClick(e, task)}>
+                  <Button
+                    onClick={(e: React.MouseEvent) => handleTableClick(e, task)}
+                  >
                     {task.title}
                   </Button>
                 </Table.Cell>
@@ -172,7 +174,9 @@ export default function ListViewTasks({
                 className="bg-white dark:border-gray-700 dark:bg-gray-800"
               >
                 <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                  <Button onClick={(e) => handleTableClick(e, task)}>
+                  <Button
+                    onClick={(e: React.MouseEvent) => handleTableClick(e, task)}
+                  >
                     {task.title}
                   </Button>
                 </Table.Cell>

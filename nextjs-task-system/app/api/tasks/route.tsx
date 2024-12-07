@@ -7,6 +7,9 @@ import { NextRequest, NextResponse } from "next/server";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function GET(req: NextRequest) {
+  {
+    /*verify the existence of the jwt token*/
+  }
   const cookieStore = cookies();
   const tokenFromCookie = cookieStore.get("tokenLogin")?.value;
   const tokenFromHeaders = req.headers.get("Authorization")?.split(" ")[1];

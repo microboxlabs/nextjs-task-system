@@ -1,3 +1,4 @@
+import { User } from "@prisma/client/wasm";
 import { JWTPayload } from "jose";
 
 export function verifyToken(payload: JWTPayload) {

@@ -32,7 +32,7 @@ interface props {
 }
 
 export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
-  const { taskForModal, setTaskForModal, showModal, setShowModal } =
+  const { taskForModal, setTaskForModal, updateModal, setUpdateModal } =
     useTaskContext();
 
   const [dataAssigned, setDataAssigned] =
@@ -50,6 +50,9 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
     status: { id: 0, name: "" },
     creationDate: new Date(),
   });
+  {
+    /*useffect to recieve the data for the form*/
+  }
   useEffect(() => {
     if (taskForModal?.task?.id && taskForModal.task.id !== 0) {
       setFormData({
@@ -70,10 +73,10 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
       });
     }
   }, [taskForModal]);
-
+  //recieve the dynamics selects for the forms
   useEffect(() => {
     const fetchData = async () => {
-      if (!showModal) return;
+      if (!updateModal) return;
 
       try {
         const url = process.env.NEXT_PUBLIC_URL_PAGE + "/api/tasks/getselects";
@@ -91,8 +94,11 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
     };
 
     fetchData();
-  }, [showModal]);
+  }, [updateModal]);
 
+  {
+    /*function to update the information on formdata*/
+  }
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -151,9 +157,9 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
   if (taskForModal.task.id === 0) {
     return (
       <Modal
-        show={showModal}
+        show={updateModal}
         size="lg"
-        onClose={() => setShowModal(false)}
+        onClose={() => setUpdateModal(false)}
         popup
       >
         <Modal.Header>Edit Task</Modal.Header>
@@ -178,9 +184,9 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
     return (
       <Modal
         className="min-h-screen"
-        show={showModal}
+        show={updateModal}
         size="md"
-        onClose={() => setShowModal(false)}
+        onClose={() => setUpdateModal(false)}
         popup
       >
         <Modal.Header />
@@ -199,10 +205,10 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
   return (
     <Modal
       className="min-h-screen"
-      show={showModal}
+      show={updateModal}
       size="lg"
       onClose={() => {
-        setShowModal(false);
+        setUpdateModal(false);
         setTaskForModal({
           task: {
             dueDate: "",
@@ -228,7 +234,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
                 formData,
                 valuesData,
               );
-              setShowModal(false);
+              setUpdateModal(false);
               setShowToast({
                 message: response.message,
                 icon: response.status == 200 ? "success" : "warning",

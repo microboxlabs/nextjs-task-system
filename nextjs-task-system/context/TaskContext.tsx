@@ -5,8 +5,8 @@ import { Filters, Task } from "@/types/tasks-types";
 interface TaskContextType {
   taskForModal: { task: Task };
   setTaskForModal: React.Dispatch<React.SetStateAction<{ task: Task }>>;
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  showModal: boolean;
+  setUpdateModal: React.Dispatch<React.SetStateAction<boolean>>;
+  updateModal: boolean;
   showDeleteModal: boolean;
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
   setIdForDelete: React.Dispatch<React.SetStateAction<number>>;
@@ -20,7 +20,6 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-  const [idForDelete, setIdForDelete] = useState<number>(0);
   const [taskForModal, setTaskForModal] = useState<{ task: Task }>({
     task: {
       id: 0,
@@ -35,10 +34,23 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       comments: [],
     },
   });
-
+  {
+    /*Values for the delete modal */
+  }
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [idForDelete, setIdForDelete] = useState<number>(0);
+  {
+    /*Values for the update modal*/
+  }
+  const [updateModal, setUpdateModal] = useState<boolean>(false);
+  {
+    /*Values for the view modal*/
+  }
   const [viewModal, setViewModal] = useState<boolean>(false);
+
+  {
+    /*Filters for the filter modal*/
+  }
   const [filters, setFilters] = useState<Filters>({
     status: [],
     priority: "",
@@ -53,8 +65,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       value={{
         taskForModal,
         setTaskForModal,
-        setShowModal,
-        showModal,
+        setUpdateModal,
+        updateModal,
         showDeleteModal,
         setShowDeleteModal,
         setIdForDelete,

@@ -19,6 +19,7 @@ export default function ModalFilters({
   const [dataAssigned, setDataAssigned] =
     useState<ResponseSelectAssigned | null>(null);
 
+  //recieve the dynamics selects for the forms
   useEffect(() => {
     const fetchData = async () => {
       if (!filtersOpen) return;
@@ -39,7 +40,6 @@ export default function ModalFilters({
     fetchData();
   }, [filtersOpen]);
 
-  // Estado temporal para los filtros, sin afectar el estado global
   const [formData, setFormData] = useState<Filters>({
     status: filters.status || [],
     priority: filters.priority || "",
@@ -48,7 +48,9 @@ export default function ModalFilters({
     sortOrder: filters.sortOrder || "asc",
     typeOfAssigned: "",
   });
-
+  {
+    /*function to update the information on formdata*/
+  }
   const handleStatusChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     status: string,
@@ -83,6 +85,9 @@ export default function ModalFilters({
     setFormData({ ...formData, sortOrder: e.target.value as "asc" | "desc" });
   };
 
+  {
+    /*Functions to apply filters and cleared in case of not using them*/
+  }
   const clearFilters = () => {
     setFormData({
       status: [],
@@ -113,7 +118,9 @@ export default function ModalFilters({
     });
     setFiltersOpen(false);
   };
-
+  {
+    /*recieve the filters that are already marked*/
+  }
   useEffect(() => {
     if (filtersOpen) {
       setFormData({

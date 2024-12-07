@@ -1,6 +1,5 @@
 "use client";
 import { createTask } from "@/actions/tasks/task-actions";
-import { DynamicBanner } from "@/components/layout/bannerMessage";
 
 import { ResponseSelectAssigned, ResponseTaskGet } from "@/types/tasks-types";
 import {
@@ -34,7 +33,7 @@ export default function ModalCreateTask({
 }: props) {
   const [typeOfAssigned, setTypeOfAssigned] = useState<string>("");
   const [dataAssigned, setDataAssigned] = useState<ResponseSelectAssigned>();
-  const cacheRef = useRef<{ [key: string]: ResponseSelectAssigned }>({});
+
   const [loading, setLoading] = useState<boolean>(true);
 
   //useffect to load the data in the select section

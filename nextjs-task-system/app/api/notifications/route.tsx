@@ -26,52 +26,36 @@ export async function GET(req: NextRequest) {
     try {
       const { payload } = await jwtVerify(token, secret);
       verifyToken(payload);
-
-      const groups = await prisma.group.findMany({
+      const { searchParams } = new URL(req.url);
+      const userId = Number(searchParams.get("user"));
+      const groupId = Number(searchParams.get("group"));
+      const notifications = await prisma.notification.findMany({
+        where: {
+          // Use OR to match notifications based on either userId or groupId (or both)
+          OR: [
+            groupId ? { groupId: groupId } : {},
+            userId ? { userId: userId } : {},
+          ],
+        },
         select: {
           id: true,
-          name: true,
+          createdAt: true,
+          groupId: true,
+          message: true,
+          userId: true,
         },
       });
-
-      const users = await prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      });
-
-      const priorities = await prisma.priority.findMany({
-        select: {
-          id: true,
-          name: true,
-        },
-      });
-      const status = await prisma.status.findMany({
-        select: {
-          id: true,
-          name: true,
-        },
-      });
-      if (users && groups && priorities) {
-        const data = {
-          users: users,
-          groups: groups,
-          priorities: priorities,
-          status: status,
-        };
+      if (notifications.length <= 0) {
         return NextResponse.json({
           message: "Succesful request",
-          data: data,
+          data: [],
           status: 200,
         });
       }
-
       return NextResponse.json({
-        message: "Internal server error",
-        data: [],
-        status: 500,
+        message: "Succesful request",
+        data: notifications,
+        status: 200,
       });
     } catch (error) {
       if (

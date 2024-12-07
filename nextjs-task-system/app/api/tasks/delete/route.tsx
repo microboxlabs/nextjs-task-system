@@ -1,3 +1,4 @@
+import { saveMessageAndTask } from "@/actions/notifications/notifications-actions";
 import { verifyToken } from "@/actions/token/token-actions";
 import prisma from "@/lib/prisma";
 import { Task } from "@/types/tasks-types";
@@ -9,6 +10,9 @@ import { NextRequest, NextResponse } from "next/server";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function DELETE(req: NextRequest) {
+  {
+    /*verify the existence of the jwt token*/
+  }
   const cookieStore = cookies();
   const tokenFromCookie = cookieStore.get("tokenLogin")?.value;
   const tokenFromHeaders = req.headers.get("Authorization")?.split(" ")[1];
@@ -41,6 +45,15 @@ export async function DELETE(req: NextRequest) {
 
     const task = await prisma.task.findUnique({
       where: { id },
+      include: {
+        group: { select: { name: true, id: true } },
+        user: { select: { name: true, id: true } },
+        priority: { select: { name: true, id: true } },
+        status: { select: { name: true, id: true } },
+        comments: {
+          select: { content: true, user: { select: { name: true, id: true } } },
+        },
+      },
     });
 
     if (!task) {
@@ -50,6 +63,24 @@ export async function DELETE(req: NextRequest) {
       where: { id },
     });
 
+    const formattedTask: Task = {
+      id: task.id,
+      title: task.title,
+      status: task.status,
+      user: task.user ?? null,
+      group: task.group ?? null,
+      dueDate: task.dueDate,
+      priority: task.priority,
+      description: task.description,
+      comments: task.comments ?? [],
+      creationDate: task.creationDate,
+    };
+
+    await saveMessageAndTask(
+      formattedTask,
+      token,
+      `La tarea "${formattedTask.title}" ha sido borrada.`,
+    );
     return NextResponse.json({
       message: "Task deleted successfully",
       status: 200,

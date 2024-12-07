@@ -2,7 +2,28 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, install all the dependencies of the project
+
+```bash
+npm install
+```
+
+Second, the database use prisma as an orm to run the queries more efficient and simple, follow this instructions
+
+```bash
+npx prisma generate     # Generate Prisma client
+npx prisma migrate dev  # Run migrations
+
+```
+
+Thrid the project is running with an external server to run the websockets by the application so followt this instructions to run the server
+
+```bash
+ts-node src/server.ts
+
+```
+
+fourth, run the development server:
 
 ```bash
 npm run dev
@@ -13,6 +34,11 @@ pnpm dev
 # or
 bun dev
 ```
+
+The project has a functional login with role control, use this users to start trying the funcionalities:
+
+- email: user@gmail.com password: user123 role: normal user
+- email: admin@gmail.com password: admin123 role: admin
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

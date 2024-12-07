@@ -1,6 +1,5 @@
 import { ResponseTaskGet, Task } from "@/types/tasks-types";
 import Card from "./cards";
-import { TaskProvider } from "@/context/TaskContext";
 interface props {
   title: string;
   tasks: Task[];

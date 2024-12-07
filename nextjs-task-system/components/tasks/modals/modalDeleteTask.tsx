@@ -4,7 +4,7 @@ import { deleteTask } from "@/actions/tasks/task-actions";
 import { useTaskContext } from "@/context/TaskContext";
 import { ResponseTaskGet } from "@/types/tasks-types";
 import { Button, Modal } from "flowbite-react";
-import { useState } from "react";
+
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 interface Props {
   setTasksData: React.Dispatch<React.SetStateAction<ResponseTaskGet>>;
@@ -49,7 +49,7 @@ export function ModalDeleteTask({ setTasksData, setShowToast }: Props) {
                       ...prevData,
                       data: prevData?.data.filter(
                         (task) => task.id !== idForDelete,
-                      ), // Filtra la tarea con el id para eliminarla
+                      ), // Filter task to delete
                     }));
                   }
                 }}

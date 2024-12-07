@@ -1,9 +1,11 @@
+import { JWTPayload } from "jose";
+
 export interface Response {
   message: string;
   status: number;
 }
 
-export interface User {
+export interface User extends JWTPayload {
   email: string;
   exp: number;
   groupId: number;

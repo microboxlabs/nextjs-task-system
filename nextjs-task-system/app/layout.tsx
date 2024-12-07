@@ -6,6 +6,7 @@ import { SidebarComponent } from "@/components/layout/sideBar";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { verifyToken } from "@/actions/token/token-actions";
+import { User } from "@/types/global-types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,12 +20,10 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // Obtener la cookie tokenLogin
   const cookieStore = cookies();
   const tokenExists = cookieStore.get("tokenLogin")?.value;
 
   if (!tokenExists) {
-    // Si no existe el token, no se puede continuar con la verificación
     return (
       <html lang="en">
         <head>
@@ -38,13 +37,12 @@ export default async function RootLayout({
   }
 
   try {
-    // Verificar el token JWT
-    const { payload } = await jwtVerify(tokenExists, secret);
+    const { payload } = (await jwtVerify(tokenExists, secret)) as {
+      payload: User;
+    };
 
-    // Verificar el contenido del token, como el rol o el email
     verifyToken(payload);
 
-    // Pasar el payload al SidebarComponent para que lo utilice
     return (
       <html lang="en">
         <head>

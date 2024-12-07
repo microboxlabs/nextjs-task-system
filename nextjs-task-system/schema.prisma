@@ -8,24 +8,26 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  roleId    Int
-  role      Role     @relation(fields: [roleId], references: [id])
-  groupId   Int?
-  group     Group?   @relation(fields: [groupId], references: [id])
-  createdAt DateTime @default(now())
-  password  String
-  tasks     Task[]   @relation("UserTasks")
-  comments  Comment[]
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  roleId        Int
+  role          Role           @relation(fields: [roleId], references: [id])
+  groupId       Int?
+  group         Group?         @relation(fields: [groupId], references: [id])
+  createdAt     DateTime       @default(now())
+  password      String
+  tasks         Task[]         @relation("UserTasks")
+  comments      Comment[]
+  notifications Notification[] @relation("UserNotifications")
 }
 
 model Group {
-  id    Int    @id @default(autoincrement())
-  name  String
-  users User[]
-  tasks Task[] @relation("GroupTasks")
+  id            Int            @id @default(autoincrement())
+  name          String
+  users         User[]
+  tasks         Task[]         @relation("GroupTasks")
+  notifications Notification[] @relation("GroupNotifications")
 }
 
 model Role {
@@ -45,6 +47,7 @@ model Status {
   name  String
   tasks Task[] @relation("StatusTasks")
 }
+
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
@@ -55,6 +58,7 @@ model Comment {
   task Task @relation(fields: [taskId], references: [id])
   user User @relation(fields: [userId], references: [id])
 }
+
 model Task {
   id                Int      @id @default(autoincrement())
   title             String
@@ -64,7 +68,7 @@ model Task {
   user              User?    @relation("UserTasks", fields: [assignedToUserId], references: [id])
   group             Group?   @relation("GroupTasks", fields: [assignedToGroupId], references: [id])
   creationDate      DateTime @default(now())
-  dueDate           DateTime 
+  dueDate           DateTime
 
   priorityId Int
   priority   Priority @relation("PriorityTask", fields: [priorityId], references: [id])
@@ -72,5 +76,18 @@ model Task {
   statusId Int    @default(1)
   status   Status @relation("StatusTasks", fields: [statusId], references: [id])
 
-  comments  Comment[]
+  comments      Comment[]
+  notifications Notification[] @relation("TaskNotifications")
+}
+
+model Notification {
+  id        Int       @id @default(autoincrement())
+  message   String
+  createdAt DateTime  @default(now())
+  taskId    Int?
+  task      Task?     @relation("TaskNotifications", fields: [taskId], references: [id])
+  userId    Int?
+  user      User?     @relation("UserNotifications", fields: [userId], references: [id])
+  groupId   Int?
+  group     Group?    @relation("GroupNotifications", fields: [groupId], references: [id])
 }
