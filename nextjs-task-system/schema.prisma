@@ -18,6 +18,7 @@ model User {
   createdAt DateTime @default(now())
   password  String
   tasks     Task[]   @relation("UserTasks")
+  comments  Comment[]
 }
 
 model Group {
@@ -44,7 +45,16 @@ model Status {
   name  String
   tasks Task[] @relation("StatusTasks")
 }
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  taskId    Int
+  userId    Int
 
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
 model Task {
   id                Int      @id @default(autoincrement())
   title             String
@@ -61,4 +71,6 @@ model Task {
 
   statusId Int    @default(1)
   status   Status @relation("StatusTasks", fields: [statusId], references: [id])
+
+  comments  Comment[]
 }

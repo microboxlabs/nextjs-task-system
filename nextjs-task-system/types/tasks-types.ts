@@ -1,11 +1,10 @@
 import { Response } from "./global-types";
 
-interface Status {
-  id: number;
-  name: string;
+interface Comments {
+  content: string;
+  user: RelationResponse;
 }
-
-export interface relationResponse {
+export interface RelationResponse {
   id: number;
   name: string;
 }
@@ -13,11 +12,13 @@ export interface Task {
   id: number;
   title: string;
   description: string;
-  status: relationResponse;
-  user?: relationResponse | null;
-  group?: relationResponse | null;
+  status: RelationResponse;
+  user?: RelationResponse | null;
+  group?: RelationResponse | null;
+  creationDate: string | Date;
   dueDate: string | Date;
-  priority: relationResponse;
+  priority: RelationResponse;
+  comments?: Comments[];
 }
 
 export interface TaskReponse {
@@ -71,4 +72,22 @@ export interface ResponseTaskGet extends Response {
 
 export interface ResponseTaskGetWithoutArray extends Response {
   data: Task;
+}
+
+export interface Filters {
+  status: string[];
+  priority: string;
+  assignedUserOrGroup: string;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+  typeOfAssigned: string;
+}
+
+export interface FormatedFilters {
+  status: number[];
+  priority: number;
+  assignedUserOrGroup: number;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+  typeOfAssigned: string;
 }

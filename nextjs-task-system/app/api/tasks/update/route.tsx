@@ -9,7 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function PUT(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+  const cookieStore = cookies();
+  const tokenFromCookie = cookieStore.get("tokenLogin")?.value;
+  const tokenFromHeaders = req.headers.get("Authorization")?.split(" ")[1];
+  const token = tokenFromCookie || tokenFromHeaders;
   if (req.method !== "PUT") {
     return NextResponse.json({ message: "Method not allowed", status: 405 });
   }
@@ -25,6 +28,7 @@ export async function PUT(req: NextRequest) {
       typeOfAssigned,
       dueDate,
       priority,
+      newComment,
     } = await req.json();
 
     if (!token) {
@@ -35,6 +39,7 @@ export async function PUT(req: NextRequest) {
     }
     try {
       const { payload } = await jwtVerify(token, secret);
+
       verifyToken(payload);
     } catch (error) {
       if (
@@ -47,7 +52,23 @@ export async function PUT(req: NextRequest) {
       console.error(error);
       return NextResponse.json({ message: "Invalid token", status: 401 });
     }
+    const { payload } = await jwtVerify(token, secret);
+    const { email } = payload;
+    let updatedComments: string | any[] = [];
+    if (newComment) {
+      const userFromDb = await prisma.user.findUnique({
+        where: { email: email as string },
+        select: { id: true },
+      });
 
+      if (!userFromDb) {
+        return NextResponse.json({ message: "User not found", status: 404 });
+      }
+
+      updatedComments = [
+        { content: newComment, createdAt: new Date(), userId: userFromDb.id },
+      ];
+    }
     const task = await prisma.task.update({
       where: { id },
       data: {
@@ -58,6 +79,12 @@ export async function PUT(req: NextRequest) {
         statusId: status,
         priorityId: priority,
         dueDate: dueDate,
+        comments:
+          updatedComments.length > 0
+            ? {
+                create: updatedComments,
+              }
+            : undefined,
       },
       include: {
         group: {
@@ -72,6 +99,9 @@ export async function PUT(req: NextRequest) {
         status: {
           select: { name: true, id: true },
         },
+        comments: {
+          select: { content: true, user: { select: { name: true, id: true } } },
+        },
       },
     });
 
@@ -84,6 +114,8 @@ export async function PUT(req: NextRequest) {
       dueDate: task.dueDate,
       priority: task.priority,
       description: task.description,
+      comments: task.comments ?? [],
+      creationDate: task.creationDate,
     };
 
     return NextResponse.json({

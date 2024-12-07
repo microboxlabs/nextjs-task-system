@@ -29,9 +29,10 @@ export const loginUser = async (formData: FormData) => {
   cookieStore.set({
     name: "tokenLogin",
     value: data.token,
-    httpOnly: false,
+    httpOnly: true,
     secure: process.env.NODE_ENV !== "development",
     path: "/",
+    sameSite: "lax",
     expires: new Date(Date.now() + 3600 * 1000),
   });
 

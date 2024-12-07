@@ -6,12 +6,17 @@ import ListViewTasks from "./table/ListViewTasks";
 import BoardViewTasks from "./board/boardViewTasks";
 import ModalFilters from "./modals/modalFilters";
 import ModalCreateTask from "./modals/modalCreateTask";
-import { ResponseTaskGet } from "@/types/tasks-types";
-import Loading from "@/components/tasks/loading";
+import { Filters, ResponseTaskGet } from "@/types/tasks-types";
+import Loading from "@/components/loadingskeletons/loading";
 import { DynamicBanner } from "../layout/bannerMessage";
-import { TaskProvider } from "@/context/TaskContext";
+import { TaskProvider, useTaskContext } from "@/context/TaskContext";
+import { useGlobalContext } from "@/context/GlobalContext";
+import { User } from "@/types/global-types";
+import { generateQueryParams } from "@/actions/filters/filters";
 
 export default function CustomNavbarWithFilters() {
+  const userLogged: User = useGlobalContext();
+  const { filters } = useTaskContext();
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<string>("Board");
   const [createOpen, setCreateOpen] = useState<boolean>(false);
@@ -28,9 +33,14 @@ export default function CustomNavbarWithFilters() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleViewChange = (view: string) => setActiveView(view);
 
+  {
+    /* activate the filters by the update of the state filters */
+  }
   useEffect(() => {
     const fetchData = async () => {
-      const url = process.env.NEXT_PUBLIC_URL_PAGE + "/api/tasks/";
+      const queryParams = generateQueryParams(filters);
+      const url = `${process.env.NEXT_PUBLIC_URL_PAGE}/api/tasks/?${queryParams}`;
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -49,10 +59,8 @@ export default function CustomNavbarWithFilters() {
       setIsLoading(false);
     };
 
-    if (isLoading) {
-      fetchData();
-    }
-  }, [isLoading]);
+    fetchData();
+  }, [filters]);
 
   return (
     <div className="flex min-h-screen flex-col p-4">
@@ -77,15 +85,18 @@ export default function CustomNavbarWithFilters() {
             Table
           </Button>
         </div>
+
         <div className="flex gap-4">
-          <Button
-            disabled={isLoading}
-            onClick={() => setCreateOpen(true)}
-            color="gray"
-          >
-            <HiDocumentAdd className="size-5" />
-            New task
-          </Button>
+          {userLogged.rol === 1 && (
+            <Button
+              disabled={isLoading}
+              onClick={() => setCreateOpen(true)}
+              color="gray"
+            >
+              <HiDocumentAdd className="size-5" />
+              New task
+            </Button>
+          )}
 
           <Button
             disabled={isLoading}
@@ -105,33 +116,36 @@ export default function CustomNavbarWithFilters() {
         showToast={showToast.show}
       />
       {/* Contenedor para contenido con scroll */}
-      <TaskProvider>
-        <div className="max-h-screen flex-1 overflow-auto p-4">
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <>
-              {activeView === "Board" && (
-                <BoardViewTasks
-                  tasks={tasksData?.data ?? []}
-                  setTasksData={setTasksData}
-                  setShowToast={setShowToast}
-                />
-              )}
-              {activeView === "Table" && (
-                <ListViewTasks
-                  tasks={tasksData?.data ?? []}
-                  setTasksData={setTasksData}
-                  setShowToast={setShowToast}
-                />
-              )}
-            </>
-          )}
-        </div>
-      </TaskProvider>
+
+      <div className="max-h-screen flex-1 overflow-auto p-4">
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <>
+            {activeView === "Board" && (
+              <BoardViewTasks
+                tasks={tasksData?.data ?? []}
+                setTasksData={setTasksData}
+                setShowToast={setShowToast}
+              />
+            )}
+            {activeView === "Table" && (
+              <ListViewTasks
+                tasks={tasksData?.data ?? []}
+                setTasksData={setTasksData}
+                setShowToast={setShowToast}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       {/* Modales para Funcionalidades */}
-      <ModalFilters filtersOpen={filtersOpen} setFiltersOpen={setFiltersOpen} />
+      <ModalFilters
+        filtersOpen={filtersOpen}
+        setFiltersOpen={setFiltersOpen}
+        isAdmin={userLogged.userId === 1}
+      />
       <ModalCreateTask
         createOpen={createOpen}
         setCreateOpen={setCreateOpen}

@@ -3,13 +3,17 @@ import prisma from "@/lib/prisma";
 import { Task } from "@/types/tasks-types";
 
 import { jwtVerify } from "jose";
+import { cookies } from "next/headers";
 
 import { NextRequest, NextResponse } from "next/server";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function POST(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+  const cookieStore = cookies();
+  const tokenFromCookie = cookieStore.get("tokenLogin")?.value;
+  const tokenFromHeaders = req.headers.get("Authorization")?.split(" ")[1];
+  const token = tokenFromCookie || tokenFromHeaders;
   //Send data to sqlLite and returns the same data to the front to post the card
   if (req.method === "POST") {
     const { title, description, assigned, typeOfAssigned, dueDate, priority } =

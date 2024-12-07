@@ -1,23 +1,27 @@
 // Contexto TaskContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Task } from "@/types/tasks-types";
+import { Filters, Task } from "@/types/tasks-types";
 
 interface TaskContextType {
-  updateModal: { task: Task };
-  setUpdateModal: React.Dispatch<React.SetStateAction<{ task: Task }>>;
+  taskForModal: { task: Task };
+  setTaskForModal: React.Dispatch<React.SetStateAction<{ task: Task }>>;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   showModal: boolean;
   showDeleteModal: boolean;
   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
   setIdForDelete: React.Dispatch<React.SetStateAction<number>>;
   idForDelete: number;
+  viewModal: boolean;
+  setViewModal: React.Dispatch<React.SetStateAction<boolean>>;
+  filters: Filters;
+  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
   const [idForDelete, setIdForDelete] = useState<number>(0);
-  const [updateModal, setUpdateModal] = useState<{ task: Task }>({
+  const [taskForModal, setTaskForModal] = useState<{ task: Task }>({
     task: {
       id: 0,
       title: "",
@@ -27,22 +31,38 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       dueDate: new Date(),
       priority: { id: 0, name: "" },
       status: { id: 0, name: "" },
+      creationDate: new Date(),
+      comments: [],
     },
   });
+
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [viewModal, setViewModal] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Filters>({
+    status: [],
+    priority: "",
+    assignedUserOrGroup: "",
+    sortBy: "dueDate",
+    sortOrder: "asc",
+    typeOfAssigned: "person",
+  });
 
   return (
     <TaskContext.Provider
       value={{
-        updateModal,
-        setUpdateModal,
+        taskForModal,
+        setTaskForModal,
         setShowModal,
         showModal,
         showDeleteModal,
         setShowDeleteModal,
         setIdForDelete,
         idForDelete,
+        viewModal,
+        setViewModal,
+        filters,
+        setFilters,
       }}
     >
       {children}

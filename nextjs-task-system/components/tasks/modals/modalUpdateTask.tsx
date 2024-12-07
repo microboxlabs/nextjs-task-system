@@ -10,7 +10,7 @@ import {
 } from "flowbite-react";
 import {
   GroupsAndPriorities,
-  relationResponse,
+  RelationResponse,
   ResponseSelectAssigned,
   ResponseTaskGet,
   ResponseTaskGetWithoutArray,
@@ -19,7 +19,6 @@ import {
 import { useTaskContext } from "@/context/TaskContext";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { updateTask } from "@/actions/tasks/task-actions";
-import { formatDate } from "@/actions/global-actions";
 
 interface props {
   setShowToast: React.Dispatch<
@@ -33,7 +32,7 @@ interface props {
 }
 
 export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
-  const { updateModal, setUpdateModal, showModal, setShowModal } =
+  const { taskForModal, setTaskForModal, showModal, setShowModal } =
     useTaskContext();
 
   const [dataAssigned, setDataAssigned] =
@@ -49,28 +48,28 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
     typeOfAssigned: "",
     priority: { id: 0, name: "" },
     status: { id: 0, name: "" },
+    creationDate: new Date(),
   });
-  console.log(formData);
   useEffect(() => {
-    if (updateModal?.task?.id && updateModal.task.id !== 0) {
+    if (taskForModal?.task?.id && taskForModal.task.id !== 0) {
       setFormData({
-        title: updateModal.task.title || "",
-        description: updateModal.task.description || "",
-        priority: updateModal.task.priority || "",
-        user: updateModal.task.user || null,
-        dueDate: updateModal.task.dueDate,
-        group: updateModal.task.group || null,
-        status: updateModal.task.status || null,
-        id: updateModal.task.id || 0,
-
-        typeOfAssigned: updateModal.task.user
+        title: taskForModal.task.title || "",
+        description: taskForModal.task.description || "",
+        priority: taskForModal.task.priority || "",
+        user: taskForModal.task.user || null,
+        dueDate: taskForModal.task.dueDate,
+        group: taskForModal.task.group || null,
+        status: taskForModal.task.status || null,
+        id: taskForModal.task.id || 0,
+        creationDate: taskForModal.task.creationDate,
+        typeOfAssigned: taskForModal.task.user
           ? "person"
-          : updateModal.task.group
+          : taskForModal.task.group
             ? "group"
             : "",
       });
     }
-  }, [updateModal]);
+  }, [taskForModal]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,7 +106,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
           ...prevState,
           [name]:
             dataAssigned.data?.users.find(
-              (person: relationResponse) => person.id === parseInt(value),
+              (person: RelationResponse) => person.id === parseInt(value),
             ) || null,
         }));
       } else if (name === "group" && dataAssigned.data.groups) {
@@ -115,7 +114,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
           ...prevState,
           [name]:
             dataAssigned.data?.groups.find(
-              (group: relationResponse) => group.id === parseInt(value),
+              (group: RelationResponse) => group.id === parseInt(value),
             ) || null,
         }));
       } else if (name === "priority" && dataAssigned.data.priorities) {
@@ -125,7 +124,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
             (dataAssigned.data?.priorities.find(
               (priority: GroupsAndPriorities) =>
                 priority.id === parseInt(value),
-            ) as relationResponse) || null,
+            ) as RelationResponse) || null,
         }));
       } else if (name === "status" && dataAssigned.data.priorities) {
         setFormData((prevState) => ({
@@ -133,7 +132,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
           [name]:
             (dataAssigned.data?.status.find(
               (status: GroupsAndPriorities) => status.id === parseInt(value),
-            ) as relationResponse) || null,
+            ) as RelationResponse) || null,
         }));
       } else {
         setFormData((prevState) => ({
@@ -149,7 +148,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
   {
     /* Loading state to let next process the context data */
   }
-  if (updateModal.task.id === 0) {
+  if (taskForModal.task.id === 0) {
     return (
       <Modal
         show={showModal}
@@ -159,7 +158,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
       >
         <Modal.Header>Edit Task</Modal.Header>
         <Modal.Body>
-          {updateModal.task.id === 0 && (
+          {taskForModal.task.id === 0 && (
             <div className="space-y-6">
               <div className="h-8 animate-pulse rounded-md bg-gray-300"></div>
               <div className="h-8 animate-pulse rounded-md bg-gray-300"></div>
@@ -196,7 +195,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
       </Modal>
     );
   }
-  console.log(formData);
+
   return (
     <Modal
       className="min-h-screen"
@@ -204,7 +203,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
       size="lg"
       onClose={() => {
         setShowModal(false);
-        setUpdateModal({
+        setTaskForModal({
           task: {
             dueDate: "",
             id: 0,
@@ -214,6 +213,7 @@ export default function ModalUpdateTask({ setShowToast, setTasksData }: props) {
             group: { id: 0, name: "" },
             user: { id: 0, name: "" },
             description: "",
+            creationDate: "",
           },
         });
       }}

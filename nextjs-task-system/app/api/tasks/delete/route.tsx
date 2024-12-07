@@ -9,7 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function DELETE(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+  const cookieStore = cookies();
+  const tokenFromCookie = cookieStore.get("tokenLogin")?.value;
+  const tokenFromHeaders = req.headers.get("Authorization")?.split(" ")[1];
+  const token = tokenFromCookie || tokenFromHeaders;
 
   if (req.method !== "DELETE") {
     return NextResponse.json({ message: "Method not allowed", status: 405 });

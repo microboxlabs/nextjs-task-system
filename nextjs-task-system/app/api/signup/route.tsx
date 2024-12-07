@@ -30,8 +30,14 @@ export async function POST(req: NextRequest) {
     if (!isValidPassword) {
       return NextResponse.json({ message: "Invalid credentials", status: 401 });
     }
+
     //sign a jwt token to validate the login of the user
-    const token = await new SignJWT({ email: user.email, rol: user.roleId })
+    const token = await new SignJWT({
+      email: user.email,
+      rol: user.roleId,
+      groupId: user.groupId,
+      userId: user.id,
+    })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("1h")
