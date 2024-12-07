@@ -15,7 +15,12 @@ npx prisma generate     # Generate Prisma client
 npx prisma migrate dev  # Run migrations
 
 ```
+Optionally, the database can be hosted with a UI interface to view and manage all tables., run the next command to activate this function:
 
+```bash
+npx prisma studio
+
+```
 Thrid the project is running with an external server to run the websockets by the application so followt this instructions to run the server
 
 ```bash
