@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Users {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  password   String
+  role       UserRole @default(USER)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  groups     GroupMembers[]
+  tasks      Tasks[]
+  comments   Comments[]
+
+  @@map("users")
+}
+
+model Groups {
+  id         String   @id @default(cuid())
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  members    GroupMembers[]
+  tasks      Tasks[]
+  
+  @@map("groups")
+}
+
+model GroupMembers {
+  id         String   @id @default(cuid())
+  groupId    String
+  userId     String
+  user       Users     @relation(fields: [userId], references: [id])
+  group      Groups   @relation(fields: [groupId], references: [id])
+
+  @@map("group_members")
+}
+
+model Tasks {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  status      TaskStatus @default(PENDING)
+  assigned_to String
+  group_id    String
+  due_date    DateTime
+  priority    Priority   @default(LOW)
+  comments    Comments[]
+  user        Users       @relation(fields: [assigned_to], references: [id])
+  group       Groups     @relation(fields: [group_id], references: [id])
+
+  @@map("tasks")
+}
+
+model Comments {
+  id        String   @id @default(cuid())
+  task_id   String
+  user_id   String
+  comment   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  task      Tasks     @relation(fields: [task_id], references: [id])
+  user      Users     @relation(fields: [user_id], references: [id])
+
+  @@map("comments")
+}
