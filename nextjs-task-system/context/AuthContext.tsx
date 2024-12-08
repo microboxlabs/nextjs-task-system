@@ -1,4 +1,4 @@
-"use client"; // Solo necesario si el contexto interactúa con hooks del cliente.
+"use client";
 
 import {
   createContext,
@@ -24,11 +24,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Proveedor del contexto
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem("token"),
-  );
+  const [token, setToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | undefined>();
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -41,8 +40,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Recuperar y parsear el usuario
+      setUser(JSON.parse(storedUser));
     }
+
+    setIsLoading(false); // Marcar como cargado
   }, []);
 
   // Método para iniciar sesión
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{ isAuthenticated, token, user, login, logout }}
     >
-      {children}
+      {!isLoading && children}
     </AuthContext.Provider>
   );
 };

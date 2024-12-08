@@ -9,7 +9,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     case "GET":
       return protectRoute(getUsers, "admin")(req, res);
     case "POST":
-      return protectRoute(createUser, "admin")(req, res);
+      return createUser(req, res);
     default:
       return res.status(405).json({ message: "Method Not Allowed" });
   }

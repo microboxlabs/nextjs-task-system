@@ -59,20 +59,19 @@ const createGroup = (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-// Endpoint para obtener todos los grupos y los usuarios asignados
 const getGroups = (req: NextApiRequest, res: NextApiResponse) => {
-  // Consulta para obtener todos los grupos
   db.all("SELECT * FROM groups", (err, groups: Group[]) => {
     if (err) {
       return res.status(500).json({ error: "Error fetching groups" });
     }
 
+    // Si no hay grupos, retornamos un array vacío en lugar de una estructura diferente
     if (!groups || groups.length === 0) {
-      return res.status(404).json({ message: "No groups found" });
+      return res.status(200).json({ groups: [] });
     }
 
-    // Inicializar el array con el tipo explícito
     const groupsWithUsers: GroupWithUsers[] = [];
+    let processedGroups = 0;
 
     groups.forEach((group) => {
       db.all(
@@ -88,15 +87,17 @@ const getGroups = (req: NextApiRequest, res: NextApiResponse) => {
           groupsWithUsers.push({
             name: group.name,
             users: users.map((user) => ({
-              id: user.id,
+              id: user.id!,
               username: user.username,
             })),
-            id: group.id,
+            id: group.id!,
           });
 
-          // Cuando hemos agregado todos los grupos y sus usuarios, respondemos
-          if (groupsWithUsers.length === groups.length) {
-            return res.status(200).json(groupsWithUsers);
+          processedGroups++;
+
+          // Respondemos solo cuando hemos procesado todos los grupos
+          if (processedGroups === groups.length) {
+            return res.status(200).json({ groups: groupsWithUsers });
           }
         },
       );

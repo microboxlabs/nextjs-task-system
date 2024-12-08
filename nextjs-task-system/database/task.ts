@@ -14,6 +14,12 @@ export const db = new sqlite3.Database(dbPath, (err) => {
 // Crear tablas si no existen
 export const initializeDB = () => {
   db.serialize(() => {
+    // Eliminar las tablas si existen
+    /*db.run(`DROP TABLE IF EXISTS user_groups`);
+    db.run(`DROP TABLE IF EXISTS groups`);
+    db.run(`DROP TABLE IF EXISTS tasks`);
+    db.run(`DROP TABLE IF EXISTS users`);*/
+
     db.run(`
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,6 +36,7 @@ export const initializeDB = () => {
                 description TEXT,
                 assigned_to TEXT,
                 due_date TEXT,
+                created_date TEXT,
                 priority TEXT,
                 status TEXT DEFAULT 'Pendiente',
                 comments TEXT,

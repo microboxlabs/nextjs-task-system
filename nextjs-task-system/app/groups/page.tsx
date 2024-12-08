@@ -26,14 +26,23 @@ export default function UsersPage() {
 
   const getGroups = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/groups", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setGroups(response.data);
-    } catch (error) {}
+      await axios
+        .get("http://localhost:3000/api/groups", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.data.groups.length === 0) {
+            setGroups([]);
+          } else {
+            setGroups(response.data.groups);
+          }
+        })
+        .catch((err) => console.log("error al obtener grupos: " + err));
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+    }
   };
 
   const handleAddGroup = async (newGroup: Group) => {

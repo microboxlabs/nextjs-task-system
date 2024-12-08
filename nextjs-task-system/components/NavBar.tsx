@@ -5,7 +5,7 @@ import { Navbar } from "flowbite-react";
 import Link from "next/link";
 
 export default function NavBar() {
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
 
   if (!token) {
     return null;
@@ -27,12 +27,16 @@ export default function NavBar() {
           <Link href="/dashboard" className="hover:underline dark:text-white">
             Dashboard
           </Link>
-          <Link href="/users" className="hover:underline dark:text-white">
-            Usuarios
-          </Link>
-          <Link href="/groups" className="hover:underline dark:text-white">
-            Grupos
-          </Link>
+          {user?.role === "admin" && (
+            <>
+              <Link href="/users" className="hover:underline dark:text-white">
+                Usuarios
+              </Link>
+              <Link href="/groups" className="hover:underline dark:text-white">
+                Grupos
+              </Link>
+            </>
+          )}
         </div>
       </Navbar.Collapse>
 

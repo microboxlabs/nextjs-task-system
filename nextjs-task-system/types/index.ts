@@ -12,6 +12,7 @@ export interface Task {
   description: string;
   assigned_to: number | { type: string; id: number }; // Usuario o grupo asignado
   due_date: string;
+  created_date: string;
   priority: string;
   status?: string;
   comments?: string;
@@ -22,4 +23,5 @@ export interface Group {
   id?: number;
   name: string;
   user_ids?: number[];
+  users: User[];
 }

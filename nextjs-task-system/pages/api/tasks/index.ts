@@ -15,7 +15,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     case "DELETE":
       return protectRoute(deleteTask, "admin")(req, res);
     case "PATCH":
-      return protectRoute(updateTaskStatus)(req, res);
+      return protectRoute(updateTaskStatusAndComment)(req, res);
     default:
       return res.status(405).json({ message: "Method Not Allowed" });
   }
@@ -181,13 +181,14 @@ const createTask = (req: NextApiRequest, res: NextApiResponse) => {
     description,
     assigned_to,
     due_date,
+    created_date,
     priority,
     status,
     comments,
   } = req.body;
 
   // Validación básica de los datos
-  if (!title || !assigned_to || !due_date || !priority) {
+  if (!title || !assigned_to || !due_date || !created_date || !priority) {
     return res.status(400).json({ message: "Faltan campos requeridos" });
   }
 
@@ -206,8 +207,8 @@ const createTask = (req: NextApiRequest, res: NextApiResponse) => {
 
   // Crear la consulta SQL para insertar la tarea
   const query = `
-    INSERT INTO tasks (title, description, assigned_to, due_date, priority, status, comments)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO tasks (title, description, assigned_to, due_date, created_date, priority, status, comments)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   // Ejecutar la consulta
@@ -218,6 +219,7 @@ const createTask = (req: NextApiRequest, res: NextApiResponse) => {
       description,
       assignedToValue, // Almacenamos el valor serializado de assigned_to
       due_date,
+      created_date,
       priority,
       status || "Pendiente",
       comments || "",
@@ -286,8 +288,16 @@ const resolveAssignedName = (
 };
 
 const updateTask = (req: NextApiRequest, res: NextApiResponse) => {
-  const { id, assigned_to, title, description, due_date, priority, comments } =
-    req.body;
+  const {
+    id,
+    assigned_to,
+    title,
+    description,
+    due_date,
+    created_date,
+    priority,
+    comments,
+  } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: "Task ID is required" });
@@ -299,6 +309,7 @@ const updateTask = (req: NextApiRequest, res: NextApiResponse) => {
     !title &&
     !description &&
     !due_date &&
+    !created_date &&
     !priority &&
     !comments
   ) {
@@ -348,6 +359,10 @@ const updateTask = (req: NextApiRequest, res: NextApiResponse) => {
     if (due_date) {
       fields.push("due_date = ?");
       values.push(due_date);
+    }
+    if (created_date) {
+      fields.push("create_date = ?");
+      values.push(created_date);
     }
     if (priority) {
       fields.push("priority = ?");
@@ -410,61 +425,15 @@ const deleteTask = (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-/*const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
-  const userId = req.userId; // ID del usuario autenticado
-  const { id, status } = req.body; // ID de la tarea y el nuevo estado
-
-  if (!id || !status) {
-    return res.status(400).json({ error: "Task ID and status are required" });
-  }
-
-  // Verificar si la tarea está asignada al usuario o a su grupo
-  db.get(
-    "SELECT assigned_to FROM tasks WHERE id = ?",
-    [id],
-    (err, task: Task) => {
-      if (err) {
-        return res.status(500).json({ error: "Error fetching task" });
-      }
-
-      if (!task || task.assigned_to !== userId) {
-        return res
-          .status(403)
-          .json({ error: "Forbidden: Task not assigned to user" });
-      }
-
-      // Actualizar el estado de la tarea
-      db.run(
-        "UPDATE tasks SET status = ? WHERE id = ?",
-        [status, id],
-        function (err) {
-          if (err) {
-            return res
-              .status(500)
-              .json({ error: "Error updating task status" });
-          }
-
-          if (this.changes === 0) {
-            return res.status(404).json({ error: "Task not found" });
-          }
-
-          return res.status(200).json({
-            message: "Task status updated successfully",
-            taskId: id,
-            newStatus: status,
-          });
-        },
-      );
-    },
-  );
-};*/
-
-// Función para actualizar el campo status de una tarea
-const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
-  const { taskId, status } = req.body;
+// Función para actualizar el campo status y comments de una tarea
+const updateTaskStatusAndComment = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => {
+  const { taskId, status, comments } = req.body;
 
   // Validar entrada
-  if (!taskId || !status) {
+  if (!taskId) {
     return res.status(400).json({ message: "Faltan campos requeridos" });
   }
 
@@ -479,40 +448,63 @@ const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(404).json({ message: "Tarea no encontrada" });
     }
 
-    // Actualizar el campo status
-    db.run(
-      "UPDATE tasks SET status = ? WHERE id = ?",
-      [status, taskId],
-      function (err) {
-        if (err) {
-          console.error("Error al actualizar tarea:", err.message);
-          return res.status(500).json({
-            message: "Error al actualizar el estado de la tarea",
-          });
-        }
+    // Preparar las actualizaciones
+    let updateFields: string[] = [];
+    let updateValues: (string | null)[] = [];
 
-        // Obtener assigned_name
-        resolveAssignedName(task.assigned_to)
-          .then((assigned_name) => {
-            return res.status(200).json({
-              message: "Estado actualizado con éxito",
-              task: {
-                ...task,
-                status,
-                assigned_name,
-              },
-            });
-          })
-          .catch((error) => {
-            console.error("Error al resolver assigned_name:", error.message);
-            return res.status(500).json({
-              message:
-                "Estado actualizado, pero error al obtener el nombre asignado",
-              taskId,
-              status,
-            });
+    if (status) {
+      updateFields.push("status = ?");
+      updateValues.push(status);
+    }
+
+    if (comments !== undefined) {
+      // Comprobamos que no sea undefined
+      updateFields.push("comments = ?");
+      updateValues.push(comments);
+    }
+
+    if (updateFields.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No se enviaron campos para actualizar" });
+    }
+
+    // Añadir el taskId al final de los valores
+    updateValues.push(taskId);
+
+    // Crear consulta dinámica para actualizar los campos
+    const updateQuery = `UPDATE tasks SET ${updateFields.join(", ")} WHERE id = ?`;
+
+    // Ejecutar la consulta de actualización
+    db.run(updateQuery, updateValues, function (err) {
+      if (err) {
+        console.error("Error al actualizar tarea:", err.message);
+        return res.status(500).json({
+          message: "Error al actualizar el estado o comentario de la tarea",
+        });
+      }
+
+      // Obtener assigned_name si es necesario
+      resolveAssignedName(task.assigned_to)
+        .then((assigned_name) => {
+          return res.status(200).json({
+            message: "Tarea actualizada con éxito",
+            task: {
+              ...task,
+              status: status || task.status, // Mantener el valor original si no se ha actualizado
+              comments: comments !== undefined ? comments : task.comments, // Mantener el valor original si no se ha actualizado
+              assigned_name,
+            },
           });
-      },
-    );
+        })
+        .catch((error) => {
+          console.error("Error al resolver assigned_name:", error.message);
+          return res.status(500).json({
+            message:
+              "Tarea actualizada, pero error al obtener el nombre asignado",
+            taskId,
+          });
+        });
+    });
   });
 };

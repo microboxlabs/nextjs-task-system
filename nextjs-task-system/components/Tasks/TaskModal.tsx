@@ -52,13 +52,22 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
 
   const getGroups = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/groups", {
+      const response = await axios.get("/api/groups", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setGroups(response.data);
-    } catch (error) {}
+
+      if (response.data.groups.length === 0) {
+        console.log("No hay grupos disponibles.");
+        // Mostrar un mensaje adecuado en la interfaz
+        setGroups([]); // O mostrar un mensaje a los usuarios
+      } else {
+        setGroups(response.data.groups);
+      }
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,6 +77,7 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
 
       // Formatear la fecha de entrega
       const formattedDate = dueDate ? dueDate.toISOString().split("T")[0] : "";
+      const created_date = new Date().toISOString().split("T")[0];
 
       const newTask: Task = {
         title,
@@ -76,6 +86,7 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
           ? Number(userSelect)
           : { type: "group", id: Number(userSelect) }, //userSelect traería el id del grupo
         due_date: formattedDate,
+        created_date,
         priority,
         status,
         comments: "",
