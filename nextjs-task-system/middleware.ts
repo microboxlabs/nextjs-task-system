@@ -1,28 +1,34 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import { jwtDecode } from "jwt-decode";
 
-export async function middleware(request: NextRequest) {
-    const publicPaths = ['/login', '/']; // Rutas públicas que no requieren autenticación
-    const { pathname } = request.nextUrl;
+export function middleware(req) {
+    const token = req.cookies.get("auth-token");
+    const url = req.nextUrl.clone();
 
-    // Permitir acceso a rutas públicas
-    if (publicPaths.includes(pathname)) {
-        return NextResponse.next();
-    }
-
-    // Obtener el token de las cookies
-    const token = request.cookies.get('auth-token')?.value;
-
-    // Si no hay token, redirigir al login
     if (!token) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        url.pathname = "/login";
+        return NextResponse.redirect(url);
     }
 
-    // Continuar si hay token
-    return NextResponse.next();
+    try {
+        const decodeToken = jwtDecode(token.value);
+
+        if (url.pathname.startsWith("/dashboard") && decodeToken.role !== "adm") {
+            url.pathname = "/unauthorized";
+            return NextResponse.redirect(url);
+        }
+
+        if (url.pathname === "/my-tasks" && decodeToken.role !== "user") {
+            url.pathname = "/unauthorized";
+            return NextResponse.redirect(url);
+        }
+    } catch (err) {
+        console.error("Invalid token", err);
+        url.pathname = "/login";
+        return NextResponse.redirect(url);
+    }
 }
 
-// Configuración de las rutas que usarán el middleware
 export const config = {
-    matcher: ['/', '/dashboard/:path*'], // Proteger /dashboard y sus subrutas
+    matcher: ["/dashboard/:path*", "/my-tasks"], // Rutas protegidas
 };

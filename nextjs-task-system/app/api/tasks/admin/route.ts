@@ -14,9 +14,8 @@ export async function POST(req: Request) {
         assignedTo = groupUsers.find(group => group.id === body.assignedTo);
     }
 
-
     const newTask: Task = {
-        id: tasks.length + 1,
+        id: nextId,
         title: body.title,
         description: body.description,
         assignedTo,
@@ -27,6 +26,7 @@ export async function POST(req: Request) {
         comments: [],
     };
     tasks.push(newTask)
+    revalidatePath('/dashboard/tasks')
     return NextResponse.json({ message: 'Task created' }, { status: 200 })
 }
 
@@ -41,7 +41,6 @@ export async function GET(req: Request) {
             task.status.toLocaleLowerCase().includes(query)
 
     )
-    revalidatePath('/dashboard/tasks')
 
     return NextResponse.json(filteredTasks, { status: 200 })
 }

@@ -2,7 +2,7 @@ import { Task } from "./definitions";
 
 export async function fetchParams(query: string): Promise<Task[]> {
 
-    const url = new URL("http://localhost:3000/api/tasks");
+    const url = new URL("http://localhost:3000/api/tasks/admin");
     if (query) {
         url.searchParams.append("query", query);
     }

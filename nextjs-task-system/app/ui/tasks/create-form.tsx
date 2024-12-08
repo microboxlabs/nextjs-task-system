@@ -23,7 +23,7 @@ function Form({
       const formData = new FormData(event.currentTarget);
       const data = Object.fromEntries(formData.entries());
 
-      const response = await fetch("http://localhost:3000/api/tasks", {
+      const response = await fetch("http://localhost:3000/api/tasks/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

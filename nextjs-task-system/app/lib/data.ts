@@ -14,12 +14,12 @@ export const groupUsers: UserGroup[] = [
     {
         id: "g-1",
         name: "Party Planners",
-        userIds: [1, 2]
+        userIds: ["u-1", "u-2"]
     },
     {
         id: "g-2",
         name: "Development Team",
-        userIds: [3]
+        userIds: ["u-3"]
     },
 ];
 
@@ -28,7 +28,7 @@ export const tasks: Task[] = [
         id: 1,
         title: "Plan Event",
         description: "Organize a party for the client.",
-        assignedTo: userInputs[0],
+        assignedTo: userInputs[1],
         creationDate: "2024-12-01",
         dueDate: "2024-12-05",
         priority: "low",
@@ -39,7 +39,7 @@ export const tasks: Task[] = [
         id: 2,
         title: "Build API",
         description: "Develop the backend for the new project.",
-        assignedTo: groupUsers[1],
+        assignedTo: groupUsers[0],
         creationDate: "2024-12-01",
         dueDate: "2024-12-10",
         priority: "high",
@@ -50,7 +50,7 @@ export const tasks: Task[] = [
         id: 3,
         title: "Design UI",
         description: "Create mockups for the new dashboard.",
-        assignedTo: userInputs[1],
+        assignedTo: userInputs[2],
         creationDate: "2024-12-02",
         dueDate: "2024-12-08",
         priority: "medium",
