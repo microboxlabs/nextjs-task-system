@@ -4,8 +4,8 @@ import { Task, User } from "@/types";
 import axios from "axios";
 import { Card } from "flowbite-react";
 import { useState } from "react";
-import TaskDetails from "./TaskDetails";
 import { FaTrash } from "react-icons/fa";
+import TaskDetails from "./TaskDetails";
 
 export function CustomCard({
   task,
@@ -28,7 +28,7 @@ export function CustomCard({
       await axios.patch(
         `http://localhost:3000/api/tasks`,
         {
-          id: taskId,
+          taskId,
           status: newStatus,
         },
         {

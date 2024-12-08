@@ -47,13 +47,12 @@ export default function Dashboard() {
           },
         )
         .then((res) => {
-          const { assigned_user, assigned_group } = res.data; // Extraemos los datos del servidor
+          const { assigned_name } = res.data; // Extraemos los datos del servidor
 
           // Fusionamos los datos retornados con los que ya tenemos en newTask
           const completeTask: Task = {
             ...newTask,
-            assigned_user: assigned_user ? assigned_user : null,
-            assigned_group: assigned_group ? assigned_group : null,
+            assigned_name,
           };
 
           console.log("que recibe setTasks: " + JSON.stringify(completeTask));

@@ -15,8 +15,7 @@ export interface Task {
   priority: string;
   status?: string;
   comments?: string;
-  assigned_user?: string; // Nombre del usuario asignado (si aplica)
-  assigned_group?: string; // Nombre del grupo asignado (si aplica)
+  assigned_name?: string | null;
 }
 
 export interface Group {

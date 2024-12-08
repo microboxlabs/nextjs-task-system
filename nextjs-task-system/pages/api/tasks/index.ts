@@ -1,6 +1,6 @@
 import { verifyToken } from "@/database/auth";
 import { db } from "@/database/task";
-import { Task, User } from "@/types";
+import { Group, Task, User } from "@/types";
 import { protectRoute } from "@/utils/middleware";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -23,7 +23,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 // Función para obtener todas las tareas
 const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
-  // Obtener el token del encabezado Authorization
   const token = req.headers["authorization"]?.split(" ")[1]; // El formato es "Bearer <token>"
   const userId = req.userId;
 
@@ -31,13 +30,11 @@ const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
 
-  // Verificar y decodificar el token
   const decoded = verifyToken(token);
   if (!decoded) {
     return res.status(401).json({ message: "Unauthorized: Invalid token" });
   }
 
-  // Consultar el rol del usuario en la base de datos
   db.get("SELECT role FROM users WHERE id = ?", [userId], (err, row: User) => {
     if (err) {
       console.error("Error retrieving user role:", err.message);
@@ -52,9 +49,9 @@ const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
 
     const userRole = row.role;
 
-    // Si el usuario es admin, obtener todas las tareas
     if (userRole === "admin") {
-      db.all("SELECT * FROM tasks", (err, rows: Task[]) => {
+      // Admin: obtener todas las tareas
+      db.all("SELECT * FROM tasks", async (err, rows: Task[]) => {
         if (err) {
           console.error("Error retrieving tasks:", err.message);
           return res
@@ -62,60 +59,119 @@ const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
             .json({ message: "Error retrieving tasks", error: err.message });
         }
 
-        // Procesar el campo assigned_to
-        const tasks = rows.map((task: Task) => {
-          if (typeof task.assigned_to === "string") {
-            try {
-              // Intenta parsear la cadena como un objeto JSON
-              task.assigned_to = JSON.parse(task.assigned_to);
-            } catch (e) {
-              // Si no es un objeto JSON válido, convertimos a número
-              task.assigned_to = parseInt(JSON.stringify(task.assigned_to), 10);
-            }
-          }
-          return task;
-        });
-
+        const tasks = await Promise.all(rows.map(processTaskWithAssignedName));
         return res.status(200).json(tasks);
       });
     } else if (userRole === "regular") {
-      // Si el usuario es regular, obtener solo las tareas asignadas a él
+      // Regular: obtener tareas asignadas al usuario o a sus grupos
       db.all(
-        "SELECT * FROM tasks WHERE assigned_to = ?",
+        "SELECT group_id FROM user_groups WHERE user_id = ?",
         [userId],
-        (err, rows: Task[]) => {
+        (err, groupRows: { group_id: number }[]) => {
           if (err) {
-            console.error("Error retrieving user tasks:", err.message);
+            console.error("Error retrieving user groups:", err.message);
             return res.status(500).json({
-              message: "Error retrieving user tasks",
+              message: "Error retrieving user groups",
               error: err.message,
             });
           }
 
-          // Procesar el campo assigned_to
-          const tasks = rows.map((task: Task) => {
-            if (typeof task.assigned_to === "string") {
-              try {
-                // Intenta parsear la cadena como un objeto JSON
-                task.assigned_to = JSON.parse(task.assigned_to);
-              } catch (e) {
-                // Si no es un objeto JSON válido, convertimos a número
-                task.assigned_to = parseInt(
-                  JSON.stringify(task.assigned_to),
-                  10,
-                );
-              }
-            }
-            return task;
-          });
+          const groupIds = groupRows.map((row) => row.group_id);
 
-          return res.status(200).json(tasks);
+          db.all("SELECT * FROM tasks", async (err, rows: Task[]) => {
+            if (err) {
+              console.error("Error retrieving tasks:", err.message);
+              return res.status(500).json({
+                message: "Error retrieving tasks",
+                error: err.message,
+              });
+            }
+
+            const tasks = await Promise.all(
+              rows
+                .map(processAssignedTo)
+                .filter((task) => {
+                  if (typeof task.assigned_to === "number") {
+                    // Tareas asignadas directamente al usuario
+                    return task.assigned_to === userId;
+                  } else if (
+                    typeof task.assigned_to === "object" &&
+                    task.assigned_to.type === "group"
+                  ) {
+                    // Tareas asignadas a un grupo al que pertenece el usuario
+                    return groupIds.includes(task.assigned_to.id);
+                  }
+                  return false;
+                })
+                .map(processTaskWithAssignedName),
+            );
+
+            return res.status(200).json(tasks);
+          });
         },
       );
     } else {
       return res.status(403).json({ message: "Forbidden: Invalid user role" });
     }
   });
+};
+
+// Procesar el campo assigned_to para convertirlo
+const processAssignedTo = (task: Task): Task => {
+  if (typeof task.assigned_to === "string") {
+    try {
+      task.assigned_to = JSON.parse(task.assigned_to);
+    } catch (e) {
+      task.assigned_to = parseInt(JSON.stringify(task.assigned_to), 10);
+    }
+  }
+  return task;
+};
+
+// Agregar el campo assigned_name a la tarea
+const processTaskWithAssignedName = async (task: Task): Promise<Task> => {
+  const processedTask = processAssignedTo(task);
+  if (typeof processedTask.assigned_to === "number") {
+    // Consultar el nombre del usuario
+    return new Promise((resolve) => {
+      db.get(
+        "SELECT username FROM users WHERE id = ?",
+        [processedTask.assigned_to],
+        (err, row: { username: string }) => {
+          if (err) {
+            console.error("Error retrieving username:", err.message);
+            processedTask["assigned_name"] = null;
+          } else {
+            processedTask["assigned_name"] = row ? row.username : null;
+          }
+          resolve(processedTask);
+        },
+      );
+    });
+  } else if (typeof processedTask.assigned_to === "object") {
+    // Consultar el nombre del grupo
+    return new Promise((resolve) => {
+      if (typeof processedTask.assigned_to === "object") {
+        db.get(
+          "SELECT name FROM groups WHERE id = ?",
+          [processedTask.assigned_to.id],
+          (err, row: { name: string }) => {
+            if (err) {
+              console.error("Error retrieving group name:", err.message);
+              processedTask["assigned_name"] = null;
+            } else {
+              processedTask["assigned_name"] = row ? row.name : null;
+            }
+            resolve(processedTask);
+          },
+        );
+      } else {
+        // Si no es un grupo, resolver con la tarea sin modificar
+        resolve(processedTask);
+      }
+    });
+  }
+  return processedTask;
 };
 
 // Función para crear una tarea
@@ -172,11 +228,61 @@ const createTask = (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(500).json({ message: "Error al crear tarea" });
       }
 
-      return res
-        .status(201)
-        .json({ message: "Tarea creada con éxito", taskId: this.lastID });
+      const taskId = this.lastID;
+
+      // Resolver el campo assigned_name
+      resolveAssignedName(assigned_to)
+        .then((assigned_name) => {
+          return res.status(201).json({
+            message: "Tarea creada con éxito",
+            taskId,
+            assigned_name,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al resolver assigned_name:", error.message);
+          return res.status(500).json({
+            message: "Error al obtener el nombre asignado",
+            taskId,
+          });
+        });
     },
   );
+};
+
+// Resolver el campo assigned_name
+const resolveAssignedName = (
+  assigned_to: number | { type: string; id: number },
+): Promise<string | null> => {
+  return new Promise((resolve, reject) => {
+    if (typeof assigned_to === "number") {
+      // Consultar el nombre del usuario
+      db.get(
+        "SELECT username FROM users WHERE id = ?",
+        [assigned_to],
+        (err, row: { username: string }) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(row ? row.username : null);
+        },
+      );
+    } else if (typeof assigned_to === "object") {
+      // Consultar el nombre del grupo
+      db.get(
+        "SELECT name FROM groups WHERE id = ?",
+        [assigned_to.id],
+        (err, row: { name: string }) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(row ? row.name : null);
+        },
+      );
+    } else {
+      resolve(null);
+    }
+  });
 };
 
 const updateTask = (req: NextApiRequest, res: NextApiResponse) => {
@@ -304,7 +410,7 @@ const deleteTask = (req: NextApiRequest, res: NextApiResponse) => {
   });
 };
 
-const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
+/*const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
   const userId = req.userId; // ID del usuario autenticado
   const { id, status } = req.body; // ID de la tarea y el nuevo estado
 
@@ -351,4 +457,62 @@ const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
       );
     },
   );
+};*/
+
+// Función para actualizar el campo status de una tarea
+const updateTaskStatus = (req: NextApiRequest, res: NextApiResponse) => {
+  const { taskId, status } = req.body;
+
+  // Validar entrada
+  if (!taskId || !status) {
+    return res.status(400).json({ message: "Faltan campos requeridos" });
+  }
+
+  // Consultar si la tarea existe
+  db.get("SELECT * FROM tasks WHERE id = ?", [taskId], (err, task: Task) => {
+    if (err) {
+      console.error("Error al buscar tarea:", err.message);
+      return res.status(500).json({ message: "Error al buscar tarea" });
+    }
+
+    if (!task) {
+      return res.status(404).json({ message: "Tarea no encontrada" });
+    }
+
+    // Actualizar el campo status
+    db.run(
+      "UPDATE tasks SET status = ? WHERE id = ?",
+      [status, taskId],
+      function (err) {
+        if (err) {
+          console.error("Error al actualizar tarea:", err.message);
+          return res.status(500).json({
+            message: "Error al actualizar el estado de la tarea",
+          });
+        }
+
+        // Obtener assigned_name
+        resolveAssignedName(task.assigned_to)
+          .then((assigned_name) => {
+            return res.status(200).json({
+              message: "Estado actualizado con éxito",
+              task: {
+                ...task,
+                status,
+                assigned_name,
+              },
+            });
+          })
+          .catch((error) => {
+            console.error("Error al resolver assigned_name:", error.message);
+            return res.status(500).json({
+              message:
+                "Estado actualizado, pero error al obtener el nombre asignado",
+              taskId,
+              status,
+            });
+          });
+      },
+    );
+  });
 };

@@ -12,8 +12,7 @@ const TaskDetails = ({ task, isOpen, onClose }: TaskDetailsProps) => {
   const {
     title,
     description,
-    assigned_user,
-    assigned_group,
+    assigned_name,
     due_date,
     priority,
     status,
@@ -32,9 +31,7 @@ const TaskDetails = ({ task, isOpen, onClose }: TaskDetailsProps) => {
         <div className="mb-4 grid grid-cols-2 gap-4">
           <div>
             <h3 className="text-sm font-medium text-gray-500">Asignado a</h3>
-            <p className="text-gray-700">
-              {assigned_group ? assigned_group : assigned_user}
-            </p>
+            <p className="text-gray-700">{assigned_name}</p>
           </div>
           <div>
             <h3 className="text-sm font-medium text-gray-500">Prioridad</h3>
