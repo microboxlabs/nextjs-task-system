@@ -20,12 +20,25 @@ export default function NavBar() {
           </span>
         </Link>
       </Navbar.Brand>
+
+      {/* Agrupar los enlaces de navegación */}
       <Navbar.Collapse>
-        <Link href="/dashboard" className="hover:underline dark:text-white">
-          Dashboard
-        </Link>
+        <div className="flex space-x-4">
+          <Link href="/dashboard" className="hover:underline dark:text-white">
+            Dashboard
+          </Link>
+          <Link href="/users" className="hover:underline dark:text-white">
+            Usuarios
+          </Link>
+          <Link href="/groups" className="hover:underline dark:text-white">
+            Grupos
+          </Link>
+        </div>
       </Navbar.Collapse>
+
       <Navbar.Toggle />
+
+      {/* Botón de logout */}
       <button
         onClick={logout}
         className="rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"

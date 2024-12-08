@@ -31,6 +31,12 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
     getGroups();
   }, []);
 
+  useEffect(() => {
+    if (isGroup && userSelect === "") {
+      setUserSelect(JSON.stringify(groups[0].id));
+    }
+  }, [isGroup, userSelect]);
+
   const getUsers = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/users", {
@@ -40,6 +46,7 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
       });
 
       setUsers(response.data);
+      setUserSelect(JSON.stringify(response.data[0].id));
     } catch (error) {}
   };
 
@@ -50,7 +57,6 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("aaa: " + JSON.stringify(response.data));
       setGroups(response.data);
     } catch (error) {}
   };
@@ -68,8 +74,8 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
         description,
         assigned_to: !isGroup
           ? Number(userSelect)
-          : { type: "group", id: Number(userSelect) },
-        due_date: formattedDate, // Aquí se asigna una cadena vacía si no hay fecha
+          : { type: "group", id: Number(userSelect) }, //userSelect traería el id del grupo
+        due_date: formattedDate,
         priority,
         status,
         comments: "",
@@ -134,7 +140,9 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
               type="checkbox"
               id="enable-selects"
               checked={isGroup}
-              onChange={() => setIsGroup(!isGroup)}
+              onChange={() => {
+                setIsGroup(!isGroup);
+              }}
               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <label

@@ -1,45 +1,45 @@
 "use client";
 
-import { CustomCard } from "@/components/tasks/Card";
 import FloatingButton from "@/components/FloatingButton";
 import ProtectedRoute from "@/components/ProtectedRoutes";
 import ConfirmDeleteModal from "@/components/tasks/ConfirmDelete";
-import TaskModal from "@/components/tasks/TaskModal";
 import { useAuth } from "@/context/AuthContext";
-import { Task } from "@/types";
+import { User } from "@/types";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { CustomCardUser } from "@/components/users/Card";
+import UserModal from "@/components/users/UserModal";
 
-export default function Dashboard() {
+export default function UsersPage() {
   const { token, user } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     if (token) {
-      getTasks();
+      getUsers();
     }
   }, []);
 
-  const getTasks = async () => {
+  const getUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/tasks", {
+      const response = await axios.get("http://localhost:3000/api/users", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setTasks(response.data);
+      setUsers(response.data);
     } catch (error) {}
   };
 
-  const handleAddTask = async (newTask: Task) => {
+  const handleAddUser = async (newUser: User) => {
     try {
       await axios
         .post(
-          "http://localhost:3000/api/tasks",
-          newTask, //enviamos el objeto newTask
+          "http://localhost:3000/api/users",
+          newUser, //enviamos el objeto newTask
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,19 +47,10 @@ export default function Dashboard() {
           },
         )
         .then((res) => {
-          const { assigned_user, assigned_group } = res.data; // Extraemos los datos del servidor
-
-          // Fusionamos los datos retornados con los que ya tenemos en newTask
-          const completeTask: Task = {
-            ...newTask,
-            assigned_user: assigned_user ? assigned_user : null,
-            assigned_group: assigned_group ? assigned_group : null,
-          };
-
-          console.log("que recibe setTasks: " + JSON.stringify(completeTask));
-          setTasks([...tasks, completeTask]);
+          console.log("que recibe setUsers: " + JSON.stringify(newUser));
+          setUsers([...users, newUser]);
           setIsModalOpen(false);
-          alert("Tarea registrada exitosamente");
+          alert("Usuario registrado exitosamente");
         });
     } catch (error) {
       console.log("Error al crear tarea:", error);
@@ -67,9 +58,9 @@ export default function Dashboard() {
   };
 
   //eliminar tarea
-  const deleteTask = async (id: number) => {
-    try {
-      await axios.delete("http://localhost:3000/api/tasks", {
+  const deleteUser = async (id: number) => {
+    /* try {
+      await axios.delete("http://localhost:3000/api/users", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -78,33 +69,33 @@ export default function Dashboard() {
         },
       });
       console.log("tarea eliminada: " + id);
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     } catch (error) {
       console.log(error);
     } finally {
       setTaskToDelete(null);
-    }
+    }*/
   };
 
   return (
     <ProtectedRoute>
       <div className="grid grid-cols-1 gap-1 p-4 sm:grid-cols-2 lg:grid-cols-3">
-        {tasks.map((task) => (
-          <CustomCard
-            task={task}
-            token={token}
+        {users.map((userr) => (
+          <CustomCardUser
             user={user}
-            openDeleteModal={() => setTaskToDelete(task.id!)}
+            token={token}
+            usuario={userr}
+            openDeleteModal={() => setTaskToDelete(userr.id!)}
           />
         ))}
       </div>
       {user?.role === "admin" && (
         <>
           <FloatingButton onPress={() => setIsModalOpen(true)} />
-          <TaskModal
+          <UserModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            onSubmit={handleAddTask}
+            onSubmit={handleAddUser}
           />
         </>
       )}
@@ -114,7 +105,7 @@ export default function Dashboard() {
           isOpen={true}
           onClose={() => setTaskToDelete(null)} // Cierra el modal
           onConfirm={() => {
-            deleteTask(taskToDelete); // Llama a la función de eliminación
+            deleteUser(taskToDelete); // Llama a la función de eliminación
             setTaskToDelete(null); // Resetea el estado
           }}
         />

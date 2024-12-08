@@ -28,7 +28,7 @@ export const initializeDB = () => {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 description TEXT,
-                assigned_to INTEGER,
+                assigned_to TEXT,
                 due_date TEXT,
                 priority TEXT,
                 status TEXT DEFAULT 'Pendiente',

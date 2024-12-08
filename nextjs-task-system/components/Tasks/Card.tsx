@@ -4,7 +4,7 @@ import { Task, User } from "@/types";
 import axios from "axios";
 import { Card } from "flowbite-react";
 import { useState } from "react";
-import TaskDetails from "./Tasks/TaskDetails";
+import TaskDetails from "./TaskDetails";
 import { FaTrash } from "react-icons/fa";
 
 export function CustomCard({

@@ -20,8 +20,6 @@ const TaskDetails = ({ task, isOpen, onClose }: TaskDetailsProps) => {
     comments,
   } = task;
 
-  console.log("que trae task en details: " + JSON.stringify(task));
-
   return (
     <Modal show={isOpen} onClose={onClose}>
       <Modal.Header>{title}</Modal.Header>
@@ -35,8 +33,7 @@ const TaskDetails = ({ task, isOpen, onClose }: TaskDetailsProps) => {
           <div>
             <h3 className="text-sm font-medium text-gray-500">Asignado a</h3>
             <p className="text-gray-700">
-              {/* Mostrar si está asignado a un usuario o grupo */}
-              {assigned_user ? assigned_user : assigned_group}
+              {assigned_group ? assigned_group : assigned_user}
             </p>
           </div>
           <div>

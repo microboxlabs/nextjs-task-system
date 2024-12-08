@@ -1,45 +1,48 @@
 "use client";
 
-import { CustomCard } from "@/components/tasks/Card";
 import FloatingButton from "@/components/FloatingButton";
 import ProtectedRoute from "@/components/ProtectedRoutes";
 import ConfirmDeleteModal from "@/components/tasks/ConfirmDelete";
-import TaskModal from "@/components/tasks/TaskModal";
 import { useAuth } from "@/context/AuthContext";
-import { Task } from "@/types";
+import { Group, User } from "@/types";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { CustomCardUser } from "@/components/users/Card";
+import UserModal from "@/components/users/UserModal";
+import { CustomCardGroup } from "@/components/groups/Card";
+import GroupModal from "@/components/groups/UserModal";
 
-export default function Dashboard() {
+export default function UsersPage() {
   const { token, user } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
   useEffect(() => {
     if (token) {
-      getTasks();
+      getGroups();
     }
   }, []);
 
-  const getTasks = async () => {
+  const getGroups = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/tasks", {
+      const response = await axios.get("http://localhost:3000/api/groups", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setTasks(response.data);
+      setGroups(response.data);
     } catch (error) {}
   };
 
-  const handleAddTask = async (newTask: Task) => {
+  const handleAddGroup = async (newGroup: Group) => {
+    console.log("que trae newGroup: " + JSON.stringify(newGroup));
     try {
       await axios
         .post(
-          "http://localhost:3000/api/tasks",
-          newTask, //enviamos el objeto newTask
+          "http://localhost:3000/api/groups",
+          newGroup, //enviamos el objeto newTask
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,29 +50,20 @@ export default function Dashboard() {
           },
         )
         .then((res) => {
-          const { assigned_user, assigned_group } = res.data; // Extraemos los datos del servidor
-
-          // Fusionamos los datos retornados con los que ya tenemos en newTask
-          const completeTask: Task = {
-            ...newTask,
-            assigned_user: assigned_user ? assigned_user : null,
-            assigned_group: assigned_group ? assigned_group : null,
-          };
-
-          console.log("que recibe setTasks: " + JSON.stringify(completeTask));
-          setTasks([...tasks, completeTask]);
+          console.log("que recibe setGroups: " + JSON.stringify(newGroup));
+          setGroups([...groups, newGroup]);
           setIsModalOpen(false);
-          alert("Tarea registrada exitosamente");
+          alert("Grupo registrado exitosamente");
         });
     } catch (error) {
-      console.log("Error al crear tarea:", error);
+      console.log("Error al crear grupo:", error);
     }
   };
 
   //eliminar tarea
-  const deleteTask = async (id: number) => {
-    try {
-      await axios.delete("http://localhost:3000/api/tasks", {
+  const deleteUser = async (id: number) => {
+    /* try {
+      await axios.delete("http://localhost:3000/api/users", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -78,33 +72,33 @@ export default function Dashboard() {
         },
       });
       console.log("tarea eliminada: " + id);
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     } catch (error) {
       console.log(error);
     } finally {
       setTaskToDelete(null);
-    }
+    }*/
   };
 
   return (
     <ProtectedRoute>
       <div className="grid grid-cols-1 gap-1 p-4 sm:grid-cols-2 lg:grid-cols-3">
-        {tasks.map((task) => (
-          <CustomCard
-            task={task}
-            token={token}
+        {groups.map((group) => (
+          <CustomCardGroup
             user={user}
-            openDeleteModal={() => setTaskToDelete(task.id!)}
+            token={token}
+            group={group}
+            openDeleteModal={() => setTaskToDelete(group.id!)}
           />
         ))}
       </div>
       {user?.role === "admin" && (
         <>
           <FloatingButton onPress={() => setIsModalOpen(true)} />
-          <TaskModal
+          <GroupModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            onSubmit={handleAddTask}
+            onSubmit={handleAddGroup}
           />
         </>
       )}
@@ -112,9 +106,9 @@ export default function Dashboard() {
       {taskToDelete !== null && (
         <ConfirmDeleteModal
           isOpen={true}
-          onClose={() => setTaskToDelete(null)} // Cierra el modal
+          onClose={() => setTaskToDelete(null)}
           onConfirm={() => {
-            deleteTask(taskToDelete); // Llama a la función de eliminación
+            deleteUser(taskToDelete); // Llama a la función de eliminación
             setTaskToDelete(null); // Resetea el estado
           }}
         />
