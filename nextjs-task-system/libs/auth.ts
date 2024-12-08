@@ -3,9 +3,10 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/libs/prisma"
 import bcrypt from 'bcrypt';
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { Adapter } from "next-auth/adapters";
 
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(prisma),
+    adapter: PrismaAdapter(prisma) as Adapter,
     secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt"
@@ -37,12 +38,38 @@ export const authOptions: NextAuthOptions = {
 
                 if (!matchPassword) throw new Error('Wrong password');
 
+
                 return {
                     id: `${userFound.id}`,
                     name: userFound.name,
-                    email: userFound.email
+                    email: userFound.email,
+                    isAdmin: userFound.isAdmin
                 }
             }
         })
-    ]
+    ],
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                return {
+                    ...token,
+                    id: user.id,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                }
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    id: token.id,
+                    email: token.email,
+                    isAdmin: token.isAdmin,
+                }
+            }
+        },
+    },
 }

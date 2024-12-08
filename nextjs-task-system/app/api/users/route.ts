@@ -3,12 +3,16 @@ import { errorHandler } from "@/libs/errorHandler";
 import { prisma } from "@/libs/prisma"
 import bcrypt from 'bcrypt';
 
-
-const validRoles = ["ADMIN", "REGULAR_USER"];
-
 export async function GET(request: Request) {
     try {
-        const users = await prisma.user.findMany();
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                isAdmin: true,
+            },
+        });
         return NextResponse.json(users, { status: 200 });
 
     } catch (error) {
@@ -22,7 +26,7 @@ export async function POST(request: Request) {
     try {
         const body = await request.json()
 
-        const { email, password, name, role = "ADMIN" } = body;
+        const { email, password, name, isAdmin } = body;
 
         if (!email || !password || !name) {
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -36,13 +40,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "User with this email" }, { status: 400 });
         }
 
-        if (!validRoles.includes(role)) {
-            return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-        }
-
-        /*         const users = await prisma.user.findMany();
-                return NextResponse.json(users, { status: 200 }); */
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await prisma.user.create({
@@ -50,7 +47,7 @@ export async function POST(request: Request) {
                 name,
                 email,
                 password: hashedPassword,
-                role,
+                isAdmin: isAdmin || false,
             },
         });
 

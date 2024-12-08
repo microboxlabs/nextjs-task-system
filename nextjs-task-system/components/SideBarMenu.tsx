@@ -10,15 +10,13 @@ const SideBarMenu = () => {
             className={`${isCollapsed ? "w-16" : "w-64"
                 } flex h-screen flex-col bg-gray-800 text-white transition-all duration-300`}
         >
-            {/* Botón para expandir/colapsar */}
             <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 className="p-4 text-left transition-colors hover:bg-gray-700"
             >
-                {isCollapsed ? ">" : "< Collapse"}
+                {isCollapsed ? "=" : "X"}
             </button>
 
-            {/* Lista de elementos */}
             <nav className="mt-4 flex flex-col">
                 <SidebarItem text="Dashboard" isCollapsed={isCollapsed} />
                 <SidebarItem text="Tasks" isCollapsed={isCollapsed} />

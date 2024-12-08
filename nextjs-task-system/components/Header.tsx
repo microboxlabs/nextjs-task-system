@@ -9,15 +9,15 @@ async function Header() {
     const session = await getServerSession(authOptions);
 
     return (
-        <div className='p-5'>
+        <div className='px-5 pt-6 '>
             {session?.user && (
-                <Navbar fluid >
+                <Navbar fluid  >
                     <Link href="/">
                         Home
                     </Link>
                     <NavbarToggle />
-                    <NavbarCollapse>
-                        <NavbarLink href="#">Dashboard</NavbarLink>
+                    <NavbarCollapse >
+                        <NavbarLink href="#" className='items-center text-center self-center m-auto'>Dashboard</NavbarLink>
                         <Logout />
                     </NavbarCollapse>
                 </Navbar>

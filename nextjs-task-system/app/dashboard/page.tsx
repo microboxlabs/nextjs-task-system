@@ -1,9 +1,14 @@
+import BoardViewContainer from '@/components/boardView/BoardViewContainer'
+import { authOptions } from '@/libs/auth';
+import { getServerSession } from 'next-auth';
 import React from 'react'
 
-const Dashboard = () => {
+export default async function Dashboard() {
+    const session = await getServerSession(authOptions);
+
     return (
-        <div>Dashboard</div>
+        <div className='overflow-hidden size-full'>
+            <BoardViewContainer />
+        </div>
     )
 }
-
-export default Dashboard

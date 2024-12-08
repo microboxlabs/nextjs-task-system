@@ -6,50 +6,53 @@ type Params = {
     params: { id: string }
 }
 
-export async function PATCH(request: Request, { params }: Params) {
+const validStatuses = ['Pending', 'In Progress', 'Completed'];
+
+export async function PUT(request: Request, { params }: Params) {
     try {
         const body = await request.json();
         const { title, description, assignedTo, dueDate, priority, status } = body;
         const taskId = params.id;
 
-        console.log(taskId)
-        if (!taskId || !status) {
-            return errorHandler(400, "Task ID and Status are required");
+        if (!taskId) {
+            return errorHandler(400, "Task ID is required");
         };
 
-        if (!assignedTo) {
-            return errorHandler(400, "Assigned user email is required");
-        };
 
+        if (status && !validStatuses.includes(status)) {
+            return errorHandler(400, "Invalid status value. Allowed values are 'Pending', 'In Progress', 'Completed'.");
+        }
+
+        // Obtener el usuario mediante su correo electrónico
         const task = await prisma.task.findUnique({
-            where: { id: Number(taskId) }, // Asegúrate de que taskId es un número
+            where: { id: Number(taskId) },
         });
 
         if (!task) {
             return errorHandler(404, "Task not found");
         }
 
-        // Obtener el usuario mediante su correo electrónico
-        const user = await prisma.user.findUnique({
-            where: { email: assignedTo },  // Asegúrate de que el correo electrónico esté en minúsculas
-        });
+        // Solo actualizar los campos que fueron enviados en el body
+        const updatedTaskData: any = {};
 
-        if (!user) {
-            return errorHandler(404, "User not found");
-        };
+        if (title) updatedTaskData.title = title;
+        if (description) updatedTaskData.description = description;
+        if (assignedTo) {
+            // Solo actualizar el assignedTo si se proporciona
+            const user = await prisma.user.findUnique({
+                where: { email: assignedTo },  // Asumir que el correo es único
+            });
+            if (!user) return errorHandler(404, "User not found");
+            updatedTaskData.assignedTo = { connect: { id: user.id } };
+        }
+        if (dueDate) updatedTaskData.dueDate = new Date(dueDate);
+        if (priority) updatedTaskData.priority = priority;
+        if (status) updatedTaskData.status = status;
 
+        // Si no se pasa ningún campo, el objeto se mantendrá vacío, lo que no hará cambios
         const updatedTask = await prisma.task.update({
-            where: { id: Number(taskId) },  // Buscar la tarea por ID
-            data: {
-                title,
-                description,
-                assignedTo: {
-                    connect: { id: user.id },  // Conectar la tarea con el usuario encontrado
-                },
-                dueDate: dueDate ? new Date(dueDate) : null,
-                priority,
-                status,
-            },
+            where: { id: Number(taskId) },
+            data: updatedTaskData,
         });
 
         return NextResponse.json(updatedTask);
