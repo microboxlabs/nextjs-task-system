@@ -17,14 +17,12 @@ export function RegisterComponent() {
 
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    console.log(`Updating ${id} to: ${value}`); 
+    const { id, value } = e.target; 
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   // Validar formulario
-  const validateForm = () => {
-    console.log("Validating form:", formData); 
+  const validateForm = () => { 
     if (!formData.email.includes("@")) {
       setMessage("Please enter a valid email address.");
       return false;

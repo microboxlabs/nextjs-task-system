@@ -13,19 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "PUT") {
     const { title, description, priority, status, dueDate, userId, groupId } = req.body;
-
-    console.log("Received data for update:", {
-      id,
-      title,
-      description,
-      priority,
-      status,
-      dueDate,
-      userId,
-      groupId,
-    });
-
-    
+  
     if (priority && !validPriorities.includes(priority)) {
       return res.status(400).json({
         error: `Invalid priority value. Allowed: ${validPriorities.join(", ")}`,
@@ -58,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       });
 
-      console.log("Task updated successfully:", updatedTask);
+
       return res.status(200).json(updatedTask);
     } catch (error: any) {
       console.error("Error updating task:", error);
@@ -72,23 +60,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (req.method === "DELETE") {
     try {
-      console.log("Attempting to delete task with ID:", id);
+
 
       
       const taskExists = await prisma.task.findUnique({ where: { id } });
       if (!taskExists) {
-        console.log("Task not found:", id);
         return res.status(404).json({ error: "Task not found" });
       }
 
       
-      console.log("Deleting task and related comments...");
+
       await prisma.$transaction([
         prisma.comment.deleteMany({ where: { taskId: id } }),
         prisma.task.delete({ where: { id } }),
       ]);
 
-      console.log("Task deleted successfully:", id);
+
       return res.status(204).end(); 
     } catch (error: any) {
       console.error("Error deleting task:", error);

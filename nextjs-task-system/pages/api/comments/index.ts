@@ -45,7 +45,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { content, taskId } = body;
   
-      console.log("POST received:", { content, taskId, user });
   
       
       if (!content || !taskId) {
@@ -77,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       });
   
-      console.log("Comment created successfully:", newComment);
+
       return res.status(201).json(newComment);
     } catch (error: any) {
       console.error("Error creating comment:", error.message);

@@ -40,7 +40,6 @@ export const TaskList: React.FC<TaskListProps> = ({
       alert("Comment cannot be empty.");
       return;
     }
-    console.log("Comment submitted for task ID:", taskId, "Content:", commentContent);
   };
 
   return (

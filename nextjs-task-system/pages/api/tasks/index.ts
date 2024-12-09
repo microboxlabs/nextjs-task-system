@@ -109,7 +109,7 @@ async function createComment(body: any, res: NextApiResponse) {
 }
 
 async function createTask(body: any, res: NextApiResponse) {
-  console.log("Body received:", body);
+
 
   const { title, description, priority, dueDate, userId, groupId } = body;
 

@@ -71,8 +71,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       token: "",
     });
 
-    
-    console.log("User logged out. State reset.");
   },
 
   hasRole: (roles) => {

@@ -165,7 +165,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set({ loading: true, error: null });
   
     try {
-      console.log(`Attempting to delete task with ID: ${id}`);
+
       
       const response = await fetch(`${API_ROUTES.TASKS.BASE}/${id}`, {
         method: "DELETE",
@@ -183,7 +183,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         tasks: state.tasks.filter((task) => task.id !== id),
       }));
   
-      console.log(`Task with ID: ${id} deleted successfully.`);
+
       localStorageHelper.setItem("tasks", get().tasks);
     } catch (error: any) {
       console.error(`Error deleting task with ID: ${id}`, error.message);
@@ -197,8 +197,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   addComment: async (taskId, commentData): Promise<TaskCommentData> => {
     set({ loading: true, error: null });
   
-    console.log("Task ID:", taskId);
-    console.log("Comment Data:", commentData);
   
     try {
       if (!taskId || !commentData?.content) {
@@ -221,7 +219,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       }
   
       const newComment = await response.json();
-      console.log("New Comment:", newComment);
+
   
       set((state) => {
         const updatedTasks = state.tasks.map((task) =>

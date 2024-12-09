@@ -9,7 +9,7 @@ async function main() {
   await prisma.task.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.group.deleteMany({});
-  console.log("Tablas limpiadas correctamente.");
+
 
   
   const hashedAdminPassword = await bcrypt.hash("admin123", 10);
@@ -89,9 +89,6 @@ async function main() {
     },
   });
 
-
-
-  console.log("Admin user creado:", adminUser);
 }
 main()
   .catch((e) => {
