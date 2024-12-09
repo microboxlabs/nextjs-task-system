@@ -3,7 +3,7 @@ import { z } from "zod";
 export const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  status: z.enum(["pending", "in-progress", "completed"], {
+  status: z.enum(["pending", "inProgress", "completed"], {
     errorMap: () => ({ message: "Invalid status value" }),
   }),
   dueDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
@@ -19,7 +19,7 @@ export const updateTaskSchema = z.object({
   id: z.number().positive("Task ID is required and must be a valid number"),
   title: z.string().optional(),
   description: z.string().optional(),
-  status: z.enum(["pending", "in-progress", "completed"]).optional(),
+  status: z.enum(["pending", "inProgress", "completed"]).optional(),
   dueDate: z
     .string()
     .optional()
