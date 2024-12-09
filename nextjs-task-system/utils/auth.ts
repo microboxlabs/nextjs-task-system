@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { serialize } from "cookie"; // To set cookies in responses
+import { serialize } from "cookie";
 import { IncomingMessage, ServerResponse } from "http";
 
-const SECRET_KEY = process.env.JWT_SECRET || "default_secret_key"; // Cambia esto en producción
+const SECRET_KEY = process.env.JWT_SECRET || "default_secret_key";
 
 export interface CustomJwtPayload extends jwt.JwtPayload {
   id: number;
@@ -43,7 +43,7 @@ export const setTokenCookie = (res: ServerResponse, token: string): void => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 3600, // 1 hour
+    maxAge: 3600,
     path: "/",
   });
 

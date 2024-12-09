@@ -198,17 +198,18 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   addComment: async (taskId, commentData): Promise<TaskCommentData> => {
     set({ loading: true, error: null });
   
-  
     try {
+      // Validate taskId and comment content
       if (!taskId || !commentData?.content) {
         throw new Error("Invalid taskId or comment content.");
       }
   
+      // Make a request to add a comment, including cookies for authentication
       const response = await fetch(API_ROUTES.COMMENTS.BASE, {
         method: "POST",
+        credentials: "include", // Include cookies for authentication
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ taskId, ...commentData }),
       });
@@ -220,8 +221,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       }
   
       const newComment = await response.json();
-
   
+      // Update the state with the new comment
       set((state) => {
         const updatedTasks = state.tasks.map((task) =>
           task.id === taskId
@@ -233,13 +234,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   
       return newComment;
     } catch (error: any) {
-      console.error("Error adding comment:", error.message);
-      set({ error: { message: error.message } });
+      console.error("Error adding comment:", error.message || error);
+      set({ error: { message: error.message || "An error occurred while adding a comment." } });
       throw error;
     } finally {
       set({ loading: false });
     }
-  }, 
+  },
+  
   
   fetchGroups: async () => {
     try {

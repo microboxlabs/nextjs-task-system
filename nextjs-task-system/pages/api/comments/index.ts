@@ -1,33 +1,31 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../prisma/client";
+import { getTokenFromCookies } from "../../../utils/auth";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, body, query } = req;
 
-  
-  const user = {
-    id: 1, 
-    role: "REGULAR", 
-  };
+  try {
+    const user = getTokenFromCookies(req);
 
-  if (method === "GET") {
-   
-    if (user.role !== "ADMIN") {
-      return res.status(403).json({ error: "Access denied. Only admins can view comments." });
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
-    try {
+    if (method === "GET") {
+      if (user.role !== "ADMIN") {
+        return res.status(403).json({ error: "Access denied. Only admins can view comments." });
+      }
+
       const taskId = query.taskId ? parseInt(query.taskId as string, 10) : null;
 
-      if (!taskId || isNaN(taskId)) {
-        return res.status(400).json({ error: "taskId is required and must be a valid number" });
+      if (!taskId) {
+        return res.status(400).json({ error: "Task ID is required" });
       }
 
       const comments = await prisma.comment.findMany({
         where: { taskId },
-        include: {
-          user: { select: { id: true, email: true } },
-        },
+        include: { user: { select: { id: true, email: true } } },
       });
 
       if (comments.length === 0) {
@@ -35,57 +33,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       return res.status(200).json(comments);
-    } catch (error: any) {
-      console.error("Error fetching comments:", error);
-      return res.status(500).json({ error: "Error fetching comments" });
     }
-  }
 
-  if (method === "POST") {
-    try {
+    if (method === "POST") {
       const { content, taskId } = body;
-  
-  
-      
+
       if (!content || !taskId) {
-        return res.status(400).json({ error: "Content and taskId are required" });
+        return res.status(400).json({ error: "Content and Task ID are required" });
       }
-  
-      
+
       const taskExists = await prisma.task.findUnique({
         where: { id: Number(taskId) },
       });
+
       if (!taskExists) {
         return res.status(404).json({ error: "Task not found" });
       }
-  
-      
-      const userExists = await prisma.user.findUnique({
-        where: { id: user.id },
-      });
-      if (!userExists) {
-        return res.status(404).json({ error: "User not found" });
-      }
-  
-      
+
       const newComment = await prisma.comment.create({
         data: {
           content,
           taskId: Number(taskId),
-          userId: user.id, 
+          userId: user.id,
         },
       });
-  
 
       return res.status(201).json(newComment);
-    } catch (error: any) {
-      console.error("Error creating comment:", error.message);
-      return res.status(500).json({ error: error.message || "Failed to create comment." });
     }
+
+    res.setHeader("Allow", ["GET", "POST"]);
+    return res.status(405).json({ error: `Method ${method} not allowed` });
+  } catch (error: any) {
+    console.error("Error handling comment request:", error.message || error);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-  return res.status(405).json({ error: "Method not allowed" });
 }
-  
-
-
