@@ -90,63 +90,66 @@ export default function AdminLayout({
           </Button>
         </div>
 
-        <Sidebar
-          aria-label="Admin sidebar"
-          className="h-full border-r border-gray-200 dark:border-gray-700"
-        >
-          <div className="flex h-full flex-col justify-between">
-            {/* User Welcome Section */}
-            <div className="mt-4 border-b border-gray-200 px-4 py-4 dark:border-gray-700">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
-                  <HiUser className="h-5 w-5 text-blue-600 dark:text-blue-300" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    Welcome,
-                  </p>
-                  <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                    {currentUser
-                      ? `${currentUser.first_name} ${currentUser.last_name}`
-                      : "Loading..."}
-                  </p>
-                </div>
+        <Sidebar className="h-full border-r border-gray-200 dark:border-gray-700">
+          {/* User Welcome Section */}
+          <div className="mb-4 border-b border-gray-200 px-4 py-6 dark:border-gray-700">
+            <div className="flex items-center space-x-3">
+              <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
+                <HiUser className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  Welcome,
+                </p>
+                <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                  {currentUser
+                    ? `${currentUser.first_name} ${currentUser.last_name}`
+                    : "Loading..."}
+                </p>
               </div>
             </div>
+          </div>
 
-            <Sidebar.Items className="mt-4">
+          <Sidebar.Items>
+            <Sidebar.ItemGroup>
+              <Sidebar.Item
+                href="/admin"
+                icon={HiChartPie}
+                active={pathname === "/admin"}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                Dashboard
+              </Sidebar.Item>
+              <Sidebar.Item
+                href="/admin/tasks"
+                icon={HiClipboardList}
+                active={pathname === "/admin/tasks"}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                Tasks
+              </Sidebar.Item>
+              <Sidebar.Item
+                href="/admin/create"
+                icon={HiUserAdd}
+                active={pathname === "/admin/create"}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                Create
+              </Sidebar.Item>
+            </Sidebar.ItemGroup>
+          </Sidebar.Items>
+
+          {/* Logout Section */}
+          <div className="mt-auto">
+            <Sidebar.Items>
               <Sidebar.ItemGroup>
                 <Sidebar.Item
-                  href="/admin"
-                  icon={HiChartPie}
-                  active={pathname === "/admin"}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Dashboard
-                </Sidebar.Item>
-                <Sidebar.Item
-                  href="/admin/tasks"
-                  icon={HiClipboardList}
-                  active={pathname === "/admin/tasks"}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Tasks
-                </Sidebar.Item>
-                <Sidebar.Item
-                  href="/admin/create"
-                  icon={HiUserAdd}
-                  active={pathname === "/admin/create"}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Create
-                </Sidebar.Item>
-                <Sidebar.Item
                   icon={HiLogout}
+                  className="cursor-pointer text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700"
                   onClick={() => {
                     setIsSidebarOpen(false);
                     handleLogout();
                   }}
-                  className="cursor-pointer"
                 >
                   Logout
                 </Sidebar.Item>

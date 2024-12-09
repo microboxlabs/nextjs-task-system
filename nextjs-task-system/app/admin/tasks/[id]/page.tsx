@@ -10,7 +10,7 @@ import {
 } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { Task } from "@/tipos/tasks";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { HiOutlineExclamationCircle, HiCheck, HiX } from "react-icons/hi";
 
 interface User {
   id: number;
@@ -31,6 +31,10 @@ export default function EditTask({ params }: PageProps) {
   const [formData, setFormData] = useState<Partial<Task>>({});
   const [users, setUsers] = useState<User[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -76,10 +80,10 @@ export default function EditTask({ params }: PageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowUpdateModal(true);
+  };
 
-    const confirmSubmit = confirm("Are you sure you want to update this task?");
-    if (!confirmSubmit) return;
-
+  const confirmUpdate = async () => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
@@ -91,11 +95,20 @@ export default function EditTask({ params }: PageProps) {
         throw new Error("Failed to update task");
       }
 
-      alert("Task updated successfully!");
-      router.push("/admin/tasks");
-      router.refresh();
+      setShowUpdateModal(false);
+      setShowSuccessModal(true);
+
+      // Redirect after success modal is closed
+      setTimeout(() => {
+        router.push("/admin/tasks");
+        router.refresh();
+      }, 2000);
     } catch (error) {
-      alert("Error updating task: " + error);
+      setShowUpdateModal(false);
+      setErrorMessage(
+        error instanceof Error ? error.message : "An error occurred",
+      );
+      setShowErrorModal(true);
     }
   };
 
@@ -244,6 +257,82 @@ export default function EditTask({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Update Confirmation Modal */}
+      <Modal
+        show={showUpdateModal}
+        size="md"
+        onClose={() => setShowUpdateModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to update this task?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="blue" onClick={confirmUpdate}>
+                Yes, update
+              </Button>
+              <Button color="gray" onClick={() => setShowUpdateModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        show={showSuccessModal}
+        size="md"
+        onClose={() => setShowSuccessModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiCheck className="mx-auto mb-4 h-14 w-14 text-green-500" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Task updated successfully!
+            </h3>
+            <div className="flex justify-center">
+              <Button color="gray" onClick={() => setShowSuccessModal(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Error Modal */}
+      <Modal
+        show={showErrorModal}
+        size="md"
+        onClose={() => setShowErrorModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiX className="mx-auto mb-4 h-14 w-14 text-red-500" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Error updating task
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {errorMessage}
+            </p>
+            <div className="mt-4 flex justify-center">
+              <Button color="gray" onClick={() => setShowErrorModal(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
       <Modal
         show={showDeleteModal}
         size="md"
