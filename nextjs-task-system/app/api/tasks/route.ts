@@ -108,7 +108,7 @@ export async function PUT(req: Request) {
 
     if (!id) {
       return NextResponse.json(
-        { error: "El ID de la tarea es requerido" },
+        { error: "Task ID is required" },
         { status: 400 },
       );
     }
@@ -131,7 +131,7 @@ export async function PUT(req: Request) {
 
     if (result.changes === 0) {
       return NextResponse.json(
-        { error: "No se encontró la tarea para actualizar" },
+        { error: "Task not found for update" },
         { status: 404 },
       );
     }
@@ -139,10 +139,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: "Error al actualizar la tarea" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Task ID is required" }, { status: 500 });
   }
 }
 
@@ -154,7 +151,7 @@ export async function DELETE(req: Request) {
 
     if (!id) {
       return NextResponse.json(
-        { error: "El ID de la tarea es requerido" },
+        { error: "Task ID is required" },
         { status: 400 },
       );
     }
@@ -164,7 +161,7 @@ export async function DELETE(req: Request) {
 
     if (result.changes === 0) {
       return NextResponse.json(
-        { error: "No se encontró la tarea para eliminar" },
+        { error: "Task not found for deletion" },
         { status: 404 },
       );
     }
@@ -173,7 +170,7 @@ export async function DELETE(req: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Error al eliminar la tarea" },
+      { error: "Task not found for deletion" },
       { status: 500 },
     );
   }

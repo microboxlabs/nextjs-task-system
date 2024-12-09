@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Task Management App Soluction",
+  title: "Task Management App Solution",
   description:
     "A simple task management app solution, built with Next.js by Braulio Reyes",
 };

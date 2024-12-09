@@ -40,7 +40,6 @@ export default function AdminLayout({
       const response = await fetch("/api/auth/me");
       if (response.ok) {
         const userData = await response.json();
-        console.log("User data:", userData);
         setCurrentUser(userData);
       } else {
         router.push("/login");
@@ -52,8 +51,16 @@ export default function AdminLayout({
   };
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (response.ok) {
+        router.push("/login");
+      } else {
+        console.error("Logout request failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   const toggleSidebar = () => {
