@@ -120,7 +120,7 @@ export default function TasksPage() {
         <Button
           onClick={() => router.push("/admin/create")}
           className="w-full sm:w-auto"
-          gradientDuoTone="purpleToBlue"
+          color="blue"
         >
           Create New Task
         </Button>

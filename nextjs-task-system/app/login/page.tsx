@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-
 const Home = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

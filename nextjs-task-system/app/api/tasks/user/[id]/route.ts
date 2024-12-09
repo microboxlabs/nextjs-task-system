@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/Utils/db";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+interface Params {
+  params: {
+    id: string;
+  };
+}
+
+export async function GET(request: NextRequest, { params }: Params) {
   try {
     const userId = params.id;
+
+    // Validate userId
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 },
+      );
+    }
 
     const tasks = db
       .prepare(
@@ -15,10 +26,6 @@ export async function GET(
          ORDER BY created_at DESC`,
       )
       .all(userId);
-
-    if (!tasks) {
-      return NextResponse.json({ error: "No tasks found" }, { status: 404 });
-    }
 
     return NextResponse.json(tasks);
   } catch (error) {
@@ -30,13 +37,18 @@ export async function GET(
   }
 }
 
-// POST: Create a new task for a user
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function POST(request: NextRequest, { params }: Params) {
   try {
     const userId = params.id;
+
+    // Validate userId
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 },
+      );
+    }
+
     const body = await request.json();
     const { title, description, due_date, priority, status, comments } = body;
 

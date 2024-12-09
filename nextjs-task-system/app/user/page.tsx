@@ -29,6 +29,48 @@ type TaskSummary = {
   };
 };
 
+const SkeletonCard = () => (
+  <div className="animate-pulse">
+    <div className="h-40 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+  </div>
+);
+
+const SummarySkeleton = () => (
+  <div className="animate-pulse">
+    <div className="mb-6">
+      <div className="h-32 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+    </div>
+    <div className="mb-2 h-6 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
+    <div className="mb-6 grid gap-4 md:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="h-32 rounded-lg bg-gray-200 dark:bg-gray-700"
+        ></div>
+      ))}
+    </div>
+    <div className="mb-2 h-6 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
+    <div className="grid gap-4 md:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="h-32 rounded-lg bg-gray-200 dark:bg-gray-700"
+        ></div>
+      ))}
+    </div>
+  </div>
+);
+
+const TasksSkeleton = () => (
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {[1, 2, 3, 4, 5, 6].map((i) => (
+      <div key={i} className="animate-pulse">
+        <div className="h-48 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+      </div>
+    ))}
+  </div>
+);
+
 const UserDashboard = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskSummary, setTaskSummary] = useState<TaskSummary>({
@@ -142,7 +184,25 @@ const UserDashboard = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="mb-6 mt-12 h-8 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700 md:mt-0"></div>
+
+        {/* Task Summary Skeleton */}
+        <section className="mb-8">
+          <div className="mb-4 h-7 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+          <SummarySkeleton />
+        </section>
+
+        {/* Tasks List Skeleton */}
+        <section className="mt-8">
+          <div className="mb-4 h-7 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+          <TasksSkeleton />
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
