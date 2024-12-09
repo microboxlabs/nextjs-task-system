@@ -1,10 +1,9 @@
-import { DarkThemeToggle } from "flowbite-react";
+import HomePage from "./(views)/home/page";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center gap-2 dark:bg-gray-800">
-      <h1 className="text-2xl dark:text-white">Flowbite React + Next.js</h1>
-      <DarkThemeToggle />
+    <main className="flex grow flex-col items-center justify-center bg-gray-100 p-6 sm:p-12 md:p-16 lg:p-24">
+      <HomePage />
     </main>
   );
 }

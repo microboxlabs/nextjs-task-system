@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
+import { ClientInitializer, FooterComponent, NavBar } from "./components";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,15 +12,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <head>
-        <ThemeModeScript />
-      </head>
-      <body className={inter.className}>{children}</body>
+      <head />
+      <body
+        className={`${inter.className} flex min-h-screen flex-col bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100`}
+      >
+        <NavBar />
+        <ClientInitializer>
+          <main className="flex grow flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+            {children}
+          </main>
+        </ClientInitializer>
+        <FooterComponent />
+      </body>
     </html>
   );
 }

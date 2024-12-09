@@ -1,36 +1,156 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Task Management System
+## Description
+This project is a task management system designed for administrators and regular users. Administrators have advanced access to manage all tasks, while regular users can only view and manage their assigned tasks. The system leverages a modern tech stack to ensure scalability, responsiveness, and ease of use.
 
-## Getting Started
+## Features
+### Administrator
+View all tasks.
+Filter tasks by status and priority.
+Create new tasks.
+Edit existing tasks.
+Delete tasks.
+Manage comments related to tasks.
+### Regular User
+View their assigned tasks.
+Create new tasks (if enabled).
+Edit their own tasks.
+View comments related to their tasks.
+General
+Role-based authentication system (ADMIN and REGULAR).
+Responsive and user-friendly interface.
+Real-time validations on both frontend and backend.
+RESTful API for task and comment management.
 
-First, run the development server:
+## Technologies Used
+Frontend
+React.js
+Next.js
+Tailwind CSS
+Zustand (State management)
+Flowbite (UI components)
+Backend
+Next.js API Routes
+Prisma ORM
+SQLite (Database)
+Authentication
+JSON Web Tokens (JWT)
 
-```bash
+## Prerequisites
+Ensure the following tools are installed on your system:
+
+Node.js (v16 or higher)
+npm or yarn
+Git
+Setup Instructions
+1. Clone the Repository
+$ git clone https://github.com/diegocabre/nextjs-task-system
+cd nextjs-task-system
+
+2. Install Dependencies
+$ npm install
+
+3. Setup Prisma and the Database
+Prisma Schema
+The database schema is managed using Prisma. The schema used in this project is as follows:
+```generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./tms.db"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  password    String
+  role        String   @default("REGULAR") // "ADMIN" or "REGULAR"
+  group       Group?   @relation(fields: [groupId], references: [id])
+  groupId     Int?
+  tasks       Task[]
+  comments    Comment[]
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  users       User[]
+  tasks       Task[]
+}
+
+model Task {
+  id           Int       @id @default(autoincrement())
+  title        String    
+  description  String    
+  priority     String    @default("MEDIUM") // "LOW", "MEDIUM", "HIGH"
+  dueDate      DateTime
+  status       String    @default("PENDING") // "PENDING", "IN_PROGRESS", "COMPLETED"
+  comments     Comment[]
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       Int?
+  group        Group?    @relation(fields: [groupId], references: [id])
+  groupId      Int?
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  content     String   
+  task        Task     @relation(fields: [taskId], references: [id])
+  taskId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+}
+```
+4. Run Migrations
+Run the following command to set up the database schema:
+$ npx prisma migrate dev --name init
+
+5. Seed Data
+Use the provided seed script to populate your database with initial data:
+$ node --loader ts-node/esm --experimental-specifier-resolution=node prisma/seed.ts
+
+
+6. Environment Variables
+Create a .env file in the root of your project and add the following:
+DATABASE_URL="file:./tms.db" # SQLite
+JWT_SECRET="your-secret-key"
+
+7. Run the Development Server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+
+
+
+## Usage/Examples
+
+```javascript
+import Component from 'my-project'
+
+function App() {
+  return <Component />
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+User and Password
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+      email: "admin@example.com",
+      password: hashedAdminPassword,
+      role: "ADMIN",
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+```
+      email: "regular@example.com",
+      password: hashedRegularPassword,
+      role: "REGULAR",
+      groupId: group1.id,
+```
 
-## Learn More
+```
+      email: "regular2@example.com",
+      password: hashedRegularPassword,
+      role: "REGULAR",
+      groupId: group2.id,
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
