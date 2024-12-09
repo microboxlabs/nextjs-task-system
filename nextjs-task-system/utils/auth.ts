@@ -1,53 +1,79 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { serialize } from "cookie"; // To set cookies in responses
+import { IncomingMessage, ServerResponse } from "http";
 
-// Clave secreta para JWT
 const SECRET_KEY = process.env.JWT_SECRET || "default_secret_key"; // Cambia esto en producción
-
 
 export interface CustomJwtPayload extends jwt.JwtPayload {
   id: number;
   role: string;
   email: string;
-
 }
 
+// Hash the password using bcrypt
 export const hashPassword = async (password: string): Promise<string> => {
-  const saltRounds = 10; // Número de rondas para generar el hash
+  const saltRounds = 10;
   return bcrypt.hash(password, saltRounds);
 };
 
+// Compare plain text password with the hashed password
 export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
   return bcrypt.compare(password, hashedPassword);
 };
 
-
+// Generate a JWT and return it
 export const generateToken = (payload: CustomJwtPayload, expiresIn: string = "1h"): string => {
   return jwt.sign(payload, SECRET_KEY, { expiresIn });
 };
 
+// Verify a JWT and return its payload
 export const verifyToken = (token: string): CustomJwtPayload | null => {
   try {
-    const decoded = jwt.verify(token, SECRET_KEY) as CustomJwtPayload; 
-    return decoded;
+    return jwt.verify(token, SECRET_KEY) as CustomJwtPayload;
   } catch (error) {
     console.error("Invalid token:", error);
     throw new Error("Invalid or expired token");
   }
 };
 
-export const authenticateToken = (authorizationHeader: string | undefined): CustomJwtPayload => {
-  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
-    throw new Error("Authorization header missing or malformed");
-  }
+// Set the token as an HttpOnly cookie
+export const setTokenCookie = (res: ServerResponse, token: string): void => {
+  const cookie = serialize("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 3600, // 1 hour
+    path: "/",
+  });
 
-  const token = authorizationHeader.split(" ")[1];
-  const decoded = verifyToken(token);
-
-  if (!decoded || typeof decoded !== "object") {
-    throw new Error("Invalid or malformed token");
-  }
-
-  return decoded;
+  res.setHeader("Set-Cookie", cookie);
 };
 
+// Clear the token from cookies
+export const clearTokenCookie = (res: ServerResponse): void => {
+  const cookie = serialize("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/",
+  });
+
+  res.setHeader("Set-Cookie", cookie);
+};
+
+// Extract and verify the token from cookies
+export const getTokenFromCookies = (req: IncomingMessage): CustomJwtPayload | null => {
+  const cookieHeader = req.headers.cookie || "";
+  const cookies = Object.fromEntries(
+    cookieHeader.split("; ").map((c) => c.split("="))
+  );
+
+  const token = cookies["token"];
+  if (!token) {
+    throw new Error("Token not found in cookies");
+  }
+
+  return verifyToken(token);
+};

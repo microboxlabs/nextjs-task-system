@@ -120,18 +120,6 @@ JWT_SECRET="your-secret-key"
 npm run dev
 
 
-
-
-## Usage/Examples
-
-```javascript
-import Component from 'my-project'
-
-function App() {
-  return <Component />
-}
-```
-
 User and Password
 
 ```

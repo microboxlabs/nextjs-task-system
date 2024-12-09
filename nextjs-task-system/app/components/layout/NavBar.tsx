@@ -6,18 +6,14 @@ import { useAuthStore } from "../../store/authStore";
 import { useRouter } from "next/navigation";
 
 export const NavBar = () => {
-  const { user, token, logout } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
-    router.push("/auth/login"); 
+  const handleLogout = async () => {
+    await logout();
+    router.push("/auth/login");
   };
 
- 
-  const isAuthenticated = user?.email && token;
-
-  
   const UserButtons = () => (
     <div className="flex items-center gap-4">
       {user?.role === "ADMIN" && (
@@ -42,7 +38,6 @@ export const NavBar = () => {
     </div>
   );
 
- 
   const AuthButtons = () => (
     <div className="flex items-center gap-4">
       <Button
@@ -70,7 +65,7 @@ export const NavBar = () => {
             src="/assets/img/logo.png"
             className="mr-3"
             alt="Task System Logo"
-            priority 
+            priority
           />
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
             Task Management System

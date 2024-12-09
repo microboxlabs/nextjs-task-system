@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useState } from "react";
 import { Button } from "flowbite-react";
 import { TaskCommentData as CommentData } from "../../store/taskStore";
 
@@ -7,13 +10,14 @@ interface Task {
   description: string;
   dueDate: string;
   status: string;
+  priority: string;
   user: {
     email: string;
   } | null;
   group: {
     name: string;
   } | null;
-  comments?: CommentData[]; 
+  comments?: CommentData[];
 }
 
 interface TaskCardProps {
@@ -24,9 +28,9 @@ interface TaskCardProps {
   onAddComment?: () => void;
   commentContent: string;
   onCommentChange: (content: string) => void;
-  onEdit?: () => void;
+  onEdit: (taskId: number) => Promise<void>;
   onDelete?: () => void;
-  onUpdateStatus?: (taskId: number, newStatus: string) => void; 
+  onUpdateStatus?: (taskId: number, newStatus: string) => void;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -41,8 +45,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
   onUpdateStatus,
 }) => {
-  
   const comments = task.comments || [];
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleEditClick = async () => {
+    setIsUpdating(true);
+    try {
+      await onEdit(task.id);
+    } catch (error) {
+      console.error("Error updating task:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="rounded-md border p-4 shadow">
@@ -58,30 +73,34 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <p className="text-sm text-gray-500">
         Group: {task.group?.name || "No group"}
       </p>
+      <p>Priority: {task.priority}</p>
 
-   
+      {/* Change Status: For regular users */}
       {isRegularUser && onUpdateStatus && (
-  <div className="mt-4">
-    <label htmlFor={`status-${task.id}`} className="block text-sm font-medium text-gray-700">
-      Change Status:
-    </label>
-    <select
-      id={`status-${task.id}`}
-      value={task.status}
-      onChange={(e) => onUpdateStatus(task.id, e.target.value)}
-      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-    >
-      <option value="PENDING">Pending</option>
-      <option value="IN_PROGRESS">In Progress</option>
-      <option value="COMPLETED">Completed</option>
-    </select>
-  </div>
-)}
+        <div className="mt-4">
+          <label
+            htmlFor={`status-${task.id}`}
+            className="block text-sm font-medium text-gray-700"
+          >
+            Change Status:
+          </label>
+          <select
+            id={`status-${task.id}`}
+            value={task.status}
+            onChange={(e) => onUpdateStatus(task.id, e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          >
+            <option value="PENDING">Pending</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        </div>
+      )}
 
-
-      
+      {/* Comments Section */}
       <CommentList comments={comments} />
 
+      {/* Add Comment Button: For regular users */}
       {isRegularUser && (
         <>
           <Button size="sm" onClick={onActivate} className="mt-4">
@@ -109,9 +128,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
       )}
 
       <div className="mt-4 flex justify-between">
-        {onEdit && (
-          <Button size="sm" onClick={onEdit}>
-            Edit
+        {/* Edit Button: Visible only for admins */}
+        {!isRegularUser && (
+          <Button size="sm" onClick={handleEditClick} disabled={isUpdating}>
+            {isUpdating ? "Updating..." : "Edit"}
           </Button>
         )}
         {onDelete && (
@@ -130,8 +150,7 @@ const CommentList: React.FC<{ comments: CommentData[] }> = ({ comments }) => (
     {comments.length > 0 ? (
       comments.map((comment) => (
         <li key={comment.id} className="text-sm">
-          <span className="font-semibold">{comment.user?.email || "Unknown"}:</span>{" "}
-          {comment.content}
+          <span className="font-semibold">{comment.user?.email || "Unknown"}:</span> {comment.content}
         </li>
       ))
     ) : (

@@ -18,16 +18,16 @@ export default function UserPage() {
   useEffect(() => {
     const fetchUserTasks = async () => {
       if (!user?.id) return;
-
+  
       try {
         setLoading(true);
         setError(null);
-
+  
+        const groupId = user.groupId || null;
         if (user.role === "REGULAR") {
-          const groupId = user.groupId || null;
-          await fetchTasks(user.id, groupId?.valueOf()); // Fetch tasks for regular user
+          await fetchTasks(user.id, groupId?.valueOf());
         } else if (user.role === "ADMIN") {
-          await fetchTasks(undefined, undefined, true); // Admin fetches all tasks
+          await fetchTasks(undefined, undefined, true);
         } else {
           setError("Invalid user role.");
         }
@@ -38,9 +38,10 @@ export default function UserPage() {
         setLoading(false);
       }
     };
-
+  
     fetchUserTasks();
   }, [user, fetchTasks]);
+  
 
   // Handle adding comments to a task
   const handleAddComment = useCallback(
@@ -130,6 +131,7 @@ export default function UserPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tasks.map((task) => (
           <TaskCard
+            onEdit={fetchTasks}
             isRegularUser={user?.role === "REGULAR"}
             key={task.id}
             task={task}

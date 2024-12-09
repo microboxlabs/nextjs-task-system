@@ -24,32 +24,20 @@ async function handleGetRequest(query: any, res: NextApiResponse) {
   const userId = query.userId ? parseInt(query.userId as string, 10) : undefined;
   const groupId = query.groupId ? parseInt(query.groupId as string, 10) : undefined;
 
-  if (isAdmin) {
-    
-    const tasks = await prisma.task.findMany({
-      include: {
-        user: { select: { id: true, email: true } },
-        group: { select: { id: true, name: true } },
-        comments: {
-          include: {
-            user: { select: { id: true, email: true } },
-          },
-        },
-      },
-    });
-    return res.status(200).json(tasks);
-  }
-
-  
-  if (!userId && !groupId) {
-    return res.status(400).json({ error: "userId or groupId is required to fetch tasks" });
-  }
-
   try {
-   
-    const whereClause: any = {};
-    if (userId) whereClause.userId = userId;
-    if (groupId) whereClause.groupId = groupId;
+    const filters: any[] = [];
+    if (userId) filters.push({ userId });
+    if (groupId) filters.push({ groupId });
+
+    const whereClause = isAdmin
+      ? {}
+      : filters.length > 0
+      ? { OR: filters }
+      : null;
+
+    if (!whereClause) {
+      return res.status(400).json({ error: "Invalid filters provided. Either userId or groupId must be specified." });
+    }
 
     const tasks = await prisma.task.findMany({
       where: whereClause,
@@ -88,50 +76,50 @@ async function createComment(body: any, res: NextApiResponse) {
 
   if (!content || !taskId || !userId) {
     return res.status(400).json({
-      error: "Comment content, taskId, and userId are required",
+      error: "Comment content, taskId, and userId are required.",
     });
   }
 
-  const taskExists = await prisma.task.findUnique({ where: { id: Number(taskId) } });
-  if (!taskExists) {
-    return res.status(404).json({ error: "Task not found" });
+  try {
+    const taskExists = await prisma.task.findUnique({ where: { id: Number(taskId) } });
+    if (!taskExists) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    const newComment = await prisma.comment.create({
+      data: {
+        content,
+        taskId: Number(taskId),
+        userId: Number(userId),
+      },
+    });
+
+    return res.status(201).json(newComment);
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    return res.status(500).json({ error: "Failed to create comment." });
   }
-
-  const newComment = await prisma.comment.create({
-    data: {
-      content,
-      taskId: Number(taskId),
-      userId: Number(userId),
-    },
-  });
-
-  return res.status(201).json(newComment);
 }
 
 async function createTask(body: any, res: NextApiResponse) {
-
-
   const { title, description, priority, dueDate, userId, groupId } = body;
 
-  
   if (!title || !description || !priority || !dueDate) {
-    return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ error: "All fields are required: title, description, priority, dueDate." });
   }
 
-  
   const validPriorities = ["LOW", "MEDIUM", "HIGH"];
   const normalizedPriority = priority.toUpperCase(); 
   if (!validPriorities.includes(normalizedPriority)) {
-    return res.status(400).json({ error: "Invalid priority value" });
+    return res.status(400).json({ error: "Invalid priority value. Allowed values: LOW, MEDIUM, HIGH." });
   }
 
   try {
-    
     const newTask = await prisma.task.create({
       data: {
         title,
         description,
-        priority: normalizedPriority, 
+        priority: normalizedPriority,
         dueDate: new Date(dueDate),
         ...(userId && { userId: Number(userId) }),
         ...(groupId && { groupId: Number(groupId) }),
@@ -144,3 +132,4 @@ async function createTask(body: any, res: NextApiResponse) {
     return res.status(500).json({ error: "Internal server error. Please try again." });
   }
 }
+

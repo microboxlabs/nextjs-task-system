@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAuthStore } from "../../store/authStore"; // Solo usamos esta store
+import { useAuthStore } from "../../store/authStore";
 import { useRouter } from "next/navigation";
 import { Button, Label, TextInput, Spinner } from "flowbite-react";
 
@@ -9,7 +9,7 @@ export function LoginComponent() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser, setToken } = useAuthStore(); 
+  const { setUser } = useAuthStore(); // Use only setUser to manage user state
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +28,7 @@ export function LoginComponent() {
     setIsLoading(true);
 
     try {
+      // Call login API
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -37,12 +38,22 @@ export function LoginComponent() {
       const data = await response.json();
 
       if (response.ok) {
-        
-        setToken(data.token);
-        setUser(data.user);
+        // Fetch user data after successful login
+        const meResponse = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include", // Include cookies in the request
+        });
 
-        
-        switch (data.user.role) {
+        if (!meResponse.ok) {
+          setMessage("Failed to fetch user information. Please try again.");
+          return;
+        }
+
+        const user = await meResponse.json();
+        setUser(user); // Set the user state in AuthStore
+
+        // Redirect based on user role
+        switch (user.role) {
           case "ADMIN":
             router.push("/admin");
             break;
@@ -95,5 +106,3 @@ export function LoginComponent() {
     </form>
   );
 }
-
-

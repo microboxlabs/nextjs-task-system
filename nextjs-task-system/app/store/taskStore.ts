@@ -42,7 +42,7 @@ interface TaskStore {
   fetchTasks: (userId?: number, groupId?: number, isAdmin?: boolean) => Promise<void>;
   addTask: (task: Partial<Task>) => Promise<void>;
   updateTask: (id: number, updatedFields: Partial<Task>) => Promise<void>;
-
+  fetchGroups: () => Promise<any[]>;
   deleteTask: (id: number) => Promise<void>;
   addComment: (
     taskId: number,
@@ -51,6 +51,7 @@ interface TaskStore {
   filterTasks: (filters: {
     status?: "PENDING" | "IN_PROGRESS" | "COMPLETED";
     priority?: "Low" | "Medium" | "High";
+    assignedTo?: string;
   }) => Task[];
 }
 
@@ -238,15 +239,37 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     } finally {
       set({ loading: false });
     }
-  },  
-
+  }, 
+  
+  fetchGroups: async () => {
+    try {
+      const response = await fetch("/api/groups", { method: "GET" });
+      if (!response.ok) {
+        throw new Error("Failed to fetch groups");
+      }
+      const groups = await response.json();
+      return groups; 
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+      return [];
+    }
+  },
   filterTasks: (filters: Partial<{ status: string; priority: string }>) => {
     const allTasks = get().tasks || [];
     return allTasks.filter((task) =>
       Object.entries(filters).every(([key, value]) => {
-        if (!value) return true;
-        return task[key as keyof Task] === value;
+        if (!value) return true; 
+        if (key === "priority") {
+          return task.priority === value; 
+        }
+        if (key === "status") {
+          return task.status === value; 
+        }
+        return true;
       })
     );
   },
+  
+   
+  
 }));

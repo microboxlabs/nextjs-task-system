@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClientInitializer, FooterComponent, NavBar } from "./components";
+import { FooterComponent, NavBar } from "./components";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +22,9 @@ export default function RootLayout({
         className={`${inter.className} flex min-h-screen flex-col bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100`}
       >
         <NavBar />
-        <ClientInitializer>
           <main className="flex grow flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
             {children}
           </main>
-        </ClientInitializer>
         <FooterComponent />
       </body>
     </html>

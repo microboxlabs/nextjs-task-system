@@ -1,6 +1,4 @@
 import { create } from "zustand";
-import { localStorageHelper } from "../../utils/localStorageHelper";
-import { isTokenExpired } from "../../utils/tokenHelper";
 
 type UserRole = "ADMIN" | "REGULAR";
 
@@ -8,85 +6,76 @@ interface User {
   id: number;
   email: string;
   role: UserRole;
-  groupId?: number; 
+  groupId?: number;
 }
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: User;
-  token: string;
+  user: User | null;
   setUser: (user: User) => void;
-  setToken: (token: string) => void;
   logout: () => void;
-  hasRole: (roles: UserRole | UserRole[]) => boolean; 
-  initializeAuth: () => void; 
+  hasRole: (roles: UserRole | UserRole[]) => boolean;
+  initializeAuth: () => Promise<void>; // Cambiamos a async
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
-  user: { id: 0, email: "", role: "REGULAR", groupId: 0 }, 
-  token: "",
+  user: null, // Usuario inicial nulo
 
-  initializeAuth: () => {
-    if (typeof window === "undefined") return;
-
+  // Inicializar autenticación
+  initializeAuth: async () => {
     try {
-      const storedUser = localStorageHelper.getItem<User>("user");
-      const storedToken = localStorageHelper.getItem<string>("token");
+      const response = await fetch("/api/auth/me", {
+        method: "GET",
+        credentials: "include", // Incluir cookies en la solicitud
+      });
 
-      if (storedToken && isTokenExpired(storedToken)) {
-        console.warn("Token expired. Logging out...");
-        get().logout();
+      if (!response.ok) {
+        set({ isAuthenticated: false, user: null });
         return;
       }
 
-      if (storedUser) set({ user: storedUser });
-      if (storedToken) set({ token: storedToken });
+      const user = await response.json();
+      set({ isAuthenticated: true, user });
     } catch (error) {
       console.error("Error initializing auth:", error);
+      set({ isAuthenticated: false, user: null });
     }
   },
 
- 
+  // Establecer el usuario después de login exitoso
   setUser: (user) => {
-    const validUser = { ...user, groupId: user.groupId || 0 }; 
-    localStorageHelper.setItem("user", validUser);
-    set({ user: validUser });
+    set({ user, isAuthenticated: true });
   },
 
-  
-  setToken: (token) => {
-    localStorageHelper.setItem("token", token || "");
-    set({ token: token || "" });
+  // Cerrar sesión
+  logout: async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // Incluir cookies para limpiar en el backend
+      });
+
+      set({ isAuthenticated: false, user: null });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   },
 
-  
-  logout: () => {
-    localStorageHelper.removeItem("user");
-    localStorageHelper.removeItem("token");
-
-    
-    set({
-      user: { id: 0, email: "", role: "REGULAR", groupId: 0 },
-      token: "",
-    });
-
-  },
-
+  // Verificar roles
   hasRole: (roles) => {
-    const userRole = get().user.role;
+    const userRole = get().user?.role;
     if (!userRole) return false;
 
-    
     return Array.isArray(roles) ? roles.includes(userRole) : userRole === roles;
   },
 }));
 
-
+// Ejecutar initializeAuth en el cliente
 if (typeof window !== "undefined") {
   useAuthStore.getState().initializeAuth();
 
-  
+  // Sincronizar estado entre pestañas
   window.addEventListener("storage", () => {
     useAuthStore.getState().initializeAuth();
   });
