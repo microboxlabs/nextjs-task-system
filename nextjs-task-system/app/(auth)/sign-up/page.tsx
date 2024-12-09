@@ -1,6 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function Signup() {
 
@@ -33,7 +34,7 @@ function Signup() {
     <div className="flex h-[calc(100vh-7rem)] items-center justify-center">
       <form
         onSubmit={onSubmit}
-        className="w-10/12 lg:w-5/12"
+        className="w-10/12 lg:w-5/12 bg-slate-800 p-10 text-slate-300 rounded-md"
         method="POST"
       >
         <h1 className="mb-4 text-4xl font-bold ">Register</h1>
@@ -120,7 +121,11 @@ function Signup() {
           </span>
         )}
 
-        <button className="mt-2 w-full rounded-lg bg-blue-500 p-3 text-white">
+        <div className="flex gap-2 my-4 text-slate-300 hover:text-blue-400">
+          <Link href="/sign-in">Already have an account?</Link>
+        </div>
+
+        <button className="mt-2 w-full rounded-lg bg-blue-500 hover:bg-blue-700 p-3 text-white">
           Register
         </button>
       </form>

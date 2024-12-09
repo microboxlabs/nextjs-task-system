@@ -51,6 +51,7 @@ export async function POST(request: Request) {
             },
         });
 
+        // Remove the password from the response object to avoid exposing it
         const { password: newUserPassword, ...rest } = newUser;
 
 

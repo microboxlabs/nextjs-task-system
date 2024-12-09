@@ -11,13 +11,15 @@ type BoardViewCardProps = {
 }
 
 export const BoardViewCard = ({ id, title, priority, description, status }: BoardViewCardProps) => {
+    // Initialize drag-and-drop functionality for this card
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
-        id: id, 
+        id: id, // The ID of the draggable item (task card)
         data: {
-            laneId: status, 
+            laneId: status, // Store the status of the card as data
         },
     });
 
+    // Apply CSS transform during the drag operation
     const style = transform ? {
         transform: CSS.Translate.toString(transform),
     } : undefined;
@@ -26,12 +28,11 @@ export const BoardViewCard = ({ id, title, priority, description, status }: Boar
         <div
             ref={setNodeRef} 
             style={style}
-            {...listeners}
-            {...attributes}
+            {...listeners} // Attach event listeners (for drag events like dragstart, dragmove, etc.)
+            {...attributes}  // Apply additional drag-related attributes
             className='bg-white p-4 rounded-md shadow-lg flex flex-col gap-2 border border-gray-200 hover:shadow-xl transition-shadow'
         >
             <p className="font-semibold">{title}</p>
-            <span></span>
             <p className="text-sm text-gray-600">{description}</p>
             <div className="flex justify-between items-center pt-4">
                 <span

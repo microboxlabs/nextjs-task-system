@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 const SideBarMenu = () => {
@@ -18,9 +19,8 @@ const SideBarMenu = () => {
             </button>
 
             <nav className="mt-4 flex flex-col">
-                <SidebarItem text="Dashboard" isCollapsed={isCollapsed} />
-                <SidebarItem text="Tasks" isCollapsed={isCollapsed} />
-                <SidebarItem text="Users" isCollapsed={isCollapsed} />
+                <SidebarItem text="List View" href="/" isCollapsed={isCollapsed} />
+                <SidebarItem text="Board View" href="/board" isCollapsed={isCollapsed} />
             </nav>
         </div>
     )
@@ -29,16 +29,19 @@ const SideBarMenu = () => {
 const SidebarItem = ({
     text,
     isCollapsed,
+    href,
 }: {
     text: string;
     isCollapsed: boolean;
+    href: string;
 }) => {
     return (
-        <div
+        <Link
+            href={href}
             className="cursor-pointer p-4 text-left transition-colors hover:bg-gray-700"
         >
             {!isCollapsed && <span>{text}</span>}
-        </div>
+        </Link>
     );
 };
 

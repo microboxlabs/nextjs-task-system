@@ -20,8 +20,8 @@ type BoardViewLaneProps = {
 
 export default function BoardViewLane({ title, items, laneId }: BoardViewLaneProps) {
     const { setNodeRef } = useDroppable({
-        id: laneId, // Identifica esta lane
-        data: { laneId }, // Pasa el ID de la lane
+        id: laneId, // ID for the lane (used by the drag-and-drop system)
+        data: { laneId }, // Custom data associated with this droppable area
     });
     
     return (
@@ -33,7 +33,7 @@ export default function BoardViewLane({ title, items, laneId }: BoardViewLanePro
             </div>
             <div className='flex flex-col gap-4 p-4'>
                 {items.length === 0 ? (
-                     <p className="text-center text-gray-500">No hay tareas disponibles.</p>
+                     <p className="text-center text-gray-500">No tasks available. Try adding some!</p>
                 ) : (
                     items.map((item) => (
                         <BoardViewCard

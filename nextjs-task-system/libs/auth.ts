@@ -69,7 +69,9 @@ export const authOptions: NextAuthOptions = {
                     email: token.email,
                     isAdmin: token.isAdmin,
                 }
+                
             }
+            
         },
     },
 }

@@ -2,34 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma"
 
 import { errorHandler } from "@/libs/errorHandler";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/libs/auth";
 
 export async function GET(request: Request) {
     try {
-    
-        const session = await getServerSession(authOptions);
+        const tasks = await prisma.task.findMany();
 
-        if (!session || !session.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const userId = parseInt(session.user.id, 10);
-        const isAdmin = session.user.isAdmin;
-
-        let tasks;
-
-        if (isAdmin) {
-            // Si es ADMIN, obtiene todas las tareas
-            tasks = await prisma.task.findMany();
-        } else {
-            // Si no es ADMIN, obtiene solo las tareas del usuario
-            tasks = await prisma.task.findMany({
-                where: { assignedToId: userId },
-            });
-        }
-
-        return NextResponse.json(tasks);
+        return new Response(JSON.stringify(tasks), { status: 200 });
     } catch (error) {
         if (error instanceof Error) {
             return errorHandler(500, "Failed to fetch tasks" + error.message);
@@ -46,8 +24,18 @@ export async function POST(request: Request) {
             return errorHandler(400, "Title, AssignedTo, and Priority are required");
         }
 
+
+         // Convert assignedToId to an integer if it’s a string
+        const assignedToIdInt = parseInt(assignedToId, 10);
+
+        // Validate that assignedToId is a valid number
+        if (isNaN(assignedToIdInt)) {
+            return errorHandler(400, "AssignedToId must be a valid number");
+        }
+
+        // Check if the user with the provided assignedToId exists
         const userExists = await prisma.user.findUnique({
-            where: { id: assignedToId },
+            where: { id: assignedToIdInt },
         });
 
         if (!userExists) {
@@ -59,9 +47,9 @@ export async function POST(request: Request) {
                 title,
                 description,
                 assignedTo: {
-                    connect: { id: assignedToId },
+                    connect: { id: assignedToIdInt }, // Associate the task with the user
                 },
-                dueDate: dueDate ? new Date(dueDate) : null,
+                dueDate: dueDate ? new Date(dueDate) : null, // If a due date is provided, convert it to a Date object
                 priority,
                 status: "Pending",
             },

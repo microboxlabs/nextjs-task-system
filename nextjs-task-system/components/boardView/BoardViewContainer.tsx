@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { closestCorners, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { closestCorners, DndContext, DragEndEvent } from '@dnd-kit/core';
 import BoardViewLane from './BoardViewLane';
 import { Spinner } from "flowbite-react";
 
@@ -15,40 +15,13 @@ type Task = {
     priority: string;
 };
 
-const BoardViewContainer = () => {
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: { distance: 5 },
-        })
-    );
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const res = await fetch('/api/tasks');
-                if (!res.ok) throw new Error('Failed to fetch tasks');
-
-                const data: Task[] = await res.json();
-                setTasks(data);
-            } catch (err: any) {
-                setError(err.message || 'An unexpected error occurred');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTasks();
-    }, []);
-
+const BoardViewContainer = ({ tasks: initialTasks }: { tasks: Task[] }) => {
+    const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
 
     const handleTaskUpdate = async (taskId: number, updatedStatus: string) => {
         try {
             const response = await fetch(`/api/tasks/${taskId}`, {
-                method: 'PUT',  
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -66,38 +39,40 @@ const BoardViewContainer = () => {
         }
     };
 
+    // Handle the end of a drag event, when a task has been dropped onto a new lane
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
 
-        // Verifica que se haya soltado sobre un "droppable"
+        // If the task was not dropped over a valid lane, do nothing
         if (!over) return;
 
-        const sourceLaneId = active.data.current?.laneId;
+        // Get the current lane of the task
+        const sourceLaneId = active.data.current?.laneId; 
+        // Get the destination lane after the drag
         const destinationLaneId = over.data.current?.laneId;
 
-        // Si se arrastra al mismo lane, no hagas nada
+        // If the task is dragged to the same lane, no update is necessary
         if (sourceLaneId === destinationLaneId) return;
 
-        // Actualiza el estado moviendo la tarea a la nueva lane
-        setTasks((currentTasks) =>
-            currentTasks.map((task) =>
-                task.id === active.id
-                    ? { ...task, status: destinationLaneId as 'Pending' | 'In Progress' | 'Completed' }
-                    : task
-            )
+        // Update the task status locally
+        const updatedTasks = tasks.map((task) =>
+            task.id === Number(active.id)
+                ? { ...task, status: destinationLaneId as 'Pending' | 'In Progress' | 'Completed' }
+                : task
         );
 
+         // Update the state to reflect the new task order and status
+        setTasks(updatedTasks);
+
+         // Make an API request to update the task status on the backend
         await handleTaskUpdate(Number(active.id), destinationLaneId);
     };
 
-    if (loading) return <div className='text-center align-middle'>
-        <Spinner aria-label="Loading data" />
-    </div>;
-    if (error) return <div>Error: {error}</div>;
-
+    // Filter tasks by their current status
     const pendingTasks = tasks.filter((task) => task.status === 'Pending');
     const inProgressTasks = tasks.filter((task) => task.status === 'In Progress');
     const completedTasks = tasks.filter((task) => task.status === 'Completed');
+
 
     return (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto p-6'>

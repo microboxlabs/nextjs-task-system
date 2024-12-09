@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 
 
@@ -29,8 +30,10 @@ function Signin() {
   })
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] items-center justify-center">
-      <form onSubmit={onSubmit} className="w-10/12 lg:w-5/12">
+    <div className="flex h-[calc(100vh-7rem)]  items-center justify-center">
+      <form
+        onSubmit={onSubmit}
+        className="w-10/12 lg:w-5/12 bg-slate-800 p-10 rounded-md">
 
         {error && (
           <p className="mb-2 rounded bg-red-500 p-3 text-lg text-white">{error}</p>
@@ -78,7 +81,13 @@ function Signin() {
           </span>
         )}
 
-        <button className="mt-2 w-full rounded-lg bg-blue-500 p-3 text-white">
+        <Link href="/sign-up"
+          className=" text-slate-300 hover:text-blue-400"
+        >
+          Don´t have an account?
+        </Link>
+
+        <button className="mt-2 w-full rounded-lg bg-blue-500 hover:bg-blue-700 p-3 text-white">
           Login
         </button>
       </form>

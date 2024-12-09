@@ -1,5 +1,6 @@
 import { errorHandler } from "@/libs/errorHandler";
 import { prisma } from "@/libs/prisma"
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 type Params = {
@@ -23,7 +24,6 @@ export async function PUT(request: Request, { params }: Params) {
             return errorHandler(400, "Invalid status value. Allowed values are 'Pending', 'In Progress', 'Completed'.");
         }
 
-        // Obtener el usuario mediante su correo electrónico
         const task = await prisma.task.findUnique({
             where: { id: Number(taskId) },
         });
@@ -32,15 +32,15 @@ export async function PUT(request: Request, { params }: Params) {
             return errorHandler(404, "Task not found");
         }
 
-        // Solo actualizar los campos que fueron enviados en el body
+        // Only update the fields that are provided in the body
         const updatedTaskData: any = {};
 
         if (title) updatedTaskData.title = title;
         if (description) updatedTaskData.description = description;
         if (assignedTo) {
-            // Solo actualizar el assignedTo si se proporciona
+            // If assignedTo is provided, find the user by their email and update the task’s assignee
             const user = await prisma.user.findUnique({
-                where: { email: assignedTo },  // Asumir que el correo es único
+                where: { email: assignedTo },
             });
             if (!user) return errorHandler(404, "User not found");
             updatedTaskData.assignedTo = { connect: { id: user.id } };
@@ -72,7 +72,7 @@ export async function DELETE(request: Request, { params }: Params) {
         });
 
         if (!taskExists) {
-            // Si no se encuentra la tarea, devolver un error 404 con mensaje adecuado
+
             return NextResponse.json({ error: "Task not found" }, { status: 404 });
         }
 
