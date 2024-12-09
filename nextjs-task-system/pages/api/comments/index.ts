@@ -52,6 +52,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: "Content and taskId are required" });
       }
   
+      // Validar si la tarea existe
+      const taskExists = await prisma.task.findUnique({
+        where: { id: Number(taskId) },
+      });
+      if (!taskExists) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+  
+      // Validar si el usuario existe
+      const userExists = await prisma.user.findUnique({
+        where: { id: user.id },
+      });
+      if (!userExists) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      // Crear el comentario
       const newComment = await prisma.comment.create({
         data: {
           content,
@@ -67,9 +84,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: error.message || "Failed to create comment." });
     }
   }
-  
-  res.setHeader("Allow", ["GET", "POST"]);
-  return res.status(405).json({ error: `Method ${method} not allowed` });
+
+  return res.status(405).json({ error: "Method not allowed" });
 }
+  
 
 

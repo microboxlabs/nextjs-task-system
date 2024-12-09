@@ -123,23 +123,27 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set({ loading: true, error: null });
   
     try {
-      // Forzar el tipo de status
-      const status = updatedFields.status as "PENDING" | "IN_PROGRESS" | "COMPLETED";
-  
+      // Validar campos de actualización
+      const { status, ...otherFields } = updatedFields;
       if (status && !["PENDING", "IN_PROGRESS", "COMPLETED"].includes(status)) {
         throw new Error(`Invalid status value: ${status}`);
       }
   
-      const response = await fetch(`${API_ROUTES.TASKS}/${id}`, {
+      const response = await fetch(`${API_ROUTES.TASKS.BASE}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...updatedFields, status }),
+        body: JSON.stringify({ ...otherFields, ...(status && { status }) }),
       });
   
-      if (!response.ok) throw new Error("Failed to update task.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error updating task:", errorData);
+        throw new Error(errorData.error || "Failed to update task.");
+      }
   
       const updatedTask = await response.json();
   
+    
       set((state) => ({
         tasks: state.tasks.map((task) =>
           task.id === id ? { ...task, ...updatedTask } : task
@@ -147,12 +151,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       }));
       localStorageHelper.setItem("tasks", get().tasks);
     } catch (error: any) {
-      console.error("Error updating task:", error);
+      console.error("Error in updateTask:", error.message);
       set({ error: { message: error.message } });
+      throw error; // Lanzar el error para manejarlo en el componente
     } finally {
       set({ loading: false });
     }
   },
+  
   
   
   deleteTask: async (id: number) => {
@@ -195,15 +201,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     console.log("Comment Data:", commentData);
   
     try {
-      // Validar datos antes de enviar
-      if (!taskId || typeof taskId !== "number") {
-        throw new Error("Invalid task ID.");
-      }
-      if (!commentData?.content || typeof commentData.content !== "string") {
-        throw new Error("Comment content is required.");
-      }
-      if (!commentData?.userId || typeof commentData.userId !== "number") {
-        throw new Error("User ID is required.");
+      if (!taskId || !commentData?.content) {
+        throw new Error("Invalid taskId or comment content.");
       }
   
       const response = await fetch(API_ROUTES.COMMENTS.BASE, {
@@ -215,8 +214,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         body: JSON.stringify({ taskId, ...commentData }),
       });
   
-      console.log("API response status:", response.status);
-  
       if (!response.ok) {
         const errorText = await response.text();
         console.error("API error response:", errorText);
@@ -225,6 +222,16 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   
       const newComment = await response.json();
       console.log("New Comment:", newComment);
+  
+      set((state) => {
+        const updatedTasks = state.tasks.map((task) =>
+          task.id === taskId
+            ? { ...task, comments: [...task.comments, newComment] }
+            : task
+        );
+        return { tasks: updatedTasks };
+      });
+  
       return newComment;
     } catch (error: any) {
       console.error("Error adding comment:", error.message);
@@ -233,9 +240,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     } finally {
       set({ loading: false });
     }
-  },
-  
-  
+  },  
 
   filterTasks: (filters: Partial<{ status: string; priority: string }>) => {
     const allTasks = get().tasks || [];
