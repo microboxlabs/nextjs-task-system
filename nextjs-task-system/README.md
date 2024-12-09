@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+### Solution Overview
+This project is a task management system designed to efficiently organize and track tasks. It features a robust backend powered by Prisma ORM and a lightweight SQLite database for storage, ensuring smooth data management and retrieval. The solution utilizes **Next.js** as the framework, which enables server-side rendering and API route handling, ensuring high performance and responsiveness across the application.
 
-## Getting Started
+### Key Architectural Components
 
-First, run the development server:
+- **Database**:
+  - **Prisma ORM** is used for seamless interaction with the SQLite database, ensuring smooth data manipulation for tasks, users, and other related entities. It allows for efficient querying and transactions, ensuring data consistency and integrity.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Task Management**:
+  - The core of the application revolves around task management. The backend exposes RESTful API routes (GET, POST, PUT, DELETE) for managing tasks. These routes allow users to create, update, fetch, and delete tasks, which can be assigned to different users and tracked by priority and status.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Authentication and Authorization**:
+  - Authentication is handled using **NextAuth**, ensuring secure login and role-based access control. Admin users have full access to task management functionalities, while Regular users have limited access to tasks assigned to them.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Error Handling**:
+  - Custom error handling is built in using the **errorHandler** class, ensuring consistent and user-friendly error messages across the application.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **Testing**:
+  - Unit tests are handled using **Jest**, ensuring that critical logic such as task management and API routes work correctly. This ensures the system is reliable and maintainable.
 
-## Learn More
+## Technologies Used
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js**: The main framework for server-side rendering and API route handling.
+- **SQLite**: Lightweight relational database for storing tasks and user information.
+- **NextAuth.js**: Authentication solution for secure login and role-based access.
+- **Tailwind CSS**: Styling framework for the frontend.
+- **Prisma ORM**: For managing and interacting with the SQLite database.
+- **React Hook Form**: Library for handling forms in React.
+- **Flowbite**: A UI kit for building responsive components.
+- **Bcrypt**: For securely hashing passwords.
+- **Jest**: Unit testing framework for ensuring the reliability of task management features.
+- **Prettier**: Code formatting tool to maintain consistent coding style.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Prerequisites
 
-## Deploy on Vercel
+- **Node.js**: You need to have Node.js installed on your system. 
+- **SQLite**: This project uses SQLite as the database. Ensure you have the SQLite3 library available.
+- **npm**: npm comes installed with Node.js, but make sure it's available to manage the project's dependencies.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+This structure allows for scalable task management functionality, and as development progresses, new features such as task filtering, notifications, and analytics can be easily integrated into the existing infrastructure.
