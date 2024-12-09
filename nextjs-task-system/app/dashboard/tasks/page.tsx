@@ -17,7 +17,6 @@ export default async function Tasks({
 
   return (
     <div className="min-h-screen space-y-6 bg-gray-50 px-4 py-6 dark:bg-gray-900 md:py-8">
-      {/* Encabezado */}
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
           Task Management

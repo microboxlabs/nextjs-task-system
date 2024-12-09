@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +13,7 @@ import Link from "next/link";
 import { Task } from "@/app/lib/definitions";
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import { deleteTask } from "@/app/lib/fetchParams";
 
 export default function TableTask({ tasks }: { tasks: Task[] }) {
   const [sortedTasks, setSortedTasks] = useState<Task[]>(tasks);
@@ -97,11 +99,19 @@ export default function TableTask({ tasks }: { tasks: Task[] }) {
             <TableCell>{task.status}</TableCell>
             <TableCell>
               <Link
-                href={`/dashboard/tasks/${task.id}/edit`}
+                href={`/dashboard/tasks/create?id=${task.id}`}
                 className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
               >
                 Edit
               </Link>
+            </TableCell>
+            <TableCell>
+              <button
+                onClick={() => deleteTask(task.id)}
+                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+              >
+                Delete
+              </button>
             </TableCell>
           </TableRow>
         ))}

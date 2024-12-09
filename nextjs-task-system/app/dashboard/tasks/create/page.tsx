@@ -8,7 +8,7 @@ export default function CreateTask() {
   const router = useRouter();
 
   const handleSucess = () => {
-    router.push("/dashboard/tasks");
+    router.replace("/dashboard/tasks");
   };
 
   return (

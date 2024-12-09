@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { CombinedOptions, User } from "@/app/lib/definitions";
+import { useState, useEffect, FormEvent } from "react";
+import { CombinedOptions, Task } from "@/app/lib/definitions";
 import { Button, Label, Select, TextInput } from "flowbite-react";
+import { createTask, updateTask } from "@/app/lib/fetchParams";
+import { useSearchParams } from "next/navigation";
+import { tasks } from "@/app/lib/data";
 
 function Form({
   onSubmitSuccess,
@@ -11,32 +14,43 @@ function Form({
   onSubmitSuccess: () => void;
   combinedOptions: CombinedOptions[];
 }) {
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("id");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [taskData, setTaskData] = useState<Task | null>(null);
+
+  useEffect(() => {
+    if (taskId) {
+      const fetchTask = async () => {
+        try {
+          const task = tasks.find((task) => task.id === +taskId);
+          setTaskData(task);
+        } catch (error) {
+          setError("Error fetching task");
+        }
+      };
+      fetchTask();
+    }
+  }, [taskId]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
 
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
     try {
-      const formData = new FormData(event.currentTarget);
-      const data = Object.fromEntries(formData.entries());
-
-      const response = await fetch("http://localhost:3000/api/tasks/admin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit the task. Please try again");
+      if (taskId) {
+        await updateTask(taskId, data);
+      } else {
+        await createTask(data);
       }
       onSubmitSuccess();
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      setError("Error submitting task");
     } finally {
       setIsLoading(false);
     }
@@ -50,9 +64,10 @@ function Form({
         </div>
         <TextInput
           id="title"
-          type="title"
+          type="text"
           placeholder="Task"
           name="title"
+          defaultValue={taskData?.title}
           required
         />
       </div>
@@ -66,13 +81,20 @@ function Form({
           type="text"
           sizing="lg"
           placeholder="Any description..."
+          defaultValue={taskData?.description}
         />
       </div>
       <div>
         <div className="mb-2 block">
           <Label htmlFor="group" value="Assigned To" />
         </div>
-        <Select id="assignedTo" name="assignedTo" required>
+        <Select
+          id="assignedTo"
+          name="assignedTo"
+          defaultValue={taskData?.assignedTo?.id}
+          required
+        >
+          <option>{taskData?.assignedTo?.name}</option>
           {combinedOptions.map((option) => (
             <option key={option.id} value={option.id}>
               {option.name}
@@ -82,13 +104,14 @@ function Form({
       </div>
       <div>
         <div className="mb-2 block">
-          <Label htmlFor="dueDate" value="date" />
+          <Label htmlFor="dueDate" value="Date" />
         </div>
         <TextInput
           id="dueDate"
           name="dueDate"
           type="date"
           placeholder="09-12-2024"
+          defaultValue={taskData?.dueDate?.split("T")[0]}
           required
         />
       </div>
@@ -96,10 +119,15 @@ function Form({
         <div className="mb-2 block">
           <Label htmlFor="priority" value="Priority" />
         </div>
-        <Select id="priority" name="priority" required>
-          <option value={"low"}>Low</option>
-          <option value={"medium"}>Medium</option>
-          <option value={"high"}>High</option>
+        <Select
+          id="priority"
+          name="priority"
+          defaultValue={taskData?.priority}
+          required
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
         </Select>
       </div>
       <Button type="submit" color="success" disabled={isLoading}>
@@ -108,4 +136,5 @@ function Form({
     </form>
   );
 }
+
 export default Form;

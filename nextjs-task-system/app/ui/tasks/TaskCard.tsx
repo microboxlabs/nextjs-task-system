@@ -63,11 +63,7 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
           {statusIcons[task.status]}
         </button>
       </div>
-      {/* Botón de cambio de estado */}
 
-      {/* Título y prioridad */}
-
-      {/* Descripción */}
       <p className="mb-4 text-gray-600">{task.description}</p>
 
       {/* Fecha límite */}
