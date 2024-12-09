@@ -25,7 +25,7 @@ async function handleGetRequest(query: any, res: NextApiResponse) {
   const groupId = query.groupId ? parseInt(query.groupId as string, 10) : undefined;
 
   if (isAdmin) {
-    // Obtener todas las tareas para el administrador
+    
     const tasks = await prisma.task.findMany({
       include: {
         user: { select: { id: true, email: true } },
@@ -40,13 +40,13 @@ async function handleGetRequest(query: any, res: NextApiResponse) {
     return res.status(200).json(tasks);
   }
 
-  // Validación para solicitudes de usuarios normales
+  
   if (!userId && !groupId) {
     return res.status(400).json({ error: "userId or groupId is required to fetch tasks" });
   }
 
   try {
-    // Filtros dinámicos basados en userId y groupId
+   
     const whereClause: any = {};
     if (userId) whereClause.userId = userId;
     if (groupId) whereClause.groupId = groupId;
@@ -113,25 +113,25 @@ async function createTask(body: any, res: NextApiResponse) {
 
   const { title, description, priority, dueDate, userId, groupId } = body;
 
-  // Validación de campos obligatorios
+  
   if (!title || !description || !priority || !dueDate) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Normalizar y validar el campo priority
+  
   const validPriorities = ["LOW", "MEDIUM", "HIGH"];
-  const normalizedPriority = priority.toUpperCase(); // Convertir a mayúsculas
+  const normalizedPriority = priority.toUpperCase(); 
   if (!validPriorities.includes(normalizedPriority)) {
     return res.status(400).json({ error: "Invalid priority value" });
   }
 
   try {
-    // Crear la tarea
+    
     const newTask = await prisma.task.create({
       data: {
         title,
         description,
-        priority: normalizedPriority, // Usar el valor normalizado
+        priority: normalizedPriority, 
         dueDate: new Date(dueDate),
         ...(userId && { userId: Number(userId) }),
         ...(groupId && { groupId: Number(groupId) }),

@@ -28,7 +28,7 @@ export const generateToken = (payload: CustomJwtPayload, expiresIn: string = "1h
 
 export const verifyToken = (token: string): CustomJwtPayload | null => {
   try {
-    const decoded = jwt.verify(token, SECRET_KEY) as CustomJwtPayload; // Casting explícito
+    const decoded = jwt.verify(token, SECRET_KEY) as CustomJwtPayload; 
     return decoded;
   } catch (error) {
     console.error("Invalid token:", error);

@@ -71,7 +71,7 @@ export default function UserPage() {
         setCommentContent("");
         setActiveTaskId(null);
 
-        // Update tasks in the global state
+        
         useTaskStore.setState((state) => ({
           tasks: state.tasks.map((task) =>
             task.id === taskId
@@ -87,7 +87,7 @@ export default function UserPage() {
     [commentContent, addComment, user]
   );
 
-  // Handle updating the status of a task
+  
   const handleUpdateStatus = async (taskId: number, newStatus: string) => {
     if (!["PENDING", "IN_PROGRESS", "COMPLETED"].includes(newStatus)) {
       alert("Invalid status value!");
@@ -95,7 +95,7 @@ export default function UserPage() {
     }
   
     try {
-      // Forzar el tipo del status
+      
       const validStatus = newStatus as "PENDING" | "IN_PROGRESS" | "COMPLETED";
   
       await updateTask(taskId, { status: validStatus });

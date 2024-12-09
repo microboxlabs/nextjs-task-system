@@ -1,11 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../prisma/client";
-import { hashPassword } from "../../../utils/auth"; // Asegúrate de tener esta función para manejar las contraseñas
-
+import { hashPassword } from "../../../utils/auth"; 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const id = req.query.id ? parseInt(req.query.id as string, 10) : null;
 
-  // Validar el parámetro `id`
+  
   if (!id || isNaN(id)) {
     return res.status(400).json({ error: "Invalid or missing User ID" });
   }
@@ -42,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       let updatedData: any = { email, role, groupId };
 
-      // Codificar contraseña si se proporciona
+      
       if (password) {
         const hashedPassword = await hashPassword(password);
         updatedData.password = hashedPassword;
@@ -53,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: updatedData,
       });
 
-      // Excluir campos sensibles de la respuesta
+      
       const { password: _, ...userWithoutPassword } = updatedUser;
       res.status(200).json(userWithoutPassword);
     } catch (error) {

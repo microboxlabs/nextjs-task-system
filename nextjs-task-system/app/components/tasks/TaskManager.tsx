@@ -15,10 +15,10 @@ interface Group {
 }
 
 interface TaskManagerProps {
-  tasks: any[]; // Tareas filtradas desde el AdminPage
-  onAddTask: (task: any) => Promise<void>; // Función para añadir tareas
-  onUpdateTask: (taskId: number, task: any) => Promise<void>; // Función para actualizar tareas
-  onDeleteTask: (taskId: number) => Promise<void>; // Función para eliminar tareas
+  tasks: any[]; 
+  onAddTask: (task: any) => Promise<void>; 
+  onUpdateTask: (taskId: number, task: any) => Promise<void>; 
+  onDeleteTask: (taskId: number) => Promise<void>; 
 }
 
 export const TaskManager: React.FC<TaskManagerProps> = ({

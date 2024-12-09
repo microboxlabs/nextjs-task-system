@@ -11,9 +11,9 @@ export const ClientInitializer = ({
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
-    initializeAuth(); // Inicializar autenticación desde localStorage
+    initializeAuth(); 
   }, [initializeAuth]);
 
-  return <>{children}</>; // Renderiza el contenido que se pasa
+  return <>{children}</>; 
 };
 

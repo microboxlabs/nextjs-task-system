@@ -9,7 +9,7 @@ export function LoginComponent() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser, setToken } = useAuthStore(); // Ya no usamos `useUserStore`
+  const { setUser, setToken } = useAuthStore(); 
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,11 +37,11 @@ export function LoginComponent() {
       const data = await response.json();
 
       if (response.ok) {
-        // Actualizamos el token y el usuario en `useAuthStore`
+        
         setToken(data.token);
         setUser(data.user);
 
-        // Redirigimos según el rol
+        
         switch (data.user.role) {
           case "ADMIN":
             router.push("/admin");

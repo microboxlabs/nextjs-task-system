@@ -4,19 +4,19 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Limpia las tablas afectadas (opcional, si no tienes dependencias que lo impidan)
+  
   await prisma.comment.deleteMany({});
   await prisma.task.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.group.deleteMany({});
   console.log("Tablas limpiadas correctamente.");
 
-  // Crear contraseñas encriptadas
+  
   const hashedAdminPassword = await bcrypt.hash("admin123", 10);
   const hashedRegularPassword = await bcrypt.hash("regular123", 10);
 
 
-  // Crear grupos predefinidos
+  
   const group1 = await prisma.group.create({
     data: { name: "Frontend" },
   });
@@ -27,7 +27,7 @@ async function main() {
     data: { name: "Mobile" },
   });
 
-  // Crear un usuario Admin de ejemplo
+  
   const adminUser = await prisma.user.create({
     data: {
       email: "admin@example.com",
@@ -36,7 +36,7 @@ async function main() {
     },
   });
 
-  // crear usuario regular
+ 
   const regularUser = await prisma.user.create({
     data: {
       email: "regular@example.com",
@@ -55,7 +55,7 @@ async function main() {
     },
   });
 
-  // Crear tareas predefinidas
+  
   const task1 = await prisma.task.create({
     data: {
       title: "Tarea 1",

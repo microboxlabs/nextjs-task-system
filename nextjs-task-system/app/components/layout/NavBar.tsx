@@ -11,13 +11,13 @@ export const NavBar = () => {
 
   const handleLogout = () => {
     logout();
-    router.push("/auth/login"); // Redirigir a la página de inicio de sesión
+    router.push("/auth/login"); 
   };
 
-  // Verifica si hay un usuario autenticado
+ 
   const isAuthenticated = user?.email && token;
 
-  // Botones para usuarios autenticados
+  
   const UserButtons = () => (
     <div className="flex items-center gap-4">
       {user?.role === "ADMIN" && (
@@ -42,7 +42,7 @@ export const NavBar = () => {
     </div>
   );
 
-  // Botones para usuarios no autenticados
+ 
   const AuthButtons = () => (
     <div className="flex items-center gap-4">
       <Button
@@ -70,7 +70,7 @@ export const NavBar = () => {
             src="/assets/img/logo.png"
             className="mr-3"
             alt="Task System Logo"
-            priority // Asegurar que el logo se cargue rápidamente
+            priority 
           />
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
             Task Management System

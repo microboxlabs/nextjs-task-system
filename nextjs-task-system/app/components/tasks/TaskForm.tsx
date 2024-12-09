@@ -52,17 +52,17 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     title: null,
     description: null,
     dueDate: null,
-    global: null, // Error global
+    global: null, 
   });
 
-  // Cargar datos iniciales si están disponibles
+  
   useEffect(() => {
     if (initialData) {
       setFormData({ ...initialData });
     }
   }, [initialData]);
 
-  // Manejar cambios en los campos del formulario
+  
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -73,7 +73,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     }));
   };
 
-  // Validar el formulario antes de enviarlo
+  
   const validateForm = (): boolean => {
     const newError: Record<string, string | null> = {
       title: formData.title ? null : "Title is required.",
@@ -86,14 +86,14 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     return !Object.values(newError).some((val) => val !== null);
   };
 
-  // Manejar envío del formulario
+ 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     try {
       await onSubmit(formData);
-      onClose(); // Cerrar el formulario tras un envío exitoso
+      onClose(); 
     } catch (err) {
       console.error("Error submitting task:", err);
       setError((prev) => ({
@@ -109,12 +109,12 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         {initialData ? "Edit Task" : "Create Task"}
       </h2>
 
-      {/* Mostrar errores */}
+      
       {Object.values(error).map(
         (err, index) => err && <p key={index} className="mb-4 text-red-500">{err}</p>
       )}
 
-      {/* Campo: Título */}
+     
       <div className="mb-4">
         <label htmlFor="title" className="block text-sm font-medium">
           Title
@@ -130,7 +130,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         />
       </div>
 
-      {/* Campo: Descripción */}
+     
       <div className="mb-4">
         <label htmlFor="description" className="block text-sm font-medium">
           Description
@@ -145,7 +145,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         />
       </div>
 
-      {/* Campos: Prioridad, Estado y Fecha de Entrega */}
+      
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="mb-4">
           <label htmlFor="priority" className="block text-sm font-medium">
@@ -199,7 +199,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         </div>
       </div>
 
-      {/* Campos: Usuario y Grupo */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="mb-4">
           <label htmlFor="userId" className="block text-sm font-medium">
@@ -242,7 +241,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         </div>
       </div>
 
-      {/* Botones */}
+      
       <div className="flex justify-end space-x-4">
         <button
           type="button"

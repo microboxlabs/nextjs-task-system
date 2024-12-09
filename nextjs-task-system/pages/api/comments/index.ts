@@ -4,14 +4,14 @@ import prisma from "../../../prisma/client";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method, body, query } = req;
 
-  // Simulación de autenticación (reemplaza con tu middleware real si lo tienes)
+  
   const user = {
-    id: 1, // ID del usuario actual (simulado)
-    role: "REGULAR", // Cambia a "ADMIN" para simular un administrador
+    id: 1, 
+    role: "REGULAR", 
   };
 
   if (method === "GET") {
-    // Solo los usuarios con rol ADMIN pueden leer comentarios
+   
     if (user.role !== "ADMIN") {
       return res.status(403).json({ error: "Access denied. Only admins can view comments." });
     }
@@ -47,12 +47,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
       console.log("POST received:", { content, taskId, user });
   
-      // Validar datos
+      
       if (!content || !taskId) {
         return res.status(400).json({ error: "Content and taskId are required" });
       }
   
-      // Validar si la tarea existe
+      
       const taskExists = await prisma.task.findUnique({
         where: { id: Number(taskId) },
       });
@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: "Task not found" });
       }
   
-      // Validar si el usuario existe
+      
       const userExists = await prisma.user.findUnique({
         where: { id: user.id },
       });
@@ -68,12 +68,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: "User not found" });
       }
   
-      // Crear el comentario
+      
       const newComment = await prisma.comment.create({
         data: {
           content,
           taskId: Number(taskId),
-          userId: user.id, // Simulado desde el usuario autenticado
+          userId: user.id, 
         },
       });
   

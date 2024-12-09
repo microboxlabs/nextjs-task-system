@@ -28,17 +28,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Verificar si el usuario ya existe
+   
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
     }
 
-    // Hashear la contraseña
+    
     const hashedPassword = await hashPassword(password);
 
-    // Crear el nuevo usuario
+   
     const newUser = await prisma.user.create({
       data: {
         email,

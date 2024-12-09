@@ -25,14 +25,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Buscar al usuario en la base de datos
+    
     const user = await prisma.user.findUnique({ where: { email: sanitizedEmail } });
 
     if (!user || !(await comparePassword(sanitizedPassword, user.password))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generar token JWT
+    
     const token = generateToken({
       id: user.id,
       role: user.role,
@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error: any) {
     console.error("Error during login:", error.message || error);
 
-    // Manejar errores específicos de Prisma (si es necesario)
+    
     if (error.code === "P2002") {
       return res.status(409).json({ error: "Database conflict error" });
     }

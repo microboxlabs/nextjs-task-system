@@ -63,7 +63,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     const baseUrl = "http://localhost:3000";
     const url = new URL(`${baseUrl}/api/tasks`);
   
-    // Agregar parámetros dinámicamente
+  
     if (isAdmin) {
       url.searchParams.append("admin", "true");
     } else {
@@ -123,7 +123,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set({ loading: true, error: null });
   
     try {
-      // Validar campos de actualización
+      
       const { status, ...otherFields } = updatedFields;
       if (status && !["PENDING", "IN_PROGRESS", "COMPLETED"].includes(status)) {
         throw new Error(`Invalid status value: ${status}`);
@@ -153,7 +153,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     } catch (error: any) {
       console.error("Error in updateTask:", error.message);
       set({ error: { message: error.message } });
-      throw error; // Lanzar el error para manejarlo en el componente
+      throw error; 
     } finally {
       set({ loading: false });
     }
@@ -178,7 +178,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         throw new Error(errorMessage);
       }
   
-      // Eliminar tarea del estado local
+    
       set((state) => ({
         tasks: state.tasks.filter((task) => task.id !== id),
       }));

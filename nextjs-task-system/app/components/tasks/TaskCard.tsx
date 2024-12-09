@@ -13,7 +13,7 @@ interface Task {
   group: {
     name: string;
   } | null;
-  comments?: CommentData[]; // Marcamos `comments` como opcional
+  comments?: CommentData[]; 
 }
 
 interface TaskCardProps {
@@ -26,7 +26,7 @@ interface TaskCardProps {
   onCommentChange: (content: string) => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  onUpdateStatus?: (taskId: number, newStatus: string) => void; // Nueva Propiedad
+  onUpdateStatus?: (taskId: number, newStatus: string) => void; 
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -41,7 +41,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onDelete,
   onUpdateStatus,
 }) => {
-  // Garantizamos que `comments` siempre sea un array
+  
   const comments = task.comments || [];
 
   return (
@@ -59,7 +59,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         Group: {task.group?.name || "No group"}
       </p>
 
-      {/* Selector para cambiar el estado */}
+   
       {isRegularUser && onUpdateStatus && (
   <div className="mt-4">
     <label htmlFor={`status-${task.id}`} className="block text-sm font-medium text-gray-700">
@@ -79,7 +79,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 )}
 
 
-      {/* Renderizamos los comentarios */}
+      
       <CommentList comments={comments} />
 
       {isRegularUser && (

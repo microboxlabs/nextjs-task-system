@@ -12,19 +12,19 @@ export function RegisterComponent() {
     repeatPassword: "",
   });
   const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Indicador de carga
+  const [isLoading, setIsLoading] = useState(false); 
   const router = useRouter();
 
-  // Manejar cambios en los inputs
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    console.log(`Updating ${id} to: ${value}`); // Log para depuración
+    console.log(`Updating ${id} to: ${value}`); 
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   // Validar formulario
   const validateForm = () => {
-    console.log("Validating form:", formData); // Log para depuración
+    console.log("Validating form:", formData); 
     if (!formData.email.includes("@")) {
       setMessage("Please enter a valid email address.");
       return false;
@@ -40,14 +40,14 @@ export function RegisterComponent() {
     return true;
   };
 
-  // Enviar formulario
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setMessage(""); // Limpiar mensaje previo
+    setMessage(""); 
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -60,7 +60,7 @@ export function RegisterComponent() {
       });
 
       if (!response.ok) {
-        // Capturar errores del servidor
+        
         const errorData = await response.json();
         setMessage(errorData.error || "Registration failed.");
         return;

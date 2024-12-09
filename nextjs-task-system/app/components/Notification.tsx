@@ -4,9 +4,9 @@ import { useEffect } from "react";
 
 interface NotificationProps {
   message: string;
-  type?: "success" | "error" | "info"; // Tipos de mensajes
-  duration?: number; // Tiempo en milisegundos antes de ocultar automáticamente
-  onClose: () => void; // Función para manejar el cierre
+  type?: "success" | "error" | "info"; 
+  duration?: number; 
+  onClose: () => void; 
 }
 
 export function Notification({
@@ -15,15 +15,15 @@ export function Notification({
   duration = 5000,
   onClose,
 }: NotificationProps) {
-  // Cierre automático después del tiempo especificado
+  
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(onClose, duration);
-      return () => clearTimeout(timer); // Limpiar el temporizador si el componente se desmonta
+      return () => clearTimeout(timer); 
     }
   }, [duration, onClose]);
 
-  // Clases dinámicas según el tipo de mensaje
+  
   const getTypeClasses = () => {
     switch (type) {
       case "success":

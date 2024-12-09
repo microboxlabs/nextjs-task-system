@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Crear o reutilizar la instancia de PrismaClient
+
 export const prisma: PrismaClient = (() => {
   try {
     const client =
@@ -10,13 +10,13 @@ export const prisma: PrismaClient = (() => {
       new PrismaClient({
         log:
           process.env.NODE_ENV === "development"
-            ? ["query", "info", "warn", "error"] // Logs extendidos en desarrollo
-            : ["error"], // Logs mínimos en producción
+            ? ["query", "info", "warn", "error"] 
+            : ["error"], 
       });
 
     if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = client;
 
-    // Conectar automáticamente en producción
+ 
     if (process.env.NODE_ENV === "production") {
       client.$connect().catch((error) => {
         console.error("Failed to connect Prisma Client:", error);
@@ -30,5 +30,5 @@ export const prisma: PrismaClient = (() => {
   }
 })();
 
-// Exportar cliente de Prisma
+
 export default prisma;

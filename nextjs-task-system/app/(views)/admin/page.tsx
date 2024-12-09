@@ -15,7 +15,7 @@ export default function AdminPage() {
     priority: undefined as "Low" | "Medium" | "High" | undefined,
   });
 
-  // Cargar tareas para el administrador
+  
   useEffect(() => {
     const fetchAdminTasks = async () => {
       if (user?.role !== "ADMIN") return;
@@ -23,7 +23,7 @@ export default function AdminPage() {
       try {
         setLoading(true);
         setError(null);
-        await fetchTasks(undefined, undefined, true); // Indicar que es un administrador
+        await fetchTasks(undefined, undefined, true); 
       } catch (err) {
         console.error("Error fetching tasks:", err);
         setError("Failed to load tasks. Please try again later.");
@@ -35,7 +35,7 @@ export default function AdminPage() {
     fetchAdminTasks();
   }, [user?.role, fetchTasks]);
 
-  // Manejar cambios en los filtros
+  
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -44,7 +44,7 @@ export default function AdminPage() {
     }));
   };
 
-  // Función para crear una nueva tarea
+
   const handleAddTask = async (newTaskData: any) => {
     try {
       setLoading(true);
@@ -57,7 +57,6 @@ export default function AdminPage() {
     }
   };
 
-  // Función para editar una tarea
   const handleUpdateTask = async (taskId: number, updatedFields: any) => {
     try {
       setLoading(true);
@@ -70,10 +69,9 @@ export default function AdminPage() {
     }
   };
 
-  // Función para eliminar una tarea
   const handleDeleteTask = async (taskId: number) => {
     if (!confirm(`Are you sure you want to delete task #${taskId}?`)) {
-      return; // Salir si el usuario cancela
+      return; 
     }
 
     try {
@@ -88,7 +86,6 @@ export default function AdminPage() {
     }
   };
 
-  // Verificar acceso
   if (!user || user.role !== "ADMIN") {
     return (
       <div className="p-6 text-center">
@@ -105,14 +102,14 @@ export default function AdminPage() {
     <div className="p-6">
       <h1 className="mb-4 text-2xl font-bold">Admin Dashboard</h1>
 
-      {/* Mostrar estado de carga o errores */}
+      
       {loading && <p>Loading tasks...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Mostrar tareas solo si no hay errores */}
+     
       {!loading && !error && (
         <>
-          {/* Filtros */}
+
           <section className="mb-8">
             <h2 className="mb-4 text-xl font-semibold">Filter and Sort Tasks</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -143,7 +140,7 @@ export default function AdminPage() {
             </div>
           </section>
 
-          {/* Lista de tareas */}
+
           <section>
             <h2 className="mb-4 text-xl font-semibold">Manage Tasks</h2>
             <TaskManager
