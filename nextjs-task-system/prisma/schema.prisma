@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.sqlite"
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  role     String  // Admin o Regular
+  groupId  Int?
+  group    Group?  @relation(fields: [groupId], references: [id])
+  tasks    Task[]  @relation("AssignedTasks")
+  comments Comment[]
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  assignedTo  User?    @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  assignedToId Int?
+  groupId     Int?     
+  group       Group?   @relation(fields: [groupId], references: [id])
+  dueDate     DateTime
+  priority    String    // Low, Medium, High
+  status      String    // Pending, In Progress, Completed
+  comments    Comment[]
+}
+
+model Group {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
+  Task Task[]
+}
+
+model Comment {
+  id        Int    @id @default(autoincrement())
+  content   String
+  task      Task   @relation(fields: [taskId], references: [id])
+  taskId    Int
+  createdBy User   @relation(fields: [createdById], references: [id])
+  createdById Int
+}
