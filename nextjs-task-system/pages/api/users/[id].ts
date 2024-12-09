@@ -1,13 +1,34 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../prisma/client";
+import { hashPassword } from "../../../utils/auth"; // Asegúrate de tener esta función para manejar las contraseñas
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
+  const id = req.query.id ? parseInt(req.query.id as string, 10) : null;
+
+  // Validar el parámetro `id`
+  if (!id || isNaN(id)) {
+    return res.status(400).json({ error: "Invalid or missing User ID" });
+  }
 
   if (req.method === "GET") {
     try {
-      const user = await prisma.user.findUnique({ where: { id: Number(id) }, include: { tasks: true, group: true } });
-      if (!user) return res.status(404).json({ error: "User not found" });
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+          tasks: true,
+          group: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
       res.status(200).json(user);
     } catch (error) {
       console.error(error);
@@ -17,12 +38,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "PUT") {
     const { email, password, role, groupId } = req.body;
+
     try {
+      let updatedData: any = { email, role, groupId };
+
+      // Codificar contraseña si se proporciona
+      if (password) {
+        const hashedPassword = await hashPassword(password);
+        updatedData.password = hashedPassword;
+      }
+
       const updatedUser = await prisma.user.update({
-        where: { id: Number(id) },
-        data: { email, password, role, groupId },
+        where: { id },
+        data: updatedData,
       });
-      res.status(200).json(updatedUser);
+
+      // Excluir campos sensibles de la respuesta
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      res.status(200).json(userWithoutPassword);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Error updating user" });
@@ -31,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === "DELETE") {
     try {
-      await prisma.user.delete({ where: { id: Number(id) } });
+      await prisma.user.delete({ where: { id } });
       res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
       console.error(error);

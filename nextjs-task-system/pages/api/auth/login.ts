@@ -10,23 +10,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  // Validar y sanitizar entradas
+  const sanitizedEmail = email?.trim().toLowerCase();
+  const sanitizedPassword = password?.trim();
+
+  if (!sanitizedEmail || !sanitizedPassword) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  const emailRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  if (!emailRegex.test(sanitizedEmail)) {
     return res.status(400).json({ error: "Invalid email format" });
   }
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    // Buscar al usuario en la base de datos
+    const user = await prisma.user.findUnique({ where: { email: sanitizedEmail } });
 
-    if (!user || !(await comparePassword(password, user.password))) {
+    if (!user || !(await comparePassword(sanitizedPassword, user.password))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = generateToken({ id: user.id, role: user.role, email: user.email });
+    // Generar token JWT
+    const token = generateToken({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+    });
 
     return res.status(200).json({
       message: "Login successful",
@@ -35,6 +46,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error: any) {
     console.error("Error during login:", error.message || error);
+
+    // Manejar errores específicos de Prisma (si es necesario)
+    if (error.code === "P2002") {
+      return res.status(409).json({ error: "Database conflict error" });
+    }
+
     return res.status(500).json({ error: "Internal server error" });
   }
 }

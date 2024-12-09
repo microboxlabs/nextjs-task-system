@@ -11,7 +11,7 @@ model User {
   id          Int      @id @default(autoincrement())
   email       String   @unique
   password    String
-  role        String   @default("REGULAR") // "ADMIN" o "REGULAR"
+  role        String   @default("REGULAR") // Valores posibles: "ADMIN", "REGULAR"
   group       Group?   @relation(fields: [groupId], references: [id])
   groupId     Int?
   tasks       Task[]
@@ -29,9 +29,9 @@ model Task {
   id           Int       @id @default(autoincrement())
   title        String    
   description  String    
-  priority     String    @default("MEDIUM") // "LOW", "MEDIUM", "HIGH"
+  priority     String    @default("MEDIUM") // Valores posibles: "LOW", "MEDIUM", "HIGH"
   dueDate      DateTime
-  status       String    @default("PENDING") // "PENDING", "IN_PROGRESS", "COMPLETED"
+  status       String    @default("PENDING") // Valores posibles: "PENDING", "IN_PROGRESS", "COMPLETED"
   comments     Comment[]
   user         User?     @relation(fields: [userId], references: [id])
   userId       Int?
@@ -46,4 +46,6 @@ model Comment {
   taskId      Int
   user        User     @relation(fields: [userId], references: [id])
   userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
