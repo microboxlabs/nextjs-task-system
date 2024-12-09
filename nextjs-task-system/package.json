@@ -11,6 +11,7 @@
     "start": "next start",
     "format": "prettier . --write",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate dev"
@@ -19,8 +20,10 @@
     "@prisma/client": "^6.0.1",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "flowbite-react": "^0.8.0",
+    "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.20",
     "react": "^18",

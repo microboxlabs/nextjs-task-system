@@ -1,38 +1,42 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button, Label, TextInput, Alert, Card } from 'flowbite-react'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button, Label, TextInput, Alert, Card } from "flowbite-react";
 
 export const LoginForm = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      setError('Please fill in all fields')
-      return
+      setError("Please fill in all fields");
+      return;
     }
 
     try {
-      // Here you would typically make an API call to your authentication endpoint
-      // For demonstration, we'll just log the credentials and simulate a successful login
-      console.log('Login attempt with:', { email, password })
-
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // If login is successful, redirect to dashboard (or any other page)
-      router.push('/dashboard')
+      console.log("Login attempt with:", { email, password });
+      const login = await fetch("/api/v1/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      if (login.status !== 200) {
+        console.log("Login unsuccessful");
+      }
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
-      setError('Invalid email or password')
+      setError("Invalid email or password");
     }
-  }
+  };
 
   return (
     <Card>
@@ -63,16 +67,9 @@ export const LoginForm = () => {
             required
           />
         </div>
-        {error && (
-          <Alert color="failure">
-            {error}
-          </Alert>
-        )}
-        <Button type="submit">
-          Login
-        </Button>
+        {error && <Alert color="failure">{error}</Alert>}
+        <Button type="submit">Login</Button>
       </form>
     </Card>
-  )
-}
-
+  );
+};
