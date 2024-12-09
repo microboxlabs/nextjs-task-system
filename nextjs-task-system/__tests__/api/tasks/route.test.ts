@@ -1,6 +1,5 @@
-// __tests__/api/tasks/route.test.ts
 import { GET, POST, PUT, DELETE } from "@/app/api/tasks/route";
-import { Task } from "@/adapters/tasksAdapter";
+import { Task } from "@/types/taskTypes";
 
 // Helper function to create a valid task
 const createValidTask = (): Omit<Task, "id"> => ({

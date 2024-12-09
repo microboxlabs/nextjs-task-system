@@ -1,15 +1,5 @@
 import tasks from "../data/tasks.json";
-
-export interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: "pending" | "inProgress" | "completed";
-  dueDate: string;
-  assignedTo: string;
-  priority: "low" | "medium" | "high";
-  comments: string[];
-}
+import { Task } from "@/types/taskTypes";
 
 let taskList = [...tasks]; // Simulating an in-memory database
 
