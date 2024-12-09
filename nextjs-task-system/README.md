@@ -31,6 +31,24 @@ This project is a task management system designed to efficiently organize and tr
 - **Jest**: Unit testing framework for ensuring the reliability of task management features.
 - **Prettier**: Code formatting tool to maintain consistent coding style.
 
+## Users for Testing
+
+The project includes a functional login system with role-based access control. Use the following users to start testing the functionalities:
+
+### 1. **Admin User**
+- **Email**: admin@example.com
+- **Password**: 123456
+- **Permissions**:
+  - Create, assign, edit, and delete tasks.
+  - View all tasks, regardless of assigned user
+  - Filter tasks by user, group, or status.
+
+### 2. **Regular User**
+- **Email**: johnmorrison@example.com
+- **Password**: 123456
+- **Permissions**:
+  - View only tasks assigned to them.
+  - Mark tasks assigned to them as complete.
 
 ## Prerequisites
 
