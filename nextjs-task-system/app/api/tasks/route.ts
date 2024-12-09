@@ -1,73 +1,92 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUserServer } from "@/Utils/server/auth";
 import db from "@/Utils/db";
 
 // GET: Obtener todas las tareas
 export async function GET() {
   try {
+    const currentUser = await getCurrentUserServer();
+
+    if (!currentUser) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    if (currentUser.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     const tasks = db
       .prepare(
         `
-        SELECT tasks.id, title, description, assigned_to, due_date, priority, status, comments
-        FROM tasks
+        SELECT * FROM tasks_with_users 
+        ORDER BY created_at DESC
       `,
       )
       .all();
+
     return NextResponse.json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error);
     return NextResponse.json(
-      { error: "Error fetching tasks" },
+      { error: "Failed to fetch tasks" },
       { status: 500 },
     );
   }
 }
 
 // POST: Crear una nueva tarea
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
+    const body = await request.json();
     const {
       title,
       description,
+      user_id,
       assigned_to,
       due_date,
       priority,
       status,
       comments,
-    } = await req.json();
+    } = body;
 
-    if (
-      !title ||
-      !description ||
-      !assigned_to ||
-      !due_date ||
-      !priority ||
-      !status
-    ) {
+    if (!user_id) {
       return NextResponse.json(
-        { error: "Todos los campos requeridos deben estar completos" },
+        { error: "User ID is required" },
         { status: 400 },
       );
     }
 
-    const statement = db.prepare(`
-      INSERT INTO tasks (title, description, assigned_to, due_date, priority, status, comments)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `);
-    const result = statement.run(
-      title,
-      description,
-      assigned_to,
-      due_date,
-      priority,
-      status,
-      comments,
-    );
+    const result = db
+      .prepare(
+        `
+        INSERT INTO tasks (
+          title, description, user_id, assigned_to, 
+          due_date, priority, status, comments
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      )
+      .run([
+        title,
+        description,
+        user_id,
+        assigned_to,
+        due_date,
+        priority,
+        status,
+        comments,
+      ]);
 
-    return NextResponse.json({ id: result.lastInsertRowid });
+    // Fetch the newly created task with user details
+    const newTask = db
+      .prepare("SELECT * FROM tasks_with_users WHERE id = ?")
+      .get(result.lastInsertRowid);
+
+    return NextResponse.json(newTask);
   } catch (error) {
-    console.error(error);
+    console.error("Error creating task:", error);
     return NextResponse.json(
-      { error: "Error al crear la tarea" },
+      { error: "Failed to create task" },
       { status: 500 },
     );
   }

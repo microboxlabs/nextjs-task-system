@@ -2,14 +2,19 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Home = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -20,19 +25,18 @@ const Home = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      if (response.ok) {
-        const { user } = await response.json();
-        if (user.role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/user");
-        }
-      } else {
-        alert("Invalid credentials");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
       }
+
+      // Redirect based on role
+      router.push(data.redirectTo);
     } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login");
+      setError(error instanceof Error ? error.message : "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,7 +48,7 @@ const Home = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
               Sign in to your account
             </h1>
-            <form className="space-y-4 md:space-y-6">
+            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="email"
@@ -78,12 +82,20 @@ const Home = () => {
                 />
               </div>
               <button
-                onClick={handleLogin}
                 type="submit"
                 className="focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-500 dark:focus:ring-primary-800 w-full rounded-lg bg-blue-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-900 focus:outline-none focus:ring-4"
               >
                 Sign in
               </button>
+              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                Don't have an account?{" "}
+                <a
+                  href="/register"
+                  className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                >
+                  Register here
+                </a>
+              </p>
             </form>
           </div>
         </div>

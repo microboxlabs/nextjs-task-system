@@ -1,12 +1,44 @@
 "use client";
-import { useState } from "react";
-import { Button, Label, TextInput, Textarea, Select } from "flowbite-react";
+import { useState, useEffect } from "react";
+import {
+  Button,
+  Label,
+  TextInput,
+  Textarea,
+  Select,
+  Modal,
+} from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { Task } from "@/tipos/tasks";
 
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
 export default function CreateTask() {
   const [formData, setFormData] = useState<Partial<Task>>({});
+  const [users, setUsers] = useState<User[]>([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -15,9 +47,19 @@ export default function CreateTask() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Automatically set user_id when assigned_to changes
+    if (name === "assigned_to") {
+      setFormData((prev) => ({ ...prev, user_id: value }));
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const requiredFields = [
@@ -28,15 +70,29 @@ export default function CreateTask() {
       "priority",
       "status",
     ];
+
     for (const field of requiredFields) {
       if (!formData[field as keyof Task]) {
-        alert(`Please fill out the ${field} field.`);
+        setErrorMessage(`Please fill out the ${field} field.`);
+        setShowErrorModal(true);
         return;
       }
     }
 
-    const confirmSubmit = confirm("Are you sure you want to create this task?");
-    if (!confirmSubmit) return;
+    const selectedDate = new Date(formData.due_date as string);
+    const today = new Date(getCurrentDate());
+
+    if (selectedDate < today) {
+      setErrorMessage("Due date cannot be earlier than today.");
+      setShowErrorModal(true);
+      return;
+    }
+
+    setShowConfirmModal(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirmModal(false);
 
     await fetch("/api/tasks", {
       method: "POST",
@@ -44,8 +100,7 @@ export default function CreateTask() {
       body: JSON.stringify(formData),
     });
 
-    alert("Task created successfully!");
-    router.push("/admin");
+    setShowSuccessModal(true);
   };
 
   return (
@@ -87,14 +142,20 @@ export default function CreateTask() {
           {/* Assigned To */}
           <div>
             <Label htmlFor="assigned_to">Assigned To</Label>
-            <TextInput
+            <Select
               id="assigned_to"
               name="assigned_to"
               value={formData.assigned_to || ""}
               onChange={handleInputChange}
-              placeholder="Enter user ID"
               required
-            />
+            >
+              <option value="">Select user</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.first_name} {user.last_name}
+                </option>
+              ))}
+            </Select>
           </div>
 
           {/* Due Date */}
@@ -106,6 +167,7 @@ export default function CreateTask() {
               type="date"
               value={formData.due_date || ""}
               onChange={handleInputChange}
+              min={getCurrentDate()}
               required
             />
           </div>
@@ -121,9 +183,9 @@ export default function CreateTask() {
               required
             >
               <option value="">Select priority</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
             </Select>
           </div>
 
@@ -138,9 +200,9 @@ export default function CreateTask() {
               required
             >
               <option value="">Select status</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+              <option value="pending">Pending</option>
+              <option value="in progress">In Progress</option>
+              <option value="completed">Completed</option>
             </Select>
           </div>
 
@@ -157,11 +219,60 @@ export default function CreateTask() {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end" color="blue">
             <Button type="submit">Create Task</Button>
           </div>
         </form>
       </div>
+
+      {/* Error Modal */}
+      <Modal show={showErrorModal} onClose={() => setShowErrorModal(false)}>
+        <Modal.Header>Error</Modal.Header>
+        <Modal.Body>
+          <p className="text-red-500">{errorMessage}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="gray" onClick={() => setShowErrorModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Confirm Modal */}
+      <Modal show={showConfirmModal} onClose={() => setShowConfirmModal(false)}>
+        <Modal.Header>Confirm Task Creation</Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to create this task?</p>
+          <div className="mt-4">
+            <p>
+              <strong>Due Date:</strong> {formData.due_date}
+            </p>
+            <p>
+              <strong>Title:</strong> {formData.title}
+            </p>
+            <p>
+              <strong>Priority:</strong> {formData.priority}
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={confirmSubmit}>Yes, Create</Button>
+          <Button color="gray" onClick={() => setShowConfirmModal(false)}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal show={showSuccessModal} onClose={() => setShowSuccessModal(false)}>
+        <Modal.Header>Task Created</Modal.Header>
+        <Modal.Body>
+          <p>Task created successfully!</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => router.push("/admin")}>OK</Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

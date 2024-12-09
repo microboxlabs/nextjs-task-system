@@ -4,13 +4,15 @@ import db from "@/Utils/db";
 export async function GET() {
   try {
     const users = db
-      .prepare("SELECT id, first_name, last_name FROM users")
+      .prepare(
+        `SELECT id, first_name, last_name, email, role, created_at, updated_at FROM users ORDER BY first_name, last_name`,
+      )
       .all();
     return NextResponse.json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
-      { error: "Error fetching users" },
+      { error: "Error al obtener usuarios" },
       { status: 500 },
     );
   }

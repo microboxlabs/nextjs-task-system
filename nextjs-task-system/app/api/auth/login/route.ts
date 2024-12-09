@@ -1,68 +1,107 @@
 import { NextResponse } from "next/server";
 import db from "@/Utils/db";
-import { User } from "@/tipos/usuarios";
-import type { NextRequest } from "next/server";
+import { cookies } from "next/headers";
+import bcrypt from "bcryptjs";
 
-export async function POST(request: NextRequest) {
-  const { email, password } = await request.json();
+interface User {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  password: string;
+}
 
-  if (!email || !password) {
-    return NextResponse.json(
-      { error: "Email and password are required" },
-      { status: 400 },
-    );
-  }
-
+export async function POST(request: Request) {
   try {
-    const statement = db.prepare(
-      `SELECT id, first_name, last_name, email, password, role FROM users WHERE email = ?`,
-    );
-    const user: User | undefined = statement.get(email) as User | undefined;
+    const body = await request.json();
+    const { email, password } = body;
+
+    const user = db
+      .prepare(
+        "SELECT id, email, first_name, last_name, role, password FROM users WHERE email = ?",
+      )
+      .get(email) as User | undefined;
 
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid credentials" },
         { status: 401 },
       );
     }
 
-    if (user.password !== password) {
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid credentials" },
         { status: 401 },
       );
     }
 
-    const { password: _, ...userWithoutPassword } = user;
+    const sessionId = crypto.randomUUID();
+    db.prepare(
+      "INSERT INTO sessions (id, user_id, created_at) VALUES (?, ?, datetime('now'))",
+    ).run(sessionId, user.id);
 
     const response = NextResponse.json({
-      message: "Login successful",
-      user: userWithoutPassword,
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      role: user.role,
+      redirectTo: user.role === "admin" ? "/admin" : "/user/tasks",
     });
 
-    response.cookies.set({
-      name: "authToken",
-      value: user.id.toString(),
+    response.cookies.set("sessionId", sessionId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
-
-    response.cookies.set({
-      name: "userRole",
-      value: user.role,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: "/",
     });
 
     return response;
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error("Login error:", error);
+    return NextResponse.json({ error: "Error during login" }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const sessionId = (await cookies()).get("sessionId")?.value;
+
+    if (!sessionId) {
+      return NextResponse.json({ error: "No session found" }, { status: 401 });
+    }
+
+    // Obtener usuario de la sesión
+    const session = db
+      .prepare(
+        `SELECT u.id, u.email, u.first_name, u.last_name, u.role 
+         FROM sessions s
+         JOIN users u ON s.user_id = u.id
+         WHERE s.id = ? AND s.created_at > datetime('now', '-24 hours')`,
+      )
+      .get(sessionId) as User | undefined;
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Invalid or expired session" },
+        { status: 401 },
+      );
+    }
+
+    return NextResponse.json({
+      id: session.id,
+      email: session.email,
+      firstName: session.first_name,
+      lastName: session.last_name,
+      role: session.role,
+    });
+  } catch (error) {
+    console.error("Auth check error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Error checking authentication" },
       { status: 500 },
     );
   }

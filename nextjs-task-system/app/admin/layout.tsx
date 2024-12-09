@@ -1,114 +1,168 @@
 "use client";
 
-import React, { useState } from "react";
-import { Sidebar } from "flowbite-react";
+import { useState, useEffect } from "react";
+import { Sidebar, Button } from "flowbite-react";
 import {
   HiChartPie,
-  HiInbox,
-  HiUser,
-  HiTable,
-  HiMenuAlt1,
-  HiX,
+  HiClipboardList,
+  HiUserAdd,
   HiLogout,
+  HiMenu,
+  HiX,
+  HiUser,
 } from "react-icons/hi";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
-  const handleSignOut = async () => {
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
+
+  const getCurrentUser = async () => {
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await fetch("/api/auth/me");
       if (response.ok) {
+        const userData = await response.json();
+        console.log("User data:", userData);
+        setCurrentUser(userData);
+      } else {
         router.push("/login");
-        // Opcional: Forzar un refresh completo para limpiar el estado
-        router.refresh();
       }
     } catch (error) {
-      console.error("Error during sign out:", error);
+      console.error("Error fetching current user:", error);
+      router.push("/login");
     }
   };
 
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="flex min-h-screen">
-      {/* Mobile Menu Button */}
-      <button
-        aria-label="Toggle Sidebar"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className={`fixed left-4 top-4 z-50 rounded-lg bg-gray-800 p-2 text-white md:hidden ${
-          isSidebarOpen ? "hidden" : "block"
-        }`}
-      >
-        <HiMenuAlt1 className="h-6 w-6" />
-      </button>
-
-      {/* Sidebar with mobile responsiveness */}
-      <div
-        className={`${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed z-40 transition-transform duration-300 md:static md:translate-x-0`}
-      >
-        <Sidebar
-          id="sidebar"
-          aria-label="Admin Sidebar"
-          className="relative h-screen w-64 bg-gray-800 text-black"
-        >
-          {/* Close button - only visible on mobile */}
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="absolute right-2 top-2 p-2 text-gray-500 hover:text-gray-900 md:hidden"
-            aria-label="Close Sidebar"
-          >
-            <HiX className="h-6 w-6" />
-          </button>
-
-          <Sidebar.Logo href="/admin" img="/favicon.ico" imgAlt="App Logo">
-            Admin Dashboard
-          </Sidebar.Logo>
-          <Sidebar.Items>
-            <Sidebar.ItemGroup>
-              <Sidebar.Item href="/admin" icon={HiChartPie}>
-                Dashboard
-              </Sidebar.Item>
-              <Sidebar.Item href="/admin/tasks" icon={HiInbox}>
-                Tasks
-              </Sidebar.Item>
-              <Sidebar.Item href="/admin/create" icon={HiTable}>
-                Create task
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-
-            {/* Sign Out Button Group */}
-            <Sidebar.ItemGroup className="mt-auto">
-              <Sidebar.Item
-                icon={HiLogout}
-                onClick={handleSignOut}
-                className="cursor-pointer text-red-500 hover:bg-red-100"
-              >
-                Sign Out
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-          </Sidebar.Items>
-        </Sidebar>
-      </div>
-
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black bg-opacity-50 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 z-30 bg-gray-900 bg-opacity-50 transition-opacity md:hidden"
+          onClick={toggleSidebar}
         />
       )}
 
+      {/* Sidebar */}
+      <div
+        className={`fixed left-0 top-0 z-40 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out dark:bg-gray-800 ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
+        {/* Close button for mobile */}
+        <div className="absolute right-2 top-2 md:hidden">
+          <Button color="gray" className="!p-2" onClick={toggleSidebar}>
+            <HiX className="h-6 w-6" />
+          </Button>
+        </div>
+
+        <Sidebar
+          aria-label="Admin sidebar"
+          className="h-full border-r border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex h-full flex-col justify-between">
+            {/* User Welcome Section */}
+            <div className="mt-4 border-b border-gray-200 px-4 py-4 dark:border-gray-700">
+              <div className="flex items-center space-x-3">
+                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
+                  <HiUser className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    Welcome,
+                  </p>
+                  <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                    {currentUser
+                      ? `${currentUser.first_name} ${currentUser.last_name}`
+                      : "Loading..."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Sidebar.Items className="mt-4">
+              <Sidebar.ItemGroup>
+                <Sidebar.Item
+                  href="/admin"
+                  icon={HiChartPie}
+                  active={pathname === "/admin"}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  Dashboard
+                </Sidebar.Item>
+                <Sidebar.Item
+                  href="/admin/tasks"
+                  icon={HiClipboardList}
+                  active={pathname === "/admin/tasks"}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  Tasks
+                </Sidebar.Item>
+                <Sidebar.Item
+                  href="/admin/create"
+                  icon={HiUserAdd}
+                  active={pathname === "/admin/create"}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  Create
+                </Sidebar.Item>
+                <Sidebar.Item
+                  icon={HiLogout}
+                  onClick={() => {
+                    setIsSidebarOpen(false);
+                    handleLogout();
+                  }}
+                  className="cursor-pointer"
+                >
+                  Logout
+                </Sidebar.Item>
+              </Sidebar.ItemGroup>
+            </Sidebar.Items>
+          </div>
+        </Sidebar>
+      </div>
+
       {/* Main Content */}
-      <main className="flex-1 bg-gray-100 p-6 md:ml-0">{children}</main>
+      <div className="flex-1 md:pl-64">
+        {/* Toggle Button for Mobile */}
+        <div
+          className={`fixed left-4 top-4 z-50 transition-opacity duration-300 md:hidden ${
+            isSidebarOpen ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <Button onClick={toggleSidebar}>
+            <HiMenu className="h-6 w-6" />
+          </Button>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }

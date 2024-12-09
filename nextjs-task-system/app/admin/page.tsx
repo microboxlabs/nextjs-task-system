@@ -1,135 +1,180 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Button, Modal, Select } from "flowbite-react";
-import TaskCard from "@/components/TaskComponents/TaskCard";
+import { Card } from "flowbite-react";
+import DashboardSkeleton from "@/components/Skeletons/DashboardSkeleton";
 import { Task } from "@/tipos/tasks";
-import { useRouter } from "next/navigation";
 
-type User = {
-  id: number;
-  first_name: string;
-  last_name: string;
+type TaskSummary = {
+  total: number;
+  byStatus: {
+    pending: number;
+    "in progress": number;
+    completed: number;
+  };
+  byPriority: {
+    low: number;
+    medium: number;
+    high: number;
+  };
 };
 
-export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-  const [priorityFilter, setPriorityFilter] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
-  const router = useRouter();
+export default function AdminDashboard() {
+  const [taskSummary, setTaskSummary] = useState<TaskSummary>({
+    total: 0,
+    byStatus: {
+      pending: 0,
+      "in progress": 0,
+      completed: 0,
+    },
+    byPriority: {
+      low: 0,
+      medium: 0,
+      high: 0,
+    },
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchTasks();
   }, []);
 
-  useEffect(() => {
-    filterTasks();
-  }, [priorityFilter, statusFilter, tasks]);
-
   const fetchTasks = async () => {
-    const response = await fetch("/api/tasks");
-    const data = await response.json();
-    setTasks(data);
-  };
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/tasks");
+      const tasks: Task[] = await response.json();
 
-  const filterTasks = () => {
-    let filtered = tasks;
+      const summary: TaskSummary = {
+        total: tasks.length,
+        byStatus: {
+          pending: 0,
+          "in progress": 0,
+          completed: 0,
+        },
+        byPriority: {
+          low: 0,
+          medium: 0,
+          high: 0,
+        },
+      };
 
-    if (priorityFilter) {
-      filtered = filtered.filter((task) => task.priority === priorityFilter);
+      tasks.forEach((task) => {
+        // Count by status
+        if (summary.byStatus.hasOwnProperty(task.status)) {
+          summary.byStatus[task.status as keyof typeof summary.byStatus]++;
+        }
+
+        // Count by priority
+        if (summary.byPriority.hasOwnProperty(task.priority)) {
+          summary.byPriority[
+            task.priority as keyof typeof summary.byPriority
+          ]++;
+        }
+      });
+
+      setTaskSummary(summary);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    if (statusFilter) {
-      filtered = filtered.filter((task) => task.status === statusFilter);
-    }
-
-    setFilteredTasks(filtered);
-  };
-
-  const handleDelete = async () => {
-    if (taskToDelete) {
-      await fetch(`/api/tasks?id=${taskToDelete.id}`, { method: "DELETE" });
-      setTaskToDelete(null);
-      setIsDeleteModalOpen(false);
-      fetchTasks();
-    }
-  };
-
-  const openDeleteModal = (task: Task) => {
-    setTaskToDelete(task);
-    setIsDeleteModalOpen(true);
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-6 mt-12 text-3xl font-bold md:mt-0">
-        Task Management Dashboard
-      </h1>
-      <Button
-        onClick={() => router.push("/admin/create")}
-        className="mb-4 bg-blue-500"
-      >
-        Create New Task
-      </Button>
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <>
+          <h1 className="mb-6 mt-12 text-3xl font-bold md:mt-0">
+            Task Management Dashboard
+          </h1>
 
-      {/* Filters */}
-      <div className="mb-4 flex space-x-4">
-        <Select
-          id="priorityFilter"
-          name="priorityFilter"
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-        >
-          <option value="">All Priorities</option>
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </Select>
+          {/* Total Tasks Card */}
+          <div className="mb-8">
+            <Card>
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Total Tasks
+                </h2>
+                <p className="mt-4 text-4xl font-bold text-blue-600">
+                  {taskSummary.total}
+                </p>
+              </div>
+            </Card>
+          </div>
 
-        <Select
-          id="statusFilter"
-          name="statusFilter"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </Select>
-      </div>
+          {/* Status Summary */}
+          <h2 className="mb-4 text-xl font-semibold">Tasks by Status</h2>
+          <div className="mb-8 grid gap-4 md:grid-cols-3">
+            <Card className="bg-yellow-50">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-yellow-700">
+                  Pending
+                </h3>
+                <p className="mt-2 text-3xl font-bold text-yellow-600">
+                  {taskSummary.byStatus.pending}
+                </p>
+              </div>
+            </Card>
+            <Card className="bg-blue-50">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-blue-700">
+                  in progress
+                </h3>
+                <p className="mt-2 text-3xl font-bold text-blue-600">
+                  {taskSummary.byStatus["in progress"]}
+                </p>
+              </div>
+            </Card>
+            <Card className="bg-green-50">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-green-700">
+                  completed
+                </h3>
+                <p className="mt-2 text-3xl font-bold text-green-600">
+                  {taskSummary.byStatus.completed}
+                </p>
+              </div>
+            </Card>
+          </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onEdit={() => router.push(`/admin/edit/${task.id}`)}
-            onDelete={openDeleteModal}
-          />
-        ))}
-      </div>
-
-      {/* Confirmation Modal for Deleting Task */}
-      <Modal
-        show={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-      >
-        <Modal.Header>Confirm Delete</Modal.Header>
-        <Modal.Body>
-          <p>
-            Are you sure you want to delete the task "{taskToDelete?.title}"?
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button color="failure" onClick={handleDelete}>
-            Confirm
-          </Button>
-          <Button onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
-        </Modal.Footer>
-      </Modal>
+          {/* Priority Summary */}
+          <h2 className="mb-4 text-xl font-semibold">Tasks by Priority</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="bg-green-50">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-green-700">
+                  Low Priority
+                </h3>
+                <p className="mt-2 text-3xl font-bold text-green-600">
+                  {taskSummary.byPriority.low}
+                </p>
+              </div>
+            </Card>
+            <Card className="bg-yellow-50">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-yellow-700">
+                  Medium Priority
+                </h3>
+                <p className="mt-2 text-3xl font-bold text-yellow-600">
+                  {taskSummary.byPriority.medium}
+                </p>
+              </div>
+            </Card>
+            <Card className="bg-red-50">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-red-700">
+                  High Priority
+                </h3>
+                <p className="mt-2 text-3xl font-bold text-red-600">
+                  {taskSummary.byPriority.high}
+                </p>
+              </div>
+            </Card>
+          </div>
+        </>
+      )}
     </div>
   );
 }
