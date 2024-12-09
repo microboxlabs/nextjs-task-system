@@ -32,12 +32,7 @@ export function LoginForm() {
       const data = await response.json();
       const decodeToken = jwtDecode(data.token);
       const { role } = decodeToken;
-
-      if (role === "adm") {
-        router.push("/dashboard");
-      }
-
-      router.push("/my-tasks");
+      role === "adm" ? router.push("/dashboard") : router.push("/my-tasks");
     } catch (err) {
       setError("Invalid email or password");
     } finally {

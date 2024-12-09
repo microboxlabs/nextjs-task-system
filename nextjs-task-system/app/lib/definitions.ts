@@ -7,7 +7,7 @@ export type User = {
     role: 'user' | 'adm'
 }
 
-export type UserInput = Omit<User, "password" | "email" | "role">
+export type UserInput = Omit<User, "password" | "email">
 
 export type UserGroup = {
 

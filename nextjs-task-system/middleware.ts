@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
-export function middleware(req) {
+export function middleware(req: NextRequest) {
     const token = req.cookies.get("auth-token");
     const url = req.nextUrl.clone();
 

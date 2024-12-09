@@ -1,18 +1,19 @@
 import Link from "next/link";
 import Search from "./search";
 import TableTask from "@/app/ui/tasks/Table";
-
-export const dynamic = "force-dynamic";
+import { fetchParams } from "@/app/lib/fetchParams";
+import { PlusCircleIcon } from "lucide-react";
 
 export default async function Tasks({
   searchParams,
 }: {
   searchParams?: {
     query?: string;
-    page?: string;
   };
 }) {
   const query = searchParams?.query || "";
+
+  const tasks = await fetchParams(query);
 
   return (
     <div className="min-h-screen space-y-6 bg-gray-50 px-4 py-6 dark:bg-gray-900 md:py-8">
@@ -23,9 +24,9 @@ export default async function Tasks({
         </h1>
         <Link
           href="/dashboard/tasks/create"
-          className="inline-block rounded-md bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700"
+          className="flex w-32 items-center gap-1 rounded-md bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700"
         >
-          + Add Task
+          <PlusCircleIcon className="size-5" /> Add Task
         </Link>
       </div>
 
@@ -36,7 +37,7 @@ export default async function Tasks({
 
       {/* Tabla de Tareas */}
       <div className="overflow-hidden rounded-lg shadow-lg">
-        <TableTask query={query} />
+        <TableTask tasks={tasks} />
       </div>
     </div>
   );

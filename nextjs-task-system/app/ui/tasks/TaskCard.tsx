@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Clock, MessageCircle, CheckCircle, Loader } from "lucide-react";
 import { Task, TaskStatus } from "@/app/lib/definitions";
 import { updateTaskComments, updateTaskStatus } from "@/app/lib/tasksServices";
-import { tasks } from "@/app/lib/data";
 
 interface TaskCardProps {
   task: Task;
@@ -53,16 +52,20 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
   };
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">
-      {/* Título y prioridad */}
+    <div className="relative rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">
       <div className="mb-4 flex items-start justify-between">
         <h3 className="text-xl font-semibold text-gray-900">{task.title}</h3>
-        <span
-          className={`rounded-full px-3 py-1 text-sm font-medium capitalize ${priorityColors[task.priority]}`}
+        <button
+          onClick={handleStatusChange}
+          className="absolute right-4 top-4 flex items-center gap-2 rounded  px-3 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-300"
+          disabled={task.status === "completed"}
         >
-          {task.priority}
-        </span>
+          {statusIcons[task.status]}
+        </button>
       </div>
+      {/* Botón de cambio de estado */}
+
+      {/* Título y prioridad */}
 
       {/* Descripción */}
       <p className="mb-4 text-gray-600">{task.description}</p>
@@ -71,17 +74,6 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
       <div className="mb-4 flex items-center text-gray-500">
         <Clock className="mr-2 size-4" />
         <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
-      </div>
-
-      {/* Botón de cambio de estado */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleStatusChange}
-          className="rounded  px-3 py-1 text-sm font-medium"
-          disabled={task.status === "completed"}
-        >
-          {statusIcons[task.status]}
-        </button>
       </div>
 
       {/* Comentarios */}
@@ -120,6 +112,11 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
           </div>
         )}
       </div>
+      <span
+        className={`rounded-full px-3 py-1 text-sm font-medium capitalize ${priorityColors[task.priority]}`}
+      >
+        {task.priority}
+      </span>
     </div>
   );
 }
