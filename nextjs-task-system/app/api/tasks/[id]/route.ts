@@ -9,19 +9,23 @@ export async function GET({ params }: { params: { id: string } }) {
 
     const task = await tasksAdapter.getTaskById(id);
 
-    return NextResponse.json({ success: true, data: task });
+    return NextResponse.json({
+      success: true,
+      message: "Task found successfully",
+      data: task,
+    });
   } catch (error) {
     // Handle error if the task is not found
     if ((error as Error).message === "Task not found") {
       return NextResponse.json(
-        { success: false, error: "Task not found" },
+        { success: false, message: "Task not found" },
         { status: 404 },
       );
     }
 
     // For other errors, return a general error response
     return NextResponse.json(
-      { success: false, error: (error as Error).message },
+      { success: false, message: (error as Error).message },
       { status: 500 },
     );
   }
@@ -52,24 +56,28 @@ export async function PUT(
     // If no task is updated (i.e., the task does not exist), return 404
     if (!updatedTask) {
       return NextResponse.json(
-        { success: false, error: "Task not found" },
+        { success: false, message: "Task not found" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ success: true, data: updatedTask });
+    return NextResponse.json({
+      success: true,
+      message: "Task updated successfully",
+      data: updatedTask,
+    });
   } catch (error) {
     // Check if the error is related to "Task not found" and return 404
     if ((error as Error).message === "Task not found") {
       return NextResponse.json(
-        { success: false, error: "Task not found" },
+        { success: false, message: "Task not found" },
         { status: 404 },
       );
     }
 
     // For other errors, return 500 Internal Server Error
     return NextResponse.json(
-      { success: false, error: (error as Error).message },
+      { success: false, message: (error as Error).message },
       { status: 500 },
     );
   }
@@ -89,13 +97,13 @@ export async function DELETE({ params }: { params: { id: string } }) {
     // Handle task not found error
     if ((error as Error).message === "Task not found") {
       return NextResponse.json(
-        { success: false, error: "Task not found" },
+        { success: false, message: "Task not found" },
         { status: 404 },
       );
     }
     // General error handling: return a 500 status code if an error occurs
     return NextResponse.json(
-      { success: false, error: (error as Error).message },
+      { success: false, message: (error as Error).message },
       { status: 500 },
     );
   }
