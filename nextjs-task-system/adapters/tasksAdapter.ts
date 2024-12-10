@@ -4,6 +4,19 @@ import { Task } from "@/types/taskTypes";
 let taskList = [...tasks]; // Simulating an in-memory database
 
 export const tasksAdapter = {
+  getTaskById: async (id: number): Promise<Task> => {
+    const task = taskList.find((task) => task.id === id);
+
+    if (!task) {
+      throw new Error("Task not found");
+    }
+
+    // Simulate database response time
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(formatTaskFromDB(task)), 100);
+    });
+  },
+
   fetchTasks: async (): Promise<Task[]> => {
     // Simulates querying the task list from the database
     return new Promise((resolve) => {
