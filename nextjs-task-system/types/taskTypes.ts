@@ -10,4 +10,5 @@ export interface Task {
   assignedTo: string;
   priority: TaskPriority;
   comments: string[];
+  createdAt?: string;
 }

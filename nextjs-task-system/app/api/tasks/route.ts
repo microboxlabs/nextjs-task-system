@@ -12,13 +12,6 @@ export async function GET() {
     const tasks = await tasksAdapter.fetchTasks();
     return NextResponse.json({ success: true, data: tasks });
   } catch (error) {
-    // Handle task not found error
-    if ((error as Error).message === "Task not found") {
-      return NextResponse.json(
-        { success: false, error: "Task not found" },
-        { status: 404 },
-      );
-    }
     // General error handling: return a 500 status code if an error occurs
     return NextResponse.json(
       { success: false, error: (error as Error).message },

@@ -7,7 +7,8 @@
     "dueDate": "2024-12-01",
     "assignedTo": "John Doe",
     "priority": "high",
-    "comments": ["Install Next.js 14", "Set up Flowbite and Tailwind CSS"]
+    "comments": ["Install Next.js 14", "Set up Flowbite and Tailwind CSS"],
+    "createdAt": "2024-12-01T12:00:00.000Z"
   },
   {
     "id": 2,
@@ -20,7 +21,8 @@
     "comments": [
       "Update Next.js",
       "Verify application functionality after the update"
-    ]
+    ],
+    "createdAt": "2024-12-02T12:00:00.000Z"
   },
   {
     "id": 3,
@@ -30,7 +32,8 @@
     "dueDate": "2024-12-01",
     "assignedTo": "Carlos Perez",
     "priority": "medium",
-    "comments": ["Generate sample task data", "Use JSON format for data"]
+    "comments": ["Generate sample task data", "Use JSON format for data"],
+    "createdAt": "2024-12-03T12:00:00.000Z"
   },
   {
     "id": 4,
@@ -43,33 +46,36 @@
     "comments": [
       "Write installation steps",
       "Explain how to configure and run the app"
-    ]
+    ],
+    "createdAt": "2024-12-04T12:00:00.000Z"
   },
   {
     "id": 5,
     "title": "Implement API Routes for Tasks",
     "description": "Develop the API routes to manage tasks (create, read, update, delete).",
-    "status": "pending",
+    "status": "completed",
     "dueDate": "2024-12-10",
     "assignedTo": "Anna Lee",
     "priority": "high",
     "comments": [
       "Create the POST route to create tasks",
       "Develop the GET route to fetch all tasks"
-    ]
+    ],
+    "createdAt": "2024-12-05T12:00:00.000Z"
   },
   {
     "id": 6,
     "title": "Design User Interface for Tasks",
     "description": "Create the basic components to display and manage tasks in the user interface.",
-    "status": "pending",
+    "status": "inProgress",
     "dueDate": "2024-12-05",
     "assignedTo": "Carlos Perez",
     "priority": "medium",
     "comments": [
       "Create task list",
       "Implement design with Flowbite and Tailwind"
-    ]
+    ],
+    "createdAt": "2024-12-06T12:00:00.000Z"
   },
   {
     "id": 7,
@@ -82,6 +88,7 @@
     "comments": [
       "Test the POST route for tasks",
       "Verify error handling in routes"
-    ]
+    ],
+    "createdAt": "2024-12-07T12:00:00.000Z"
   }
 ]
