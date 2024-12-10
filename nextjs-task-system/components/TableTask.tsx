@@ -118,7 +118,7 @@ export default function TableTask() {
   };
 
   return (
-    <div className="flex flex-col gap-[20px] p-[30px] min-h-screen size-full">
+    <div className="flex size-full min-h-screen flex-col gap-[20px] p-[30px]">
       {modalTask && (
         <ModalTask
           setModalTask={setModalTask}
@@ -185,18 +185,26 @@ export default function TableTask() {
               </thead>
               <tbody>
                 {tasks.map((task) => (
-                  <tr key={task.id} className="mb-[2px] rounded-md border-2 border-[--bg-color5] bg-[--bg-color3]">
+                  <tr
+                    key={task.id}
+                    className="mb-[2px] rounded-md border-2 border-[--bg-color5] bg-[--bg-color3]"
+                  >
                     <td className="pl-[30px]">{task.id}</td>
                     <td>{task.title}</td>
                     <td>{task.description}</td>
                     <td>{task.priority}</td>
                     <td>{task.status}</td>
-                    <td>{task.assignedTo.map((user) => user.username).join(" ")}</td>
+                    <td>
+                      {task.assignedTo.map((user) => user.username).join(" ")}
+                    </td>
                     <td>
                       <div className="flex flex-col gap-2 py-2">
                         <div className="flex flex-col gap-2">
                           {task.comments.map((comment) => (
-                            <div key={comment.id} className="mx-1 border border-[#797979] p-1">
+                            <div
+                              key={comment.id}
+                              className="mx-1 border border-[#797979] p-1"
+                            >
                               <p className="text-sm">{comment.user.username}</p>
                               <p>{comment.message}</p>
                             </div>
@@ -219,12 +227,14 @@ export default function TableTask() {
                         >
                           <Edit />
                         </button>
-                        <button
-                          onClick={() => onClickDelete(task.id)}
-                          className="hidden w-fit rounded-[--buttonRadius] bg-[#813535] p-1 xl:flex"
-                        >
-                          <Delete />
-                        </button>
+                        {role === Role.admin && (
+                          <button
+                            onClick={() => onClickDelete(task.id)}
+                            className="hidden w-fit rounded-[--buttonRadius] bg-[#813535] p-1 xl:flex"
+                          >
+                            <Delete />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -300,19 +310,21 @@ export default function TableTask() {
                 <div className="flex w-full items-center justify-between border-b border-[--bg-color1] py-[10px]">
                   <p className="text-xs">{t.actions}</p>
                   <div className="flex gap-3 py-[5px]">
-                        <button
-                          className="hidden w-fit rounded-[--buttonRadius] bg-[#262c80] p-1 xl:flex"
-                          onClick={() => handlerUpdate(step)}
-                        >
-                          <Edit />
-                        </button>
-                        <button
-                          onClick={() => onClickDelete(step.id)}
-                          className="hidden w-fit rounded-[--buttonRadius] bg-[#813535] p-1 xl:flex"
-                        >
-                          <Delete />
-                        </button>
-                      </div>
+                    <button
+                      className="hidden w-fit rounded-[--buttonRadius] bg-[#262c80] p-1 xl:flex"
+                      onClick={() => handlerUpdate(step)}
+                    >
+                      <Edit />
+                    </button>
+                    {role === Role.admin && (
+                      <button
+                        onClick={() => onClickDelete(step.id)}
+                        className="hidden w-fit rounded-[--buttonRadius] bg-[#813535] p-1 xl:flex"
+                      >
+                        <Delete />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
