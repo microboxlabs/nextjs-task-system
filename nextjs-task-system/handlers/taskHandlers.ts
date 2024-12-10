@@ -1,7 +1,10 @@
 import { tasksAdapter } from "@/adapters/tasksAdapter";
 import { taskSchema, updateTaskSchema } from "@/schemas/taskSchema";
-import { handleValidationError, handleGeneralError } from "@/utils/errorUtils";
-import { validateInput } from "@/utils/validationUtils";
+import {
+  handleGeneralError,
+  handleValidationError,
+  validateInput,
+} from "@/utils";
 
 // Fetch all tasks
 export async function getTasksHandler() {

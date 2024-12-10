@@ -1,35 +1,69 @@
-import tasks from "../data/tasks.json";
 import { Task } from "@/types/taskTypes";
+import * as path from "path";
+import * as fs from "fs";
 
-let taskList = [...tasks]; // Simulating an in-memory database
+const storageFilePath = path.resolve(
+  process.cwd(),
+  "data",
+  "tasks_storage.json",
+);
+const originalFilePath = path.resolve(process.cwd(), "data", "tasks_seed.json");
+const initializeStorage = () => {
+  if (!fs.existsSync(storageFilePath)) {
+    try {
+      fs.copyFileSync(originalFilePath, storageFilePath);
+      console.log("Storage initialized from tasks_seed.json");
+    } catch (err) {
+      console.error("Error initializing storage:", err);
+    }
+  }
+};
+
+const readTasksFromStorage = (): Task[] => {
+  initializeStorage();
+  try {
+    const data = fs.readFileSync(storageFilePath, "utf-8");
+    return JSON.parse(data) as Task[];
+  } catch (err) {
+    console.error("Error reading tasks from storage:", err);
+    return [];
+  }
+};
+
+const writeTasksToStorage = (tasks: Task[]) => {
+  try {
+    fs.writeFileSync(storageFilePath, JSON.stringify(tasks, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Error writing tasks to storage:", err);
+  }
+};
 
 export const tasksAdapter = {
+  fetchTasks: async (): Promise<Task[]> => {
+    let tasks = readTasksFromStorage();
+    if (tasks.length === 0) {
+      // Initialize storage with the default JSON (this is redundant with initializeStorage)
+      tasks = [...require("../data/tasks_seed.json")]; // Cargamos desde tasks_seed.json
+      writeTasksToStorage(tasks);
+    }
+    return tasks.map(formatTaskFromDB);
+  },
+
   getTaskById: async (id: number): Promise<Task> => {
-    const task = taskList.find((task) => task.id === id);
+    const tasks = readTasksFromStorage();
+    const task = tasks.find((task) => task.id === id);
 
     if (!task) {
       throw new Error("Task not found");
     }
 
-    // Simulate database response time
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(formatTaskFromDB(task)), 100);
-    });
-  },
-
-  fetchTasks: async (): Promise<Task[]> => {
-    // Simulates querying the task list from the database
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(taskList.map(formatTaskFromDB));
-      }, 100);
-    });
+    return formatTaskFromDB(task);
   },
 
   createTask: async (newTask: Omit<Task, "id">): Promise<Task> => {
-    // Generate an ID simulating auto-increment behavior
+    const tasks = readTasksFromStorage();
     const nextId =
-      taskList.length > 0 ? Math.max(...taskList.map((t) => t.id)) + 1 : 1;
+      tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1;
 
     const task = {
       id: nextId,
@@ -39,35 +73,36 @@ export const tasksAdapter = {
       assignedTo: newTask.assignedTo || "",
     };
 
-    taskList.push(task);
-    // Simulates inserting into the database
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(formatTaskFromDB(task)), 100);
-    });
+    tasks.push(task);
+    writeTasksToStorage(tasks);
+
+    return formatTaskFromDB(task);
   },
 
   updateTask: async (id: number, updatedTask: Partial<Task>): Promise<Task> => {
-    const taskIndex = taskList.findIndex((task) => task.id === id);
+    const tasks = readTasksFromStorage();
+    const taskIndex = tasks.findIndex((task) => task.id === id);
+
     if (taskIndex === -1) {
       throw new Error("Task not found");
     }
-    taskList[taskIndex] = { ...taskList[taskIndex], ...updatedTask };
-    // Simulates updating in the database
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(formatTaskFromDB(taskList[taskIndex])), 100);
-    });
+
+    tasks[taskIndex] = { ...tasks[taskIndex], ...updatedTask };
+    writeTasksToStorage(tasks);
+
+    return formatTaskFromDB(tasks[taskIndex]);
   },
 
   deleteTask: async (id: number): Promise<void> => {
-    const initialLength = taskList.length;
-    taskList = taskList.filter((task) => task.id !== id);
-    if (taskList.length === initialLength) {
+    const tasks = readTasksFromStorage();
+    const initialLength = tasks.length;
+
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    if (updatedTasks.length === initialLength) {
       throw new Error("Task not found");
     }
-    // Simulates deletion in the database
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 100);
-    });
+
+    writeTasksToStorage(updatedTasks);
   },
 };
 
