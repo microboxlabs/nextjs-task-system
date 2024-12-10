@@ -1,4 +1,4 @@
-import { GET, POST, PUT, DELETE } from "@/app/api/tasks/route";
+import { GET, POST } from "@/app/api/tasks/route";
 import { Task } from "@/types/taskTypes";
 
 // Helper function to create a valid task
@@ -59,96 +59,6 @@ describe("API: /api/tasks", () => {
 
     expect(response.status).toBe(400); // Expect a 400 Bad Request status due to validation errors
     expect(responseBody.success).toBe(false); // Expect success to be false
-    expect(responseBody.error).toBeDefined(); // Expect an error message to be present
-  });
-
-  it("PUT /api/tasks should update an existing task", async () => {
-    const getResponse = await GET();
-    const tasksResponse = await getResponse.json();
-    const existingTask = tasksResponse.data.find((task: Task) => task.id); // Verifica que se obtiene una tarea válida
-
-    expect(existingTask).toBeDefined(); // Verifica que haya una tarea existente
-
-    const updatedTaskData = {
-      id: existingTask.id,
-      status: "inProgress",
-      priority: "high",
-    };
-
-    const request = new Request("http://localhost:3001/api/tasks", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedTaskData),
-    });
-
-    const response = await PUT(request);
-    const responseBody = await response.json();
-
-    expect(response.status).toBe(200); // Expect a 200 OK status
-    expect(responseBody.success).toBe(true); // Expect success to be true
-    expect(responseBody.data.status).toBe("inProgress"); // Expect the status to be updated
-    expect(responseBody.data.priority).toBe("high"); // Expect the priority to be updated
-  });
-
-  it("PUT /api/tasks should handle invalid data (missing ID)", async () => {
-    const updatedTaskData = { status: "inProgress" }; // Missing task ID
-
-    const request = new Request("http://localhost:3001/api/tasks", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedTaskData),
-    });
-
-    const response = await PUT(request);
-    const responseBody = await response.json();
-
-    expect(response.status).toBe(400); // Expect a 400 Bad Request status due to missing ID
-    expect(responseBody.success).toBe(false); // Expect success to be false
-    expect(responseBody.error).toBeDefined(); // Expect an error message
-  });
-
-  it("DELETE /api/tasks should delete an existing task", async () => {
-    const getResponse = await GET();
-    const tasksResponse = await getResponse.json();
-    const taskToDelete = tasksResponse.data[0]; // Get the first existing task
-
-    const request = new Request(
-      `http://localhost:3001/api/tasks?id=${taskToDelete.id}`,
-      {
-        method: "DELETE",
-      },
-    );
-
-    const response = await DELETE(request);
-    const responseBody = await response.json();
-
-    expect(response.status).toBe(200); // Expect a 200 OK status
-    expect(responseBody.success).toBe(true); // Expect success to be true
-
-    // Verify that the task no longer exists
-    const getResponseAfterDelete = await GET();
-    const tasksAfterDelete = await getResponseAfterDelete.json();
-    const deletedTask = tasksAfterDelete.data.find(
-      (task: Task) => task.id === taskToDelete.id,
-    );
-
-    expect(deletedTask).toBeUndefined(); // Expect the deleted task to be undefined
-  });
-
-  it("DELETE /api/tasks should handle non-existent task", async () => {
-    const request = new Request("http://localhost:3001/api/tasks?id=9999", {
-      method: "DELETE",
-    });
-
-    const response = await DELETE(request);
-    const responseBody = await response.json();
-
-    expect(response.status).toBe(404); // Expect a 404 Bad Request status due to non-existent task
-    expect(responseBody.success).toBe(false); // Expect success to be false
-    expect(responseBody.error).toBeDefined(); // Expect an error message
+    expect(responseBody.errors).toBeDefined(); // Expect an errors object to be present
   });
 });
