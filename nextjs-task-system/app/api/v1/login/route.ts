@@ -27,7 +27,7 @@ export const POST = async (req: NextRequest) => {
     // const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
     //   expiresIn: "1d",
     // });
-    const token = await new SignJWT({email})
+    const token = await new SignJWT({id: checkUser.id, email: email, role: checkUser.role})
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("2h")

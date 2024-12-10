@@ -14,14 +14,14 @@ export const GET = async () => {
 };
 
 export const POST = async (req: NextRequest) => {
-  const { title, description, userId, status, group_id, due_date, priority } =
+  const { title, description, assigned_to, status, group_id, due_date, priority } =
     await req.json();
   const task = await prisma.tasks.create({
     data: {
       title,
       description,
       status,
-      assigned_to: userId,
+      assigned_to,
       group_id,
       due_date,
       priority,

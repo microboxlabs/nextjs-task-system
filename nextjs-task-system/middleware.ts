@@ -2,14 +2,16 @@ import { authMiddleware } from "./app/lib/authMiddleware";
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  console.log("Middleware:", req.nextUrl.pathname);
+
   const protectedPaths = [
     "/dashboard",
-    "/profile",
+    "/task",
     "/api/v1/users",
     "/api/v1/groups",
     "/api/v1/tasks",
+    "/api/v1/groupmember",
   ];
+
   const isProtectedRoute = protectedPaths.some((path) =>
     req.nextUrl.pathname.startsWith(path),
   );
@@ -17,6 +19,7 @@ export function middleware(req: NextRequest) {
   if (isProtectedRoute) {
     return authMiddleware(req);
   }
+
   return NextResponse.next();
 }
 

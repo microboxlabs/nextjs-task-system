@@ -7,7 +7,6 @@ const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY || "your-
 
 export async function authMiddleware(req: NextRequest) {
   const token = req.cookies.get("auth_token")?.value;
-  console.log("Token:", token);
   if (!token) {
     return NextResponse.redirect(new URL("/", req.url));
   }

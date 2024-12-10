@@ -12,19 +12,11 @@ type Task = {
     title: string
     description: string
     status: TaskStatus
-    assigned_to: string
+    user: { name: string}
     due_date: Date
     priority: Priority
     comments: string[]
 }
-
-// const initialTasks: Task[] = [
-//     { id: 1, title: 'Design UI', description: 'Create wireframes and mockups', status: 'PENDING' },
-//     { id: 2, title: 'Develop Backend', description: 'Set up database and API', status: 'IN_PROGRESS' },
-//     { id: 3, title: 'Write Tests', description: 'Create unit and integration tests', status: 'PENDING' },
-//     { id: 4, title: 'Deploy to Staging', description: 'Set up staging environment', status: 'COMPLETED' },
-//     { id: 5, title: 'User Testing', description: 'Conduct user acceptance testing', status: 'IN_PROGRESS' },
-// ]
 
 export function DashBoard() {
     const [tasks, setTasks] = useState<Task[]>([]);
