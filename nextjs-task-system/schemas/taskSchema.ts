@@ -15,7 +15,6 @@ export const taskSchema = z.object({
 });
 
 export const updateTaskSchema = z.object({
-  id: z.number().positive("Task ID is required and must be a valid number"),
   title: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(["pending", "inProgress", "completed"]).optional(),
@@ -32,8 +31,4 @@ export const updateTaskSchema = z.object({
     ),
   assignedTo: z.string().optional(),
   priority: z.enum(["low", "medium", "high"]).optional(),
-});
-
-export const deleteTaskSchema = z.object({
-  id: z.string().min(1, "Task ID is required"),
 });
