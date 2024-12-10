@@ -11,9 +11,10 @@ interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (task: Task) => void;
+  task?: Task | null;
 }
 
-const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
+const TaskModal = ({ isOpen, onClose, onSubmit, task }: TaskModalProps) => {
   const { user, token } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -32,11 +33,40 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
   }, []);
 
   useEffect(() => {
+    //asignar valores a los inputs en caso de editar
+
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description);
+      setPriority(task.priority);
+
+      //convertir date string  a Date
+      const [year, month, day] = task.due_date.split("-").map(Number);
+      setDueDate(new Date(year, month - 1, day));
+
+      // Determinar si está asignado a un grupo o usuario
+
+      setIsGroup(typeof task.assigned_to === "object" ? true : false);
+      //userSelect se asigna en getUsers
+    }
+  }, []);
+
+  //asignar el primer valor al select al abrir el crear tarea
+  useEffect(() => {
     if (isGroup && userSelect === "") {
-      setUserSelect(JSON.stringify(groups[0].id));
+      setUserSelect(
+        JSON.stringify(
+          task
+            ? typeof task.assigned_to === "object"
+              ? task.assigned_to.id
+              : task.assigned_to
+            : groups[0].id,
+        ),
+      );
     }
   }, [isGroup, userSelect]);
 
+  //obtener todos los usuarios
   const getUsers = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/users", {
@@ -46,10 +76,20 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
       });
 
       setUsers(response.data);
-      setUserSelect(JSON.stringify(response.data[0].id));
+      //asignar valor a userSelect si se va a editar, verificar si el assigned_to trae object o number
+      setUserSelect(
+        JSON.stringify(
+          task
+            ? typeof task.assigned_to === "object"
+              ? task.assigned_to.id
+              : task.assigned_to
+            : response.data[0].id,
+        ),
+      );
     } catch (error) {}
   };
 
+  //obtener grupos
   const getGroups = async () => {
     try {
       const response = await axios.get("/api/groups", {
@@ -92,8 +132,18 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
         comments: "",
       };
 
-      // Llamar a la función onSubmit con la nueva tarea
-      onSubmit(newTask);
+      if (task) {
+        const updateTask = {
+          id: task.id,
+          ...newTask,
+        };
+
+        console.log(
+          "estos datos se envian a actualizar: " + JSON.stringify(updateTask),
+        );
+        onSubmit(updateTask);
+      }
+      onSubmit(newTask); // Llamar a la función onSubmit con la nueva tarea
 
       // Limpiar los campos del formulario
       setTitle("");
@@ -216,7 +266,13 @@ const TaskModal = ({ isOpen, onClose, onSubmit }: TaskModalProps) => {
               type="submit"
               className="rounded-md bg-blue-500 px-4 py-2 text-white"
             >
-              {loading ? <LoadingButton /> : "Agregar Tarea"}
+              {loading ? (
+                <LoadingButton />
+              ) : task ? (
+                "Actualizar Tarea"
+              ) : (
+                "Agregar Tarea"
+              )}
             </button>
           </div>
         </form>

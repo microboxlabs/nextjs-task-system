@@ -17,6 +17,7 @@ export interface Task {
   status?: string;
   comments?: string;
   assigned_name?: string | null;
+  isNew?: boolean;
 }
 
 export interface Group {

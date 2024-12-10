@@ -10,6 +10,8 @@ import { Task } from "@/types";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Filtrado from "@/components/tasks/Filtrado";
+import { useSSE } from "@/hooks/useSSE";
+import useNotification from "@/hooks/useNotifications";
 
 export default function Dashboard() {
   const { token, user } = useAuth();
@@ -23,6 +25,23 @@ export default function Dashboard() {
   const [filterUser, setFilterUser] = useState<string>("");
   const [filterPriority, setFilterPriority] = useState<string>("Todos");
   const [sortOrder, setSortOrder] = useState<string>("");
+  const { requestPermission } = useNotification();
+
+  useEffect(() => {
+    requestPermission();
+  }, []);
+
+  //=======================================================================================
+
+  const data = useSSE("http://localhost:3000/api/refresh");
+  console.log("que trae sse: " + JSON.stringify(data));
+
+  //=================================================================================0
+  useEffect(() => {
+    if (data) {
+      setTasks(data); // Sincroniza el estado local con las tareas actualizadas desde SSE
+    }
+  }, [data]);
 
   useEffect(() => {
     if (token) {
@@ -76,6 +95,7 @@ export default function Dashboard() {
     setFilteredTasks(result);
   };
 
+  //Ordenar tareas
   const sortTasks = () => {
     // Evitar ordenamientos innecesarios si el valor de sortOrder no cambia
     if (!sortOrder) return;
@@ -156,6 +176,27 @@ export default function Dashboard() {
     }
   };
 
+  const handleUpdateTask = async (newTask: Task) => {
+    try {
+      await axios
+        .put("http://localhost:3000/api/tasks", newTask, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          // Actualizar la lista de tareas localmente
+          setTasks((prevTasks) =>
+            prevTasks.map((task) => (task.id === newTask.id ? newTask : task)),
+          );
+          //  setIsModalOpen(false);
+          alert("Tarea actualizada exitosamente");
+        });
+    } catch (error) {
+      console.error("Error al updatear tarea:", error);
+    }
+  };
+
   const deleteTask = async (id: number) => {
     try {
       await axios.delete("http://localhost:3000/api/tasks", {
@@ -189,13 +230,14 @@ export default function Dashboard() {
 
         {/* Tarjetas */}
         <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 lg:grid-cols-4">
-          {filteredTasks.map((task) => (
+          {filteredTasks.map((task, index) => (
             <CustomCard
               key={task.id}
               task={task}
               token={token}
               user={user}
               openDeleteModal={() => setTaskToDelete(task.id!)}
+              updateTask={handleUpdateTask}
             />
           ))}
         </div>
@@ -208,6 +250,7 @@ export default function Dashboard() {
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
               onSubmit={handleAddTask}
+              task={null}
             />
           </>
         )}

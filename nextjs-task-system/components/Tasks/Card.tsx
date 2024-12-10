@@ -12,13 +12,16 @@ export function CustomCard({
   token,
   user,
   openDeleteModal,
+  updateTask,
 }: {
   task: Task;
   token: string | null;
   user: User | undefined;
   openDeleteModal: () => void;
+  updateTask: (task: Task) => void;
 }) {
   const [isOpenDetail, setisOpenDetail] = useState(false);
+  console.log("que trae task: " + task);
 
   // Cambiar estado de tarea
   const handleStatusChange = async (
@@ -145,6 +148,7 @@ export function CustomCard({
         onCommentSubmit={(comment) =>
           handleStatusChange(comment, task.id!, true)
         }
+        updateTask={updateTask}
       />
     </Card>
   );

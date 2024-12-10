@@ -1,6 +1,7 @@
 import { Task, User } from "@/types";
 import { Modal } from "flowbite-react";
 import { useState } from "react";
+import TaskModal from "./TaskModal";
 
 interface TaskDetailsProps {
   task: Task;
@@ -8,6 +9,7 @@ interface TaskDetailsProps {
   onClose: () => void;
   user: User; // Propiedad para verificar el rol del usuario
   onCommentSubmit: (comment: string) => void; // Función para enviar comentario
+  updateTask: (task: Task) => void;
 }
 
 const TaskDetails = ({
@@ -16,6 +18,7 @@ const TaskDetails = ({
   onClose,
   user,
   onCommentSubmit,
+  updateTask,
 }: TaskDetailsProps) => {
   const {
     title,
@@ -29,6 +32,7 @@ const TaskDetails = ({
   } = task;
 
   const [newComment, setNewComment] = useState<string>("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); //abrir editor de tareas
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment(e.target.value);
@@ -139,7 +143,24 @@ const TaskDetails = ({
             </button>
           </div>
         )}
+
+        {user.role === "admin" && (
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          >
+            Editar Tarea
+          </button>
+        )}
       </Modal.Footer>
+
+      {/* Modal de edición */}
+      <TaskModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={updateTask}
+        task={task} // Pasa la tarea actual para precargar los campos
+      />
     </Modal>
   );
 };

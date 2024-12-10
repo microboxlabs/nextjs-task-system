@@ -22,7 +22,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 // Función para obtener todas las tareas
-const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
+export const getTasks = (req: NextApiRequest, res: NextApiResponse) => {
   const token = req.headers["authorization"]?.split(" ")[1]; // El formato es "Bearer <token>"
   const userId = req.userId;
 
@@ -290,105 +290,94 @@ const resolveAssignedName = (
 const updateTask = (req: NextApiRequest, res: NextApiResponse) => {
   const {
     id,
-    assigned_to,
     title,
     description,
+    assigned_to,
     due_date,
-    created_date,
     priority,
+    status,
     comments,
   } = req.body;
 
   if (!id) {
-    return res.status(400).json({ error: "Task ID is required" });
+    return res.status(400).json({ message: "ID de tarea es requerido" });
   }
 
-  // Verificar si solo se está asignando un usuario
-  if (
-    assigned_to &&
-    !title &&
-    !description &&
-    !due_date &&
-    !created_date &&
-    !priority &&
-    !comments
-  ) {
-    // Proceso para asignar usuario
-    db.get("SELECT id FROM users WHERE id = ?", [assigned_to], (err, user) => {
-      if (err) {
-        return res.status(500).json({ error: "Error verifying user" });
-      }
+  // Serializar el campo `assigned_to` si es necesario
+  let assignedToValue: string | null = null;
 
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      db.run(
-        "UPDATE tasks SET assigned_to = ? WHERE id = ?",
-        [assigned_to, id],
-        function (err) {
-          if (err) {
-            return res
-              .status(500)
-              .json({ error: "Error updating task " + err });
-          }
-
-          if (this.changes === 0) {
-            return res.status(404).json({ error: "Task not found" });
-          }
-
-          return res
-            .status(200)
-            .json({ message: "Task assigned successfully" });
-        },
-      );
-    });
-  } else {
-    // Proceso para edición de tarea completa
-    const fields = [];
-    const values = [];
-
-    if (title) {
-      fields.push("title = ?");
-      values.push(title);
+  if (assigned_to) {
+    if (typeof assigned_to === "number") {
+      assignedToValue = assigned_to.toString(); // Si es un número, convertir a cadena
+    } else if (typeof assigned_to === "object") {
+      assignedToValue = JSON.stringify(assigned_to); // Si es un objeto, serializar
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Formato de assigned_to no válido" });
     }
-    if (description) {
-      fields.push("description = ?");
-      values.push(description);
-    }
-    if (due_date) {
-      fields.push("due_date = ?");
-      values.push(due_date);
-    }
-    if (created_date) {
-      fields.push("create_date = ?");
-      values.push(created_date);
-    }
-    if (priority) {
-      fields.push("priority = ?");
-      values.push(priority);
-    }
-    if (comments) {
-      fields.push("comments = ?");
-      values.push(comments);
-    }
-
-    values.push(id);
-
-    const query = `UPDATE tasks SET ${fields.join(", ")} WHERE id = ?`;
-
-    db.run(query, values, function (err) {
-      if (err) {
-        return res.status(500).json({ error: "Error updating task " + err });
-      }
-
-      if (this.changes === 0) {
-        return res.status(404).json({ error: "Task not found" });
-      }
-
-      return res.status(200).json({ message: "Task updated successfully" });
-    });
   }
+
+  // Crear consulta SQL dinámicamente para incluir solo los campos proporcionados
+  const fieldsToUpdate = [];
+  const values = [];
+
+  if (title) {
+    fieldsToUpdate.push("title = ?");
+    values.push(title);
+  }
+  if (description) {
+    fieldsToUpdate.push("description = ?");
+    values.push(description);
+  }
+  if (assigned_to) {
+    fieldsToUpdate.push("assigned_to = ?");
+    values.push(assignedToValue);
+  }
+  if (due_date) {
+    fieldsToUpdate.push("due_date = ?");
+    values.push(due_date);
+  }
+  if (priority) {
+    fieldsToUpdate.push("priority = ?");
+    values.push(priority);
+  }
+  if (status) {
+    fieldsToUpdate.push("status = ?");
+    values.push(status);
+  }
+  if (comments) {
+    fieldsToUpdate.push("comments = ?");
+    values.push(comments);
+  }
+
+  // Validar que haya al menos un campo para actualizar
+  if (fieldsToUpdate.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "No se proporcionaron campos para actualizar" });
+  }
+
+  const query = `
+    UPDATE tasks
+    SET ${fieldsToUpdate.join(", ")}
+    WHERE id = ?
+  `;
+  values.push(id); // Agregar el ID al final para la cláusula WHERE
+
+  // Ejecutar la consulta
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error("Error al actualizar tarea:", err.message);
+      return res.status(500).json({ message: "Error al actualizar tarea" });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ message: "Tarea no encontrada" });
+    }
+
+    return res.status(200).json({ message: "Tarea actualizada con éxito" });
+  });
 };
 
 const deleteTask = (req: NextApiRequest, res: NextApiResponse) => {

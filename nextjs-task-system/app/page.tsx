@@ -9,6 +9,19 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("Service Worker registrado:", registration);
+        })
+        .catch((error) => {
+          console.error("Error al registrar Service Worker:", error);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated && token) {
       router.push("/dashboard");
     } else if (!token) {
