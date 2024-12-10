@@ -148,8 +148,8 @@ const CommentList: React.FC<{ comments: CommentData[] }> = ({ comments }) => (
   <ul className="mt-2">
     <h4 className="font-bold">Comments:</h4>
     {comments.length > 0 ? (
-      comments.map((comment) => (
-        <li key={comment.id} className="text-sm">
+      comments.map((comment, index) => (
+        <li key={`${comment.id}-${index}`} className="text-sm">
           <span className="font-semibold">{comment.user?.email || "Unknown"}:</span> {comment.content}
         </li>
       ))
