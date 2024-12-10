@@ -15,6 +15,11 @@ export const handleResponse = async <T>(response: Response): Promise<T> => {
     throw new Error(errorMessage);
   }
 
+  console.log(
+    `API Response: ${response.status} ${response.statusText}`,
+    result,
+  );
+
   return result.data as T;
 };
 

@@ -1,8 +1,8 @@
 // stores/tasksStore.ts
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { Task } from "@/types/taskTypes";
-import { apiRequest } from "../utils/api";
+import { Task } from "@/types";
+import { apiRequest } from "../utils/apiUtils";
 
 interface TasksState {
   tasks: Task[];
@@ -16,27 +16,31 @@ interface TasksState {
 
 // Helper functions to interact with the API routes
 const fetchTasks = async (): Promise<Task[]> => {
-  return apiRequest("/api/tasks", "GET");
+  return apiRequest({ url: "/api/tasks", method: "GET" });
 };
 
 const postTask = async (newTask: Omit<Task, "id">): Promise<Task> => {
-  return apiRequest("/api/tasks", "POST", newTask);
+  return apiRequest({ url: "/api/tasks", method: "POST", body: newTask });
 };
 
 const putTask = async (
   id: number,
   updatedTask: Partial<Task>,
 ): Promise<Task> => {
-  return apiRequest(`/api/tasks?id=${id}`, "PUT", updatedTask);
+  return apiRequest({
+    url: `/api/tasks/${id}`,
+    method: "PUT",
+    body: updatedTask,
+  });
 };
 
 const deleteTaskById = async (id: number): Promise<void> => {
-  return apiRequest(`/api/tasks?id=${id}`, "DELETE");
+  return apiRequest({ url: `/api/tasks/${id}`, method: "DELETE" });
 };
 
 // Zustand store for tasks
 export const useTasksStore = create<TasksState>()(
-  devtools((set) => ({
+  devtools((set, get) => ({
     tasks: [],
     loading: false,
     error: null,
@@ -84,21 +88,25 @@ export const useTasksStore = create<TasksState>()(
 
     // Delete a task using the API and update the store
     deleteTask: async (id) => {
+      const currentTasks = get().tasks; // Save current state before the optimistic update
+
       // Optimistic update: Remove task before API response
       set((state) => ({
         tasks: state.tasks.filter((task) => task.id !== id),
         loading: true,
         error: null,
       }));
+
       try {
         await deleteTaskById(id);
+        set({ loading: false });
       } catch (err) {
         // Revert state if API call fails
-        set((state) => ({
-          tasks: [...state.tasks], // Restore previous state
+        set({
+          tasks: currentTasks, // Restore previous state
           error: (err as Error).message,
           loading: false,
-        }));
+        });
       }
     },
   })),
