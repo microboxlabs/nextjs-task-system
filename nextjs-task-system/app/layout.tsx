@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
+import "react-datepicker/dist/react-datepicker.css";
+import { initDB } from "@/utils/init";
+import NavBar from "@/components/NavBar";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,12 +19,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // llamar a la funcion de inicialización de la base de datos
+  initDB();
+
   return (
     <html lang="en">
       <head>
         <ThemeModeScript />
       </head>
-      <body className={inter.className}>{children}</body>
+
+      <body className={inter.className}>
+        <AuthProvider>
+          <NavBar />
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

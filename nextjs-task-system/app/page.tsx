@@ -1,10 +1,33 @@
-import { DarkThemeToggle } from "flowbite-react";
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center gap-2 dark:bg-gray-800">
-      <h1 className="text-2xl dark:text-white">Flowbite React + Next.js</h1>
-      <DarkThemeToggle />
-    </main>
-  );
+  const { isAuthenticated, token } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("Service Worker registrado:", registration);
+        })
+        .catch((error) => {
+          console.error("Error al registrar Service Worker:", error);
+        });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      router.push("/dashboard");
+    } else if (!token) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, token, router]);
+
+  return <div>Loading...</div>;
 }
