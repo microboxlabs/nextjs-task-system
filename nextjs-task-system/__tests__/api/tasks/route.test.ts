@@ -26,7 +26,7 @@ describe("API: /api/tasks", () => {
   it("POST /api/tasks should create a new task", async () => {
     const newTask = createValidTask();
 
-    const request = new Request("http://localhost:3000/api/tasks", {
+    const request = new Request("http://localhost:3001/api/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +46,7 @@ describe("API: /api/tasks", () => {
   it("POST /api/tasks should handle invalid task data", async () => {
     const invalidTask = { title: "Incomplete Task" }; // Missing required fields
 
-    const request = new Request("http://localhost:3000/api/tasks", {
+    const request = new Request("http://localhost:3001/api/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -75,7 +75,7 @@ describe("API: /api/tasks", () => {
       priority: "high",
     };
 
-    const request = new Request("http://localhost:3000/api/tasks", {
+    const request = new Request("http://localhost:3001/api/tasks", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -95,7 +95,7 @@ describe("API: /api/tasks", () => {
   it("PUT /api/tasks should handle invalid data (missing ID)", async () => {
     const updatedTaskData = { status: "inProgress" }; // Missing task ID
 
-    const request = new Request("http://localhost:3000/api/tasks", {
+    const request = new Request("http://localhost:3001/api/tasks", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +117,7 @@ describe("API: /api/tasks", () => {
     const taskToDelete = tasksResponse.data[0]; // Get the first existing task
 
     const request = new Request(
-      `http://localhost:3000/api/tasks?id=${taskToDelete.id}`,
+      `http://localhost:3001/api/tasks?id=${taskToDelete.id}`,
       {
         method: "DELETE",
       },
@@ -140,7 +140,7 @@ describe("API: /api/tasks", () => {
   });
 
   it("DELETE /api/tasks should handle non-existent task", async () => {
-    const request = new Request("http://localhost:3000/api/tasks?id=9999", {
+    const request = new Request("http://localhost:3001/api/tasks?id=9999", {
       method: "DELETE",
     });
 
