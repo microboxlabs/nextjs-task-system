@@ -17,11 +17,15 @@ export const tasksAdapter = {
     // Generate an ID simulating auto-increment behavior
     const nextId =
       taskList.length > 0 ? Math.max(...taskList.map((t) => t.id)) + 1 : 1;
+
     const task = {
       id: nextId,
       ...newTask,
       createdAt: new Date().toISOString(),
+      dueDate: newTask.dueDate || "",
+      assignedTo: newTask.assignedTo || "",
     };
+
     taskList.push(task);
     // Simulates inserting into the database
     return new Promise((resolve) => {
