@@ -1,0 +1,57 @@
+### Obtener las tareas (ADMIN todas, USUARIO REGULAR las asignadas)
+GET http://localhost:3000/api/task
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczMzQ0MDI2NSwiZXhwIjoxNzkzNDQwMjA1fQ.dy1eBje3z8qGsbhOD0oPusjbbGXcW12h28W88sFHVqk
+
+### Registrar nuevo tarea (ADMIN)
+POST http://localhost:3000/api/task
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
+
+{
+    "title": "tarea 1",
+    "description": "description tarea 1",
+    "assignedTo": ["1"],
+    "dueDate": "2024-07-17T15:47:50.449+00:00",
+    // priority Opcional default(low)
+    "priority":"low", 
+    // status Opcional default(pending)
+    "status":"pending" 
+}
+
+
+### Actualizar tarea por ID (ADMIN)
+PUT http://localhost:3000/api/task
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMzMTk1OTM1LCJleHAiOjE3MzkxOTU4NzV9.BuHCE-wrl5CVcJJpv1PFCPou6E-PZ-kzx71OGPQfENc
+
+{
+    "id": "2",
+    "title": "tarea 1",
+    "description": "description tarea 1",
+    "assignedTo": ["1"],
+    "dueDate": "2024-07-17T15:47:50.449+00:00",
+    "priority":"low",
+    "status":"pending"
+}
+
+### Actualizar tarea por ID (USER regular)
+PUT http://localhost:3000/api/task
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ1c2VyMSIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzMzNDQwOTcwLCJleHAiOjE3OTM0NDA5MTB9.ylD6Uj5dNzRFYJPKmrf2g5BfQidue19YaSG-PvWCC4E
+
+{
+    "id": "1",
+    // status Opcional default(pending)
+    "status":"pending" 
+}
+
+### Eliminar tarea por ID (ADMIN)
+DELETE http://localhost:3000/api/task?id=1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ1c2VyMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczMzI3NzY1MywiZXhwIjoxNzM5Mjc3NTkzfQ.kaOtR_Mx-Ew3moHm62HpQuVcI83OLZ4YVY-ghOND7s0

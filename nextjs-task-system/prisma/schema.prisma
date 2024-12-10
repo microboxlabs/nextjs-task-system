@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Configuración de la conexión a la base de datos
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo Usuario con relación a tareas y comentarios
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  password  String
+  role      Role
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tasks     Task[]  
+  comments  Comment[]
+}
+
+// Enumeración para los roles de usuario
+enum Role {
+  admin
+  regular
+}
+
+// Modelo Tarea con relaciones a usuarios (assignedTo) y comentarios
+model Task {
+  id          Int         @id @default(autoincrement())
+  title       String
+  description String
+  assignedTo  User[]  
+  dueDate     DateTime
+  priority    Priority
+  status      Status
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  comments    Comment[]
+}
+
+// Enumeración para las prioridades de las tareas
+enum Priority {
+  low
+  medium
+  high
+}
+
+// Enumeración para el estado de las tareas
+enum Status {
+  pending
+  inProgress
+  completed
+}
+
+// Modelo Comentario con relación al usuario y la tarea
+model Comment {
+  id        Int      @id @default(autoincrement())
+  message   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade) // Eliminación en cascada al eliminar la tarea
+  taskId    Int
+  createdAt DateTime @default(now())
+}
