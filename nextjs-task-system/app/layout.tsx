@@ -22,9 +22,9 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body
-        className={`${inter.className} bg-white text-gray-600 dark:bg-gray-900 dark:text-gray-400`}
+        className={`${inter.className} w-full min-w-0 flex-auto bg-white text-gray-600 dark:bg-gray-900 dark:text-gray-400`}
       >
-        <div className="flex min-h-screen flex-col">
+        <div className="mx-auto flex min-h-screen max-w-screen-xl flex-col">
           <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
         </div>
