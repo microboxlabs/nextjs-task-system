@@ -13,7 +13,7 @@ export function TaskList({ title, tasks }: TaskListProps) {
       <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
         {title}
       </h3>
-      <div className="flex-1 flex-col gap-4 sm:gap-3">
+      <div className="flex flex-1 flex-col gap-2 lg:gap-4">
         {tasks.length > 0 ? (
           tasks.map((task) => <TaskCard key={task.id} task={task} />)
         ) : (
