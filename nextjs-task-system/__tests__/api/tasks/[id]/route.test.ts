@@ -3,7 +3,10 @@ import { GET, PUT, DELETE } from "@/app/api/tasks/[id]/route";
 describe("API: /api/tasks", () => {
   it("GET /api/tasks/:id should return a task by ID", async () => {
     const id = "1";
-    const response = await GET({ params: { id: id } });
+    const request = new Request(`http://localhost:3001/api/tasks/${id}`, {
+      method: "GET",
+    });
+    const response = await GET(request, { params: { id: id } });
     const responseBody = await response.json();
 
     expect(response.status).toBe(200); // Check for successful status
@@ -13,7 +16,10 @@ describe("API: /api/tasks", () => {
 
   it("PUT /api/tasks/:id should update an existing task", async () => {
     const id = "6";
-    const getResponse = await GET({ params: { id: id } });
+    const getRequest = new Request(`http://localhost:3001/api/tasks/${id}`, {
+      method: "GET",
+    });
+    const getResponse = await GET(getRequest, { params: { id: id } });
     const tasksResponse = await getResponse.json();
     const validTask = tasksResponse.data;
 
