@@ -1,27 +1,83 @@
 "use client";
+import {
+  Avatar,
+  Badge,
+  Button,
+  DarkThemeToggle,
+  Dropdown,
+  Navbar,
+} from "flowbite-react";
 import { signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export const Header = () => {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   if (status === "loading") return null;
   return (
-    <header>
-      {session ? (
-        <div>
-          <p>{session.user?.name}</p>
-          <p>{session.user?.email}</p>
-          <p>{(session.user as any).role}</p>
-          <button onClick={() => signOut()} className="btn-logout">
-            signOut
-          </button>
+    <>
+      <Navbar fluid rounded>
+        <Link href="/">
+          <Navbar.Brand>
+            <img
+              src="https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/15729/MBL_2_SIN_FONDO(2).png"
+              className="mr-3 h-6 sm:h-9"
+              alt="ML Logo"
+            />
+            <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+              Tasks System
+            </span>
+          </Navbar.Brand>
+        </Link>
+        <div className="flex gap-2 md:order-2">
+          <DarkThemeToggle />
+          {session ? (
+            <Dropdown
+              arrowIcon={false}
+              inline
+              label={
+                <Avatar
+                  alt="User settings"
+                  img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                  rounded
+                />
+              }
+            >
+              <Dropdown.Header>
+                <span className="block text-sm">{session.user?.name}</span>
+                <Badge className="ml-auto inline-block" color="gray">
+                  {(session.user as any).role}
+                </Badge>
+                <span className="block truncate text-sm font-medium">
+                  {session.user?.email}
+                </span>
+              </Dropdown.Header>
+              {/* <Dropdown.Divider /> */}
+              <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
+            </Dropdown>
+          ) : (
+            <Link href="/auth/signin">
+              <Button>Sign In</Button>
+            </Link>
+          )}
+          {session && <Navbar.Toggle />}
         </div>
-      ) : (
-        <div>
-          <h1>You are not logged in</h1>
-          <Link href="/auth/signin">sign in</Link>
-        </div>
-      )}
-    </header>
+        {session && (
+          <Navbar.Collapse>
+            <Link href="/">
+              <Navbar.Link active={pathname === "/"}>
+                Task Dashboard
+              </Navbar.Link>
+            </Link>
+            <Link href="/tasks/create">
+              <Navbar.Link active={pathname === "/tasks/create"}>
+                Create Task
+              </Navbar.Link>
+            </Link>
+          </Navbar.Collapse>
+        )}
+      </Navbar>
+    </>
   );
 };

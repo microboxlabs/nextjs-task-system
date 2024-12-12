@@ -22,13 +22,9 @@ const SignInPage = () => {
         redirect: false,
       });
 
-      console.log(result);
-
       if (result?.error) {
         setError(result.error);
       } else {
-        console.log("entered");
-
         router.push("/");
       }
     } catch (error) {
@@ -37,7 +33,7 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex flex-1 items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
         <h1 className="mb-6 text-center text-2xl font-bold">Sign In</h1>
         {error && (

@@ -23,7 +23,9 @@ export default function RootLayout({
         <head>
           <ThemeModeScript />
         </head>
-        <body className={inter.className}>
+        <body
+          className={`${inter.className} flex min-h-screen flex-col dark:bg-gray-800`}
+        >
           <Header />
           {children}
         </body>
