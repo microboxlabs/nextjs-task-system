@@ -1,5 +1,5 @@
 import { Task } from "@/types/taskTypes";
-import { Card } from "flowbite-react";
+import { Card, CustomFlowbiteTheme } from "flowbite-react";
 import { TaskCard } from "./TaskCard";
 
 interface TaskListProps {
@@ -7,9 +7,15 @@ interface TaskListProps {
   tasks: Task[];
 }
 
+const customCardTheme: CustomFlowbiteTheme["card"] = {
+  root: {
+    children: "flex h-full flex-col justify-center gap-4 p-4 md:p-6",
+  },
+};
+
 export function TaskList({ title, tasks }: TaskListProps) {
   return (
-    <Card className="flex flex-1 flex-col">
+    <Card theme={customCardTheme} className="flex flex-1 flex-col">
       <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
         {title}
       </h3>
