@@ -74,7 +74,8 @@ model Tasks {
   status      TaskStatus @default(PENDING)
   assigned_to String
   group_id    String
-  due_date    DateTime
+  due_date    DateTime  @db.Date
+  created_at  DateTime  @default(now()) @db.Date
   priority    Priority   @default(LOW)
   comments    Comments[]
   user        Users       @relation(fields: [assigned_to], references: [id])

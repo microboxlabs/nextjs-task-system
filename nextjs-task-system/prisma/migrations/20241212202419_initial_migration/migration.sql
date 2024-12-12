@@ -47,7 +47,8 @@ CREATE TABLE "tasks" (
     "status" "TaskStatus" NOT NULL DEFAULT 'PENDING',
     "assigned_to" TEXT NOT NULL,
     "group_id" TEXT NOT NULL,
-    "due_date" TIMESTAMP(3) NOT NULL,
+    "due_date" DATE NOT NULL,
+    "created_at" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "priority" "Priority" NOT NULL DEFAULT 'LOW',
 
     CONSTRAINT "tasks_pkey" PRIMARY KEY ("id")

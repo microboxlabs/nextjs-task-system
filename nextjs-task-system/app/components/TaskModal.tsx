@@ -3,6 +3,9 @@ import { useRouter } from 'next/navigation';
 import { Button, Modal, Select } from 'flowbite-react';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 import { Task, Priority } from '../types';
 import { AddComments } from './AddComments';
@@ -26,6 +29,8 @@ const getPriorityColor = (priority: Priority) => {
 
 export const TaskModal = ({ task, showModal, onClose }: TaskModalProps) => {
   if (!task) return null
+
+  console.log(dayjs(task.due_date).utcOffset(8))
 
   const handleStatusChange = async(e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = await axios.put(`/api/v1/tasks/${task.id}`, { status: e.target.value })
@@ -51,11 +56,11 @@ export const TaskModal = ({ task, showModal, onClose }: TaskModalProps) => {
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Assigned to:</span>
-            <span>{task?.user.name}</span>
+            <span>{task?.user?.name}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Due date:</span>
-            <span>{dayjs(task?.due_date).format('MMMM DD, YYYY')}</span>
+            <span>{dayjs(task?.due_date).utcOffset(8).format('MMMM DD, YYYY')}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Priority:</span>

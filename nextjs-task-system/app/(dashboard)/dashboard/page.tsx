@@ -5,7 +5,7 @@ import { DashBoard } from "@/app/components/Dashboard";
 
 const Dashboard = () => {
   return (
-    <div className="flex w-[90%] mx-auto">
+    <div className="">
       <DashBoard />
     </div>
   );
