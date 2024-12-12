@@ -1,72 +1,86 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useTasksStore } from "@/stores/tasksStore";
-import { priorityOptions } from "@/utils/taskConstants";
 import { Label, TextInput, Textarea, Select, Button } from "flowbite-react";
-import { TaskPriority } from "@/types/taskTypes";
+import { Task, TaskPriority, TaskStatus } from "@/types/taskTypes";
+import { priorityOptions } from "@/utils/taskConstants";
+import { redirect } from "next/navigation";
 
-export function TaskForm() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [assignedTo, setAssignedTo] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("medium");
+interface TaskFormProps {
+  task?: Task;
+  onSubmit: (task: Task) => void;
+  onDelete?: (taskId: number) => void;
+  loading: boolean;
+}
 
-  const { createTask, loading, error } = useTasksStore();
-  const router = useRouter();
+export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
+  const [assignedTo, setAssignedTo] = useState(task?.assignedTo || "");
+  const [dueDate, setDueDate] = useState(task?.dueDate || "");
+  const [priority, setPriority] = useState<TaskPriority>(
+    task?.priority || "medium",
+  );
+  const [status, setStatus] = useState<TaskStatus>(task?.status || "pending");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCancel = () => {
+    redirect("/dashboard");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      // Create a new task using the provided store function
-      await createTask({
-        title,
-        description,
-        assignedTo,
-        dueDate,
-        priority,
-        comments: [],
-        status: "pending", // Set the initial status to "pending"
-      });
+    const newTask: Omit<Task, "id"> = {
+      title,
+      description,
+      assignedTo,
+      dueDate,
+      priority,
+      status,
+      comments: [],
+    };
 
-      // Redirect to the dashboard upon successful task creation
-      router.push("/dashboard");
-    } catch (err) {
-      // Handle any errors that occur during task creation
-      console.error("Error creating task:", err);
+    if (task) {
+      const updatedTask: Task = { id: task.id, ...newTask };
+      onSubmit(updatedTask as Task);
+    } else {
+      onSubmit(newTask as Task);
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDelete && task?.id) {
+      onDelete(task.id);
     }
   };
 
   return (
-    <div className="w-full max-w-md ">
-      <h2 className="mb-2 text-2xl font-semibold text-gray-900 dark:text-white md:mb-4">
-        Create Task
-      </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="title" value="Title" />
-          </div>
-          <TextInput
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+    <form
+      onSubmit={handleSubmit}
+      className="flex w-full flex-col gap-2 md:gap-4"
+    >
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="title" value="Title" />
         </div>
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="description" value="Description" />
-          </div>
-          <Textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+        <TextInput
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={loading}
+        />
+      </div>
+      <div>
+        <div className="mb-2 block">
+          <Label htmlFor="description" value="Description" />
         </div>
+        <Textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          disabled={loading}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <div className="mb-2 block">
             <Label htmlFor="assignedTo" value="Assigned To" />
@@ -75,18 +89,19 @@ export function TaskForm() {
             id="assignedTo"
             value={assignedTo}
             onChange={(e) => setAssignedTo(e.target.value)}
+            disabled={loading}
           />
         </div>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="dueDate" value="Due Date" />
           </div>
-
           <TextInput
             id="dueDate"
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
+            disabled={loading}
           />
         </div>
         <div>
@@ -97,6 +112,7 @@ export function TaskForm() {
             id="priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value as TaskPriority)}
+            disabled={loading}
           >
             {Object.values(priorityOptions).map(({ label, value }) => (
               <option key={value} value={value}>
@@ -105,10 +121,51 @@ export function TaskForm() {
             ))}
           </Select>
         </div>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Create Task"}
-        </Button>
-      </form>
-    </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="status" value="Status" />
+          </div>
+          <Select
+            id="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as TaskStatus)}
+            disabled={loading}
+          >
+            <option value="pending">Pending</option>
+            <option value="inProgress">In Progress</option>
+            <option value="completed">Completed</option>
+          </Select>
+        </div>
+      </div>
+      <div className={`mt-4 flex flex-col gap-4 md:flex-row`}>
+        <div
+          className={`flex w-full ${onDelete ? "md:w-2/3" : "md:w-full"} gap-4`}
+        >
+          <Button
+            color="gray"
+            onClick={handleCancel}
+            disabled={loading}
+            className="w-1/2 md:w-full"
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={loading} className="w-1/2 md:w-full">
+            Save
+          </Button>
+        </div>
+        {onDelete && (
+          <div className="w-full md:w-1/3">
+            <Button
+              color="failure"
+              onClick={handleDelete}
+              disabled={loading}
+              className="w-full"
+            >
+              Delete
+            </Button>
+          </div>
+        )}
+      </div>
+    </form>
   );
 }
