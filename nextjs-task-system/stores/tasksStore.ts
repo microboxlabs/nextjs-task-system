@@ -53,6 +53,7 @@ export const useTasksStore = create<TasksState>()(
         set({ tasks, loading: false });
       } catch (err) {
         set({ error: (err as Error).message, loading: false });
+        throw err;
       }
     },
 
@@ -67,6 +68,7 @@ export const useTasksStore = create<TasksState>()(
         }));
       } catch (err) {
         set({ error: (err as Error).message, loading: false });
+        throw err;
       }
     },
 
@@ -83,6 +85,7 @@ export const useTasksStore = create<TasksState>()(
         }));
       } catch (err) {
         set({ error: (err as Error).message, loading: false });
+        throw err;
       }
     },
 
@@ -107,6 +110,7 @@ export const useTasksStore = create<TasksState>()(
           error: (err as Error).message,
           loading: false,
         });
+        throw err;
       }
     },
   })),
