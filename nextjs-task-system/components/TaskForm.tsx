@@ -1,9 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTasksStore } from "@/stores/tasksStore";
+import { priorityOptions } from "@/utils/taskConstants";
+import { Label, TextInput, Textarea, Select, Button } from "flowbite-react";
 import { TaskPriority } from "@/types/taskTypes";
-import { useRouter } from "next/navigation";
 
 export function TaskForm() {
   const [title, setTitle] = useState("");
@@ -39,78 +41,74 @@ export function TaskForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 rounded bg-white p-6 shadow"
-    >
-      <h2 className="text-2xl font-semibold">Create Task</h2>
-      {error && <p className="text-sm text-red-500">{error}</p>}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Title</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Description
-        </label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-          className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Assigned To
-        </label>
-        <input
-          type="text"
-          value={assignedTo}
-          onChange={(e) => setAssignedTo(e.target.value)}
-          required
-          className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Due Date
-        </label>
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          required
-          className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Priority
-        </label>
-        <select
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as TaskPriority)}
-          className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
-      >
-        {loading ? "Creating..." : "Create Task"}
-      </button>
-    </form>
+    <div className="w-full max-w-md ">
+      <h2 className="mb-2 text-2xl font-semibold text-gray-900 dark:text-white md:mb-4">
+        Create Task
+      </h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="title" value="Title" />
+          </div>
+          <TextInput
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="description" value="Description" />
+          </div>
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="assignedTo" value="Assigned To" />
+          </div>
+          <TextInput
+            id="assignedTo"
+            value={assignedTo}
+            onChange={(e) => setAssignedTo(e.target.value)}
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="dueDate" value="Due Date" />
+          </div>
+
+          <TextInput
+            id="dueDate"
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="priority" value="Priority" />
+          </div>
+          <Select
+            id="priority"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value as TaskPriority)}
+          >
+            {Object.values(priorityOptions).map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Task"}
+        </Button>
+      </form>
+    </div>
   );
 }
