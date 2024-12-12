@@ -1,4 +1,4 @@
-import { Dashboard } from "../components/dashboard";
+import { Dashboard } from "../components/sidebar";
 import { FooterPage } from "../components/footer";
 import { NavBar } from "../components/navBar";
 
