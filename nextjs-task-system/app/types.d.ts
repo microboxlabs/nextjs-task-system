@@ -6,10 +6,10 @@ export type Task = {
   title: string
   description: string
   status: TaskStatus
-  user: { id: string, name: string }
+  user?: { id: string, name: string }
   due_date: string
   priority: Priority
-  comments: Comment[]
+  comments?: Comment[]
 }
 
 export type User = {
