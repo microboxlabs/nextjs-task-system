@@ -6,11 +6,10 @@ import {
   validateInput,
 } from "@/utils";
 
-// Fetch all tasks
 export async function getTasksHandler() {
   try {
     const tasks = await tasksAdapter.fetchTasks();
-    return {
+    const result = {
       status: 200,
       json: {
         success: true,
@@ -18,17 +17,28 @@ export async function getTasksHandler() {
         data: tasks,
       },
     };
+    console.log("Tasks fetched result:", result);
+    return result;
   } catch (error) {
+    console.error("Error fetching tasks:", error);
     return handleGeneralError(error);
   }
 }
 
-// Fetch a single task by ID
-export async function getTaskHandler(id: string) {
-  try {
-    const task = await tasksAdapter.getTaskById(Number(id));
+export async function getTaskHandler(request: Request, { id }: { id: string }) {
+  if (!id) {
+    return handleGeneralError(new Error("Task ID is required"));
+  }
 
-    return {
+  try {
+    const taskId = Number(id);
+    if (isNaN(taskId)) {
+      throw new Error("Invalid task ID");
+    }
+    console.log(`Fetching task with ID: ${taskId}`);
+    const task = await tasksAdapter.getTaskById(taskId);
+
+    const result = {
       status: 200,
       json: {
         success: true,
@@ -36,21 +46,26 @@ export async function getTaskHandler(id: string) {
         data: task,
       },
     };
+    console.log("Fetch task result:", result);
+    return result;
   } catch (error) {
+    console.error("Error fetching task:", error);
     return handleGeneralError(error);
   }
 }
 
-// Create a new task
-export async function createTaskHandler(data: any) {
-  const validationError = validateInput(taskSchema, data);
+export async function createTaskHandler(request: Request) {
+  const body = await request.json();
+  console.log("Request body for new task:", body);
+
+  const validationError = validateInput(taskSchema, body);
   if (validationError) {
     return handleValidationError(validationError);
   }
 
   try {
-    const newTask = await tasksAdapter.createTask(data);
-    return {
+    const newTask = await tasksAdapter.createTask(body);
+    const result = {
       status: 201,
       json: {
         success: true,
@@ -58,22 +73,33 @@ export async function createTaskHandler(data: any) {
         data: newTask,
       },
     };
+    console.log("Create task result:", result);
+    return result;
   } catch (error) {
+    console.error("Error creating task:", error);
     return handleGeneralError(error);
   }
 }
 
-// Update an existing task
-export async function updateTaskHandler(id: string, data: any) {
-  const validationError = validateInput(updateTaskSchema, data);
+export async function updateTaskHandler(
+  request: Request,
+  { id }: { id: string },
+) {
+  if (!id) {
+    return handleGeneralError(new Error("Task ID is required"));
+  }
+
+  const body = await request.json();
+  console.log("Request body for updating task:", body);
+
+  const validationError = validateInput(updateTaskSchema, body);
   if (validationError) {
     return handleValidationError(validationError);
   }
 
   try {
-    const updatedTask = await tasksAdapter.updateTask(Number(id), data);
-
-    return {
+    const updatedTask = await tasksAdapter.updateTask(Number(id), body);
+    const result = {
       status: 200,
       json: {
         success: true,
@@ -81,24 +107,35 @@ export async function updateTaskHandler(id: string, data: any) {
         data: updatedTask,
       },
     };
+    console.log("Update task result:", result);
+    return result;
   } catch (error) {
+    console.error("Error updating task:", error);
     return handleGeneralError(error);
   }
 }
 
-// Delete a task by ID
-export async function deleteTaskHandler(id: string) {
+export async function deleteTaskHandler(
+  request: Request,
+  { id }: { id: string },
+) {
+  if (!id) {
+    return handleGeneralError(new Error("Task ID is required"));
+  }
+
   try {
     await tasksAdapter.deleteTask(Number(id));
-
-    return {
+    const result = {
       status: 200,
       json: {
         success: true,
         message: "Task deleted successfully",
       },
     };
+    console.log("Delete task result:", result);
+    return result;
   } catch (error) {
+    console.error("Error deleting task:", error);
     return handleGeneralError(error);
   }
 }
