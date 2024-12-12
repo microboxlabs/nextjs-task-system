@@ -6,6 +6,7 @@ export function middleware(req: NextRequest) {
   const protectedPaths = [
     "/dashboard",
     "/task",
+    "/teams",
     "/api/v1/users",
     "/api/v1/groups",
     "/api/v1/tasks",

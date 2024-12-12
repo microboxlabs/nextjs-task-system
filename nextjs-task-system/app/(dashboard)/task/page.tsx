@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { SideNavBar } from "../components/SideNavBar";
-import { CreateTaskForm } from "../components/CreateTaskForm";
+import { CreateTaskForm } from "../../components/CreateTaskForm";
 
 interface User {
   id: string;
@@ -14,7 +13,7 @@ interface User {
 const Task = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -29,25 +28,21 @@ const Task = () => {
     fetchUser();
   }, []);
 
-  if (!user) {
-    router.push("/");
-    return null;
-  }
-
-  if(user?.role !== "ADMIN") {
-    router.push("/dashboard");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      return;
+    } else {
+      if (user?.role !== "ADMIN") {
+        router.push("/dashboard");
+        return;
+      }
+    }
+  }, [user]);
 
 
   return (
     <div className="flex">
-      <div className="w-1/6">
-        <SideNavBar />
-      </div>
-      <div className="w-5/6">
         <CreateTaskForm />
-      </div>
     </div>
   );
 };

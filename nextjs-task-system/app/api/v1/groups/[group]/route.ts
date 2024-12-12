@@ -13,6 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ grou
     },
     include: {
       members: true,
+      tasks: true,
     },
   });
   return Response.json(groups);

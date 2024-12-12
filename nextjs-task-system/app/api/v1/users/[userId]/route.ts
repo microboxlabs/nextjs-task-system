@@ -5,8 +5,12 @@ const prisma = new PrismaClient();
 export const GET = async (request: Request, { params }: { params: Promise<{ userId: string }> }) => {
     const { userId } = await params;
     const user = await prisma.users.findUnique({
+        relationLoadStrategy: "join",
         where: {
             id: userId,
+        },
+        include: {
+            groups: true,
         }
     });
     return Response.json(user);

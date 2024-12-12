@@ -5,27 +5,30 @@ import { Card, Button } from 'flowbite-react';
 import { TaskModal } from './TaskModal';
 import { Task, User } from '../types';
 
-export function DashBoard() {
+export function GroupDashboard({ groupId }: { groupId: string }) {
     const [user, setUser] = useState<User | null>(null);
-    const [group, setGroup] = useState('');
+    const [group, setGroup] = useState(groupId);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [showModal, setShowModal] = useState(false);
 
-    const columns = ['PENDING', 'IN_PROGRESS', 'COMPLETED']
+    const columns = ['PENDING', 'IN_PROGRESS', 'COMPLETED'] as const;
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await fetch("/api/v1/me");
-                const data = await response.json();
-                setUser(data);
-            } catch (error) {
-                console.error("Error fetching user:", error);
-            }
-        };
-        fetchUser();
-
+        if (groupId) {
+            return
+        } else {
+            const fetchUser = async () => {
+                try {
+                    const response = await fetch("/api/v1/me");
+                    const data = await response.json();
+                    setUser(data);
+                } catch (error) {
+                    console.error("Error fetching user:", error);
+                }
+            };
+            fetchUser();
+        }
     }, []);
 
     useEffect(() => {
@@ -52,12 +55,14 @@ export function DashBoard() {
     const fetchTasks = async () => {
         const res = await fetch('/api/v1/tasks')
         const data = await res.json()
+        console.log(data)
         setTasks(data)
     }
 
     const fetchTaskByGroupId = async (groupId: string) => {
         const res = await fetch(`/api/v1/groups/${groupId}`)
         const data = await res.json()
+        console.log(data.tasks)
         setTasks(data.tasks)
     }
 
@@ -79,7 +84,7 @@ export function DashBoard() {
         <div className="m-auto mt-6 flex w-[90%] flex-col gap-4 md:flex-row">
             {columns.map((column) => (
                 <div key={column} className="flex-1">
-                    <h3 className="mb-2 text-center text-lg font-semibold capitalize">{column.replace('-', ' ')}</h3>
+                    <h3 className="mb-2 text-lg font-semibold capitalize">{column.replace('-', ' ')}</h3>
                     <div className="h-full rounded-lg bg-gray-200 p-4">
                         {tasks
                             .filter((task) => task.status === column)

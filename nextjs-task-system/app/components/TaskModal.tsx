@@ -1,19 +1,11 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Modal, Select } from 'flowbite-react';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
-type Priority = 'LOW' | 'MEDIUM' | 'HIGH';
-type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'FINISHED';
-
-type Task = {
-  id: number
-  title: string
-  description: string
-  status: TaskStatus
-  user: { name: string }
-  due_date: Date
-  priority: Priority
-  comments: string[]
-}
+import { Task, Priority } from '../types';
+import { AddComments } from './AddComments';
 
 interface TaskModalProps {
   task: Task | null
@@ -35,8 +27,6 @@ const getPriorityColor = (priority: Priority) => {
 export const TaskModal = ({ task, showModal, onClose }: TaskModalProps) => {
   if (!task) return null
 
-  console.log(task)
-
   const handleStatusChange = async(e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = await axios.put(`/api/v1/tasks/${task.id}`, { status: e.target.value })
     if (newStatus) {
@@ -49,41 +39,32 @@ export const TaskModal = ({ task, showModal, onClose }: TaskModalProps) => {
       <Modal.Header>Task Details</Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
-          <h3 className="text-xl font-bold">{task.title}</h3>
-          <p>{task.description}</p>
+          <h3 className="text-xl font-bold">{task?.title}</h3>
+          <p>{task?.description}</p>
           <div className="flex justify-between">
             <span className="font-semibold">Status:</span>
-            <Select id="status" value={task.status} onChange={handleStatusChange} className="w-1/2">
+            <Select id="status" value={task?.status} onChange={handleStatusChange} className="w-1/2">
               <option value="PENDING">Pending</option>
               <option value="IN_PROGRESS">In Progress</option>
-              <option value="FINISHED">Finished</option>
+              <option value="COMPLETED">Completed</option>
             </Select>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Assigned to:</span>
-            <span>{task.user.name}</span>
+            <span>{task?.user.name}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Due date:</span>
-            {/* <span>{task.due_date.toLocaleDateString()}</span> */}
+            <span>{dayjs(task?.due_date).format('MMMM DD, YYYY')}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-semibold">Priority:</span>
-            <span className={`rounded px-2.5 py-0.5 text-xs font-semibold ${getPriorityColor(task.priority)}`}>
-              {task.priority}
+            <span className={`rounded px-2.5 py-0.5 text-xs font-semibold ${task?.priority ? getPriorityColor(task.priority) : ''}`}>
+              {task?.priority}
             </span>
           </div>
           <div>
-            <h4 className="mb-2 font-semibold">Comments:</h4>
-            {task.comments?.length > 0 ? (
-              <ul className="list-disc pl-5">
-                {task.comments.map((comment, index) => (
-                  <li key={index}>{comment}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>No comments yet.</p>
-            )}
+            <AddComments taskId={task.id} />
           </div>
         </div>
       </Modal.Body>

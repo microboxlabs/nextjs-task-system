@@ -7,18 +7,6 @@ import { Button, Label, TextInput, Textarea, Select } from 'flowbite-react'
 type Priority = 'LOW' | 'MEDIUM' | 'HIGH';
 type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'FINISHED';
 
-type Task = {
-    id: string
-    title: string
-    description: string
-    status: TaskStatus
-    assigned_to: string
-    due_date: Date
-    priority: Priority
-    comments: string[]
-    group_id: string
-}
-
 type Group = {
   id: string
   name: string
@@ -29,20 +17,6 @@ type User = {
   name: string
   group_id: string
 }
-
-const mockGroups: Group[] = [
-  { id: '1', name: 'Development' },
-  { id: '2', name: 'Design' },
-  { id: '3', name: 'Marketing' },
-]
-
-const mockUsers: User[] = [
-  { id: '1', name: 'Alice Johnson', group_id: '1' },
-  { id: '2', name: 'Bob Smith', group_id: '1' },
-  { id: '3', name: 'Charlie Brown', group_id: '2' },
-  { id: '4', name: 'Diana Prince', group_id: '2' },
-  { id: '5', name: 'Ethan Hunt', group_id: '3' },
-]
 
 export const CreateTaskForm = () => {
   const router = useRouter()
@@ -79,20 +53,13 @@ export const CreateTaskForm = () => {
   }, []);
 
   useEffect(() => {
-    userFromGroup(groupId);
+    if(groupId !== ''){
+       userFromGroup(groupId);
+    }
   }, [groupId])
 
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault()
-    // const newTask: Omit<Task, 'id' | 'comments'> = {
-    //   title,
-    //   description,
-    //   status,
-    //   assigned_to: assignedTo,
-    //   due_date: new Date(dueDate),
-    //   priority,
-    //   group_id: groupId
-    // }
     const res = await fetch('/api/v1/tasks', {
       method: 'POST',
       headers: {
@@ -112,15 +79,13 @@ export const CreateTaskForm = () => {
       console.error('Failed to create task');
       return;
     }
-    // Here you would typically send the new task to your backend
-    // console.log('New task:', newTask)
     router.push('/dashboard')
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold ">Create New Task</h1>
-      <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
+    <div className="w-[90%] mx-auto px-4 py-8">
+      <h1 className="mb-6 text-center text-2xl font-bold ">Create New Task</h1>
+      <form onSubmit={()=>handleSubmit} className="max-w-lg mx-auto space-y-4">
         <div>
           <Label htmlFor="title">Title</Label>
           <TextInput

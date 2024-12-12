@@ -8,6 +8,7 @@ export const GET = async () => {
     relationLoadStrategy: "join",
     include: {
       user: true,
+      comments: true,
     },
   });
   return Response.json(tasks);

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sidebar, DarkThemeToggle } from "flowbite-react";
+import { Sidebar, DarkThemeToggle, Button, Drawer } from "flowbite-react";
 import { useRouter } from "next/navigation";
-import { HiViewBoards, HiUser } from "react-icons/hi";
+import { HiViewBoards, HiUser, HiMenu } from "react-icons/hi";
 import { RiLogoutBoxRLine, RiTeamFill } from "react-icons/ri";
 import { FaTasks } from "react-icons/fa";
 
@@ -16,6 +16,9 @@ interface User {
 export const SideNavBar = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClose = () => setIsOpen(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,34 +44,46 @@ export const SideNavBar = () => {
   }
 
   return (
-    <Sidebar aria-label="Sidebar with logo branding example">
-      <Sidebar.Logo href="#" img="/favicon.ico" imgAlt="Flowbite logo">
-        Task Manager
-      </Sidebar.Logo>
-      <Sidebar.Items>
-        <Sidebar.ItemGroup>
-          <Sidebar.Item href="/dashboard" icon={HiViewBoards} active={true}>
-            Dashboard
-          </Sidebar.Item>
-          <Sidebar.Item href="/teams" icon={RiTeamFill}>
-            Grupos de trabajo
-          </Sidebar.Item>
-          {user?.role === "ADMIN" && (
-            <>
-            <Sidebar.Item href="/users" icon={HiUser}>
-            Usuarios
-          </Sidebar.Item>
-          <Sidebar.Item href="/task" icon={FaTasks}>
-            Tareas
-          </Sidebar.Item>
-          </>
-          )}
-          <Sidebar.Item href="#" onClick={handleLogout} icon={RiLogoutBoxRLine}>
-            Logout
-          </Sidebar.Item>
-        </Sidebar.ItemGroup>
-        <DarkThemeToggle />
-      </Sidebar.Items>
-    </Sidebar>
+    <>
+      <div className="flex flex-wrap gap-2 min-h-[10vh] items-center justify-center">
+        {!isOpen && (<Button onClick={() => setIsOpen(true)}>
+          <HiMenu className="mr-2 h-5 w-5"  /> Open Navbar
+        </Button>)}
+      </div>
+      <Drawer backdrop={false} open={isOpen} onClose={handleClose} >
+        <Drawer.Header title="MENU" titleIcon={() => <></>} />
+        <Drawer.Items>
+          <Sidebar aria-label="Sidebar with logo branding example">
+            <Sidebar.Items>
+              <Sidebar.ItemGroup>
+                <Sidebar.Item href="/dashboard" icon={HiViewBoards} active={true}>
+                  Dashboard
+                </Sidebar.Item>
+                <Sidebar.Item href="/teams" icon={RiTeamFill}>
+                  My teams
+                </Sidebar.Item>
+                {user?.role === "ADMIN" && (
+                  <>
+                    <Sidebar.Item href="/teams/create" icon={HiUser}>
+                      Create Team
+                    </Sidebar.Item>
+                    <Sidebar.Item href="/users" icon={HiUser}>
+                      Users
+                    </Sidebar.Item>
+                    <Sidebar.Item href="/task" icon={FaTasks}>
+                      Create tasks
+                    </Sidebar.Item>
+                  </>
+                )}
+                <Sidebar.Item href="#" onClick={handleLogout} icon={RiLogoutBoxRLine}>
+                  Logout
+                </Sidebar.Item>
+              </Sidebar.ItemGroup>
+              <DarkThemeToggle />
+            </Sidebar.Items>
+          </Sidebar>
+        </Drawer.Items>
+      </Drawer >
+    </>
   );
 };

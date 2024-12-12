@@ -20,7 +20,6 @@ export const LoginForm = () => {
     }
 
     try {
-      console.log("Login attempt with:", { email, password });
       const login = await fetch("/api/v1/login", {
         method: "POST",
         headers: {
@@ -28,10 +27,11 @@ export const LoginForm = () => {
         },
         body: JSON.stringify({ email, password }),
       });
+      console.log(login);
       if (login.status !== 200) {
         console.log("Login unsuccessful");
       }
-      router.push("/dashboard");
+      router.push("/teams");
       router.refresh();
     } catch (err) {
       setError("Invalid email or password");
