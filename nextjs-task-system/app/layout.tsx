@@ -24,10 +24,12 @@ export default function RootLayout({
       <body
         className={`${inter.className} w-full min-w-0 flex-auto bg-white text-gray-600 dark:bg-gray-900 dark:text-gray-400`}
       >
-        <Navbar />
-        <main className="mx-auto flex w-full max-w-screen-xl flex-1 flex-col px-2 pt-2 md:px-4 md:pt-4">
-          {children}
-        </main>
+        <div className="flex h-screen flex-col">
+          <Navbar />
+          <main className="mx-auto flex flex-1 flex-col p-2 md:p-4">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );
