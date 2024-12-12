@@ -21,10 +21,15 @@ There is already a migration file in the project and a seeder. To get your datab
 npm run migrate
 ```
 
-This should also generate the client for the project and the seed into the database. In case you encounter an issue, run the following scripts. 
+This should also generate the client for the project. In case you encounter an issue, run the following scripts. 
 
 ```bash
 npm run generate
+```
+
+And finally, I have some dummy data you can seed if you wish to do it. 
+
+```bash
 npx prisma db seed
 ```
 
