@@ -61,9 +61,30 @@ Here is the README in English:
   - Displays tasks organized by status (Pending, In Progress, Completed).
   - Fully integrated with the Zustand store.
 
+### Day 4: Task Creation and Management
+
+📝 **Task Creation**
+
+- Completed the form for creating tasks (Admin):
+  - Captures title, description, assignment, due date, and priority.
+  - Connected the form to the API route `/api/tasks` to save new tasks.
+
+🛠️ **Task Management**
+
+- Created the component for the comments section.
+- Added the delete button to the task form.
+
+### Day 5: Task Details Page Integration
+
+🔗 **Task Details Page**
+
+- Integrated components into the task details page accessible at `http://localhost:3000/tasks/[id]`.
+- Users can view, update (information or add comments), or delete tasks.
+- Integrated with API routes for PUT and DELETE at `http://localhost:3000/api/tasks/[id]`.
+
 ---
 
-### Collaborators
+## Collaborators
 
 - @korutx
 - @odtorres
@@ -88,17 +109,19 @@ npm run dev
 
 ## Next Steps
 
-### **Implement the Creation and Management of Tasks**
+### **Implementación de Roles y Autorización**
 
-1. **Form for Creating Tasks (Admin):**
+1. **Definir Roles:**
 
-   - Design a form to capture:
-     - Title, description, assignment, due date, priority.
-   - Connect the form to the API route `/api/tasks` to save new tasks.
+   - Añadir un campo `role` al usuario (Admin o Regular).
+   - Simular la autenticación añadiendo datos de usuario a un archivo `users.json`.
 
-2. **Task Management:**
-   - Add buttons for editing and deleting tasks.
-   - Update API routes to handle these actions (`PUT` and `DELETE`).
+2. **Autorización en la UI:**
+
+   - Mostrar opciones de administración (crear, editar, eliminar) solo a usuarios Admin.
+
+3. **Autorización en las API Routes:**
+   - Validar el rol del usuario en las rutas API.
 
 ---
 
