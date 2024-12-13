@@ -14,11 +14,13 @@ export function NavBar() {
                     arrowIcon={false}
                     inline
                     label={
-                        <Avatar
-                            alt="User settings"
-                            img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                            rounded
-                        />
+                        <div className="shadow-lg border-2 border-grey-darker border-solid rounded-full">
+                            <Avatar
+                           
+                                rounded
+                            />
+                        </div>
+
                     }
                 >
                     <Dropdown.Header>

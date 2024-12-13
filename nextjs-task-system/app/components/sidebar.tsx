@@ -65,18 +65,28 @@ export function Dashboard() {
                                 id="statusFilter"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:text-sm"
                             >
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
                                 <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="complete">Complete</option>
+                                
+                            </select>
+                        </div>
+
+                        <div className="px-4 py-2">
+                            <label htmlFor="statusFilter" className="text-sm font-medium text-gray-700">
+                                Priority
+                            </label>
+                            <select
+                                id="statusFilter"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:text-sm"
+                            >
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
                             </select>
                         </div>
                     </Sidebar.ItemGroup>
 
-                    <Sidebar.ItemGroup>
-                        <Sidebar.Item href="#" icon={HiArrowSmRight}>
-                            Sign Out
-                        </Sidebar.Item>
-                    </Sidebar.ItemGroup>
                 </Sidebar.Items>
             </Sidebar>
 

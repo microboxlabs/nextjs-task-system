@@ -48,7 +48,7 @@ export function Form() {
                     <option>High</option>
                 </Select>
             </div>
-            <Button type="submit">Create new task</Button>
+
         </form>
     );
 }
