@@ -29,9 +29,12 @@ export const apiRequest = async <T>({
   body,
   headers = { "Content-Type": "application/json" },
 }: ApiRequestParams): Promise<T> => {
-  console.log(`API Request: ${method} ${url}`, body); // Log the request
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const fullUrl = `${baseUrl}${url}`;
 
-  const response = await fetch(url, {
+  console.log(`API Request: ${method} ${fullUrl}`, body);
+
+  const response = await fetch(fullUrl, {
     method,
     headers,
     body:
