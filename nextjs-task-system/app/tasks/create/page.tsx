@@ -122,7 +122,7 @@ const CreateTask = () => {
             <option>Low</option>
           </Select>
           <Button type="submit" className="btn btn-primary w-full">
-            Create Task
+            Create
           </Button>
         </form>
       </Card>
