@@ -15,20 +15,18 @@ export const taskSchema = z.object({
 });
 
 export const updateTaskSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(["pending", "inProgress", "completed"]).optional(),
+  title: z.string().min(1, "Title is required").optional(),
+  description: z.string().min(1, "Description is required").optional(),
+  status: z
+    .enum(["pending", "inProgress", "completed"])
+    .default("pending")
+    .optional(),
   dueDate: z
     .string()
-    .optional()
-    .refine(
-      (date) => {
-        return date ? !isNaN(Date.parse(date)) : true;
-      },
-      {
-        message: "Invalid date format",
-      },
-    ),
-  assignedTo: z.string().optional(),
-  priority: z.enum(["low", "medium", "high"]).optional(),
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: "Invalid date format",
+    })
+    .optional(),
+  assignedTo: z.string().min(1, "Assigned to is required").optional(),
+  priority: z.enum(["low", "medium", "high"]).default("medium").optional(),
 });
