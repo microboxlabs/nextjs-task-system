@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
-import Navbar from "@/components/Navbar";
+import { Navbar, Toast } from "@/components";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,6 +28,7 @@ export default function RootLayout({
           <Navbar />
           <main className="mx-auto flex w-full flex-1 flex-col p-2 md:p-4">
             {children}
+            <Toast />
           </main>
         </div>
       </body>
