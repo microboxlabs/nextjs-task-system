@@ -6,19 +6,20 @@ import { notFound } from "next/navigation";
 export default async function TaskDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
 
   let task: Task | null = null;
 
   try {
-    task = await apiRequest({
+    const result = await apiRequest<Task>({
       url: `/api/tasks/${id}`,
       method: "GET",
     });
+
+    task = result;
   } catch (error) {
-    console.error("Error fetching task:", error);
     notFound();
   }
 
