@@ -1,8 +1,10 @@
+"use client";
+
 import { useState } from "react";
 import { Label, TextInput, Textarea, Select, Button } from "flowbite-react";
 import { Task, TaskPriority, TaskStatus } from "@/types/taskTypes";
 import { priorityOptions } from "@/utils/taskConstants";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface TaskFormProps {
   task?: Task;
@@ -20,9 +22,10 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
     task?.priority || "medium",
   );
   const [status, setStatus] = useState<TaskStatus>(task?.status || "pending");
+  const router = useRouter();
 
   const handleCancel = () => {
-    redirect("/dashboard");
+    router.push("/dashboard");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
