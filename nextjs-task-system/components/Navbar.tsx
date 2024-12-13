@@ -1,16 +1,21 @@
 "use client";
 
-import { Navbar, Dropdown, Avatar, DarkThemeToggle } from "flowbite-react";
+import {
+  Avatar,
+  DarkThemeToggle,
+  Dropdown,
+  Navbar as FlowbiteNavbar,
+} from "flowbite-react";
 
-export default function AppNavbar() {
+export function Navbar() {
   return (
-    <Navbar fluid border>
+    <FlowbiteNavbar fluid border>
       <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between px-4">
-        <Navbar.Brand href="/">
+        <FlowbiteNavbar.Brand href="/">
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
             Task Manager
           </span>
-        </Navbar.Brand>
+        </FlowbiteNavbar.Brand>
         <div className="flex md:order-2">
           <DarkThemeToggle className="mr-4" />
           <Dropdown
@@ -26,15 +31,17 @@ export default function AppNavbar() {
             </Dropdown.Header>
             <Dropdown.Item>Sign out</Dropdown.Item>
           </Dropdown>
-          <Navbar.Toggle />
+          <FlowbiteNavbar.Toggle />
         </div>
-        <Navbar.Collapse>
-          <Navbar.Link href="/dashboard" active>
+        <FlowbiteNavbar.Collapse>
+          <FlowbiteNavbar.Link href="/dashboard" active>
             Home
-          </Navbar.Link>
-          <Navbar.Link href="/tasks/create">Create Task</Navbar.Link>
-        </Navbar.Collapse>
+          </FlowbiteNavbar.Link>
+          <FlowbiteNavbar.Link href="/tasks/create">
+            Create Task
+          </FlowbiteNavbar.Link>
+        </FlowbiteNavbar.Collapse>
       </div>
-    </Navbar>
+    </FlowbiteNavbar>
   );
 }
