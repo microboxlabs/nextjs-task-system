@@ -1,94 +1,68 @@
 [
   {
     "id": 1,
-    "title": "Initial Project Setup",
-    "description": "Configure the development environment, install dependencies, and ensure the application runs correctly at http://localhost:3000.",
+    "title": "Implement Feature A",
+    "description": "Details about feature A.",
     "status": "completed",
-    "dueDate": "2024-12-01",
-    "assignedTo": "John Doe",
+    "dueDate": "2024-12-20",
+    "assignedTo": "Admin",
     "priority": "high",
-    "comments": ["Install Next.js 14", "Set up Flowbite and Tailwind CSS"],
-    "createdAt": "2024-12-01T12:00:00.000Z"
+    "comments": [],
+    "createdAt": "2024-12-01T12:00:00Z"
   },
   {
     "id": 2,
-    "title": "Fix Security Vulnerabilities",
-    "description": "Update Next.js to version 14.2.20 to resolve security vulnerabilities reported by npm audit (Cache Poisoning, Denial of Service).",
-    "status": "completed",
-    "dueDate": "2024-12-01",
-    "assignedTo": "Jane Smith",
-    "priority": "high",
-    "comments": [
-      "Update Next.js",
-      "Verify application functionality after the update"
-    ],
-    "createdAt": "2024-12-02T12:00:00.000Z"
+    "title": "Fix Bug in Frontend",
+    "description": "Resolve the issue with the login form.",
+    "status": "inProgress",
+    "dueDate": "2024-12-15",
+    "assignedTo": "Frontend Team",
+    "priority": "medium",
+    "comments": [],
+    "createdAt": "2024-12-02T12:00:00Z"
   },
   {
     "id": 3,
-    "title": "Create Test Data in JSON Format",
-    "description": "Generate the tasks.json file with sample data for the task management system.",
-    "status": "completed",
-    "dueDate": "2024-12-01",
-    "assignedTo": "Carlos Perez",
-    "priority": "medium",
-    "comments": ["Generate sample task data", "Use JSON format for data"],
-    "createdAt": "2024-12-03T12:00:00.000Z"
+    "title": "Update API Documentation",
+    "description": "Ensure all endpoints are documented.",
+    "status": "inProgress",
+    "dueDate": "2024-12-25",
+    "assignedTo": "John Doe",
+    "priority": "low",
+    "comments": [],
+    "createdAt": "2024-12-03T12:00:00Z"
   },
   {
     "id": 4,
-    "title": "Complete Project Documentation",
-    "description": "Complete technical and user documentation, including setup, installation, and usage details for the application.",
-    "status": "completed",
-    "dueDate": "2024-12-01",
-    "assignedTo": "John Doe",
-    "priority": "low",
-    "comments": [
-      "Write installation steps",
-      "Explain how to configure and run the app"
-    ],
-    "createdAt": "2024-12-04T12:00:00.000Z"
+    "title": "Prepare Presentation for Client",
+    "description": "Create slides for the upcoming client meeting.",
+    "status": "pending",
+    "dueDate": "2024-12-18",
+    "assignedTo": "Jane Smith",
+    "priority": "high",
+    "comments": [],
+    "createdAt": "2024-12-04T12:00:00Z"
   },
   {
     "id": 5,
-    "title": "Implement API Routes for Tasks",
-    "description": "Develop the API routes to manage tasks (create, read, update, delete).",
-    "status": "completed",
-    "dueDate": "2024-12-10",
-    "assignedTo": "Anna Lee",
-    "priority": "high",
-    "comments": [
-      "Create the POST route to create tasks",
-      "Develop the GET route to fetch all tasks"
-    ],
-    "createdAt": "2024-12-05T12:00:00.000Z"
+    "title": "Backend Optimization",
+    "description": "Improve the performance of the backend services.",
+    "status": "pending",
+    "dueDate": "2024-12-30",
+    "assignedTo": "Backend Team",
+    "priority": "medium",
+    "comments": [],
+    "createdAt": "2024-12-05T12:00:00Z"
   },
   {
     "id": 6,
-    "title": "Design User Interface for Tasks",
-    "description": "Create the basic components to display and manage tasks in the user interface.",
-    "status": "inProgress",
-    "dueDate": "2024-12-05",
-    "assignedTo": "Carlos Perez",
-    "priority": "medium",
-    "comments": [
-      "Create task list",
-      "Implement design with Flowbite and Tailwind"
-    ],
-    "createdAt": "2024-12-06T12:00:00.000Z"
-  },
-  {
-    "id": 7,
-    "title": "Implement Unit Tests for Functionalities",
-    "description": "Write and run unit tests for functions related to tasks (CRUD operations).",
+    "title": "Deploy to Production",
+    "description": "Deploy the application to the production environment.",
     "status": "pending",
-    "dueDate": "2024-12-12",
-    "assignedTo": "David Kim",
-    "priority": "medium",
-    "comments": [
-      "Test the POST route for tasks",
-      "Verify error handling in routes"
-    ],
-    "createdAt": "2024-12-07T12:00:00.000Z"
+    "dueDate": "2024-12-31",
+    "assignedTo": "Admin",
+    "priority": "high",
+    "comments": [],
+    "createdAt": "2024-12-06T12:00:00Z"
   }
 ]
