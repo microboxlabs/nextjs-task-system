@@ -34,3 +34,13 @@ export function handleServerError(error: any) {
     },
   };
 }
+
+export function handleAuthError() {
+  return {
+    status: 401,
+    json: {
+      success: false,
+      message: "Invalid username or password.",
+    },
+  };
+}
