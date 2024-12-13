@@ -1,13 +1,26 @@
 // handlers\authHandlers.ts
 import { usersAdapter } from "@/adapters/usersAdapter";
-import { handleAuthError, handleGeneralError } from "@/utils/errorUtils";
+import { authenticateUserSchema } from "@/schemas/authSchema";
+import {
+  handleAuthError,
+  handleGeneralError,
+  handleValidationError,
+  validateInput,
+} from "@/utils";
 
 export async function authenticateUser(
   request: Request,
 ): Promise<{ status: number; json: any }> {
-  const { username, password } = await request.json();
+  const body = await request.json();
+  console.log("Request body for new task:", body);
+
+  const validationError = validateInput(authenticateUserSchema, body);
+  if (validationError) {
+    return handleValidationError(validationError);
+  }
 
   try {
+    const { username, password } = body;
     const user = await usersAdapter.validateUser(username, password);
 
     if (!user) {
