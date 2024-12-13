@@ -9,6 +9,8 @@ import {
 export async function getTasksHandler() {
   try {
     const tasks = await tasksAdapter.fetchTasks();
+    console.log("Fetched tasks:", JSON.stringify(tasks, null, 2));
+
     const result = {
       status: 200,
       json: {
@@ -37,6 +39,7 @@ export async function getTaskHandler(request: Request, { id }: { id: string }) {
     }
     console.log(`Fetching task with ID: ${taskId}`);
     const task = await tasksAdapter.getTaskById(taskId);
+    console.log("Fetched task:", JSON.stringify(task, null, 2));
 
     const result = {
       status: 200,
@@ -65,6 +68,8 @@ export async function createTaskHandler(request: Request) {
 
   try {
     const newTask = await tasksAdapter.createTask(body);
+    console.log("Created task:", JSON.stringify(newTask, null, 2));
+
     const result = {
       status: 201,
       json: {
@@ -99,6 +104,8 @@ export async function updateTaskHandler(
 
   try {
     const updatedTask = await tasksAdapter.updateTask(Number(id), body);
+    console.log("Updated task:", JSON.stringify(updatedTask, null, 2));
+
     const result = {
       status: 200,
       json: {
