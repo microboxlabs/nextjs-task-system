@@ -5,7 +5,9 @@ export const handleResponse = async <T>(response: Response): Promise<T> => {
 
   if (!response.ok || !result.success) {
     const errorMessage = result.message
-      ? JSON.stringify(result.message)
+      ? typeof result.message === "string"
+        ? result.message
+        : JSON.stringify(result.message)
       : `Error ${response.status}: ${response.statusText}`;
 
     if (result.errors) {
@@ -41,7 +43,9 @@ export const apiRequest = async <T>({
     body:
       method === "GET" || method === "DELETE"
         ? undefined
-        : JSON.stringify(body),
+        : typeof body === "string"
+          ? body
+          : JSON.stringify(body),
     cache,
   });
 
