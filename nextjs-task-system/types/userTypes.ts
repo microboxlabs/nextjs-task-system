@@ -5,3 +5,8 @@ export interface User {
   role: string;
   group: string;
 }
+
+export interface UserCredentials {
+  username: string;
+  password: string;
+}
