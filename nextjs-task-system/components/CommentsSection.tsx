@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Textarea, Button } from "flowbite-react";
 
