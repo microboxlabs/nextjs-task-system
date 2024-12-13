@@ -28,6 +28,7 @@ export const apiRequest = async <T>({
   method,
   body,
   headers = { "Content-Type": "application/json" },
+  cache = "no-store",
 }: ApiRequestParams): Promise<T> => {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const fullUrl = `${baseUrl}${url}`;
@@ -41,6 +42,7 @@ export const apiRequest = async <T>({
       method === "GET" || method === "DELETE"
         ? undefined
         : JSON.stringify(body),
+    cache,
   });
 
   return handleResponse<T>(response);

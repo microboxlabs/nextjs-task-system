@@ -3,6 +3,7 @@ export interface ApiRequestParams {
   method: string;
   body?: any;
   headers?: HeadersInit;
+  cache?: RequestCache;
 }
 
 export interface ApiResponse<T> {
