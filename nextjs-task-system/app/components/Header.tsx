@@ -10,10 +10,17 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useMemo } from "react";
+import { getAvatarUrl } from "../utils/getAvatarUrl";
 
 export const Header = () => {
   const { data: session, status } = useSession();
   const pathname = usePathname();
+
+  const avatarUrl = useMemo(() => {
+    return getAvatarUrl(session?.user.name || "n h");
+  }, [session?.user.name]);
+
   if (status === "loading") return null;
   return (
     <Navbar fluid rounded>
@@ -35,13 +42,7 @@ export const Header = () => {
           <Dropdown
             arrowIcon={false}
             inline
-            label={
-              <Avatar
-                alt="User settings"
-                img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                rounded
-              />
-            }
+            label={<Avatar alt="User settings" img={avatarUrl} rounded />}
           >
             <Dropdown.Header>
               <span className="block text-sm">{session.user?.name}</span>
@@ -65,7 +66,7 @@ export const Header = () => {
       {session && (
         <Navbar.Collapse>
           <Link href="/">
-            <Navbar.Link active={pathname === "/"}>Task Dashboard</Navbar.Link>
+            <Navbar.Link active={pathname === "/"}>Dashboard</Navbar.Link>
           </Link>
           <Link href="/tasks/create">
             <Navbar.Link active={pathname === "/tasks/create"}>
