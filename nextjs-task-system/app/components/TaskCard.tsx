@@ -1,9 +1,10 @@
+import { Task } from "@prisma/client";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { TaskDrag } from "../types";
+// import { TaskDrag } from "../types";
 
 interface TaskCardProps {
-  task: TaskDrag;
+  task: Task;
   index: number;
 }
 
@@ -22,11 +23,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
         >
           <h3>{task.title}</h3>
           <p>{task.description}</p>
+          <p>{/* <strong>Assigned To:</strong> {task.assignedTo} */}</p>
           <p>
-            <strong>Assigned To:</strong> {task.assignedTo}
-          </p>
-          <p>
-            <strong>Due Date:</strong> {task.dueDate}
+            <strong>Due Date:</strong> {task.dueDate.toString()}
           </p>
           <p>
             <strong>Priority:</strong> {task.priority}

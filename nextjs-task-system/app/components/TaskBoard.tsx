@@ -1,15 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import TaskColumn from "./TaskColumn";
 import { BoardData } from "../types";
+import { Task } from "@prisma/client";
+
+type TaskStatus = "Pending" | "InProgress" | "Completed";
 
 const initialData: BoardData = {
   columns: {
     Pending: {
       name: "Pending",
       tasks: [
-        {
+        /*         {
           id: 1,
           title: "Task 1",
           description: "Details of task 1",
@@ -32,10 +35,10 @@ const initialData: BoardData = {
           assignedTo: "User B",
           dueDate: "2024-12-20",
           priority: "Medium",
-        },
+        }, */
       ],
     },
-    "In Progress": {
+    InProgress: {
       name: "In Progress",
       tasks: [],
     },
@@ -48,6 +51,52 @@ const initialData: BoardData = {
 
 const TaskBoard: React.FC = () => {
   const [data, setData] = useState<BoardData>(initialData);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch("/api/tasks");
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        const tasks: Task[] = await response.json();
+        console.log(tasks, "tasks<");
+
+        const { Pending, InProgress, Completed } = tasks.reduce(
+          (colums, task) => {
+            colums[task.status as TaskStatus] = [
+              ...colums[task.status as TaskStatus],
+              task,
+            ];
+            return colums;
+          },
+          { Pending: [], InProgress: [], Completed: [] } as {
+            Pending: Task[];
+            InProgress: Task[];
+            Completed: Task[];
+          },
+        );
+        const data = { ...initialData };
+        data.columns["Pending"] = {
+          ...data.columns["[Pending"],
+          tasks: Pending,
+        };
+        data.columns["InProgress"] = {
+          ...data.columns["[InProgress"],
+          tasks: InProgress,
+        };
+        data.columns["Completed"] = {
+          ...data.columns["[Completed"],
+          tasks: Completed,
+        };
+        setData(data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -89,7 +138,7 @@ const TaskBoard: React.FC = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+      <div className="flex justify-center gap-5">
         {Object.entries(data.columns).map(([columnId, column]) => (
           <TaskColumn key={columnId} columnId={columnId} column={column} />
         ))}
