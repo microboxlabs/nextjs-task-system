@@ -1,10 +1,12 @@
-import { Task } from "@prisma/client";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
-// import { TaskDrag } from "../types";
+import { PriorityBadge, PriorityTask } from "./PriorityBadge";
+import { AvatarGroup } from "./AvatarGroup";
+import { TaskWithAssignments } from "../types";
+import { TaskDueDate } from "./TaskDueDate";
 
 interface TaskCardProps {
-  task: Task;
+  task: TaskWithAssignments;
   index: number;
 }
 
@@ -22,14 +24,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
           }}
         >
           <h3>{task.title}</h3>
-          <p>{task.description}</p>
-          <p>{/* <strong>Assigned To:</strong> {task.assignedTo} */}</p>
-          <p>
-            <strong>Due Date:</strong> {task.dueDate.toString()}
-          </p>
-          <p>
-            <strong>Priority:</strong> {task.priority}
-          </p>
+          <p className="pb-2 text-sm text-gray-600">{task.description}</p>
+          <TaskDueDate dueDate={task.dueDate.toString()} />
+          <div className="flex justify-between">
+            <PriorityBadge priority={task.priority as PriorityTask} />
+            <AvatarGroup assignments={task.assignments} />
+          </div>
         </div>
       )}
     </Draggable>

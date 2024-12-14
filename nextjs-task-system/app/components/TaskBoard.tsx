@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import TaskColumn from "./TaskColumn";
-import { BoardData } from "../types";
-import { Task } from "@prisma/client";
+import { BoardData, TaskWithAssignments } from "../types";
 import Filters from "./Filters";
 import Sort from "./Sort";
 import { useSession } from "next-auth/react";
@@ -61,7 +60,7 @@ const TaskBoard: React.FC = () => {
         throw new Error("Failed to fetch tasks");
       }
 
-      const tasks: Task[] = await response.json();
+      const tasks: TaskWithAssignments[] = await response.json();
 
       const { Pending, InProgress, Completed } = tasks.reduce(
         (columns, task) => {
@@ -72,9 +71,9 @@ const TaskBoard: React.FC = () => {
           return columns;
         },
         { Pending: [], InProgress: [], Completed: [] } as {
-          Pending: Task[];
-          InProgress: Task[];
-          Completed: Task[];
+          Pending: TaskWithAssignments[];
+          InProgress: TaskWithAssignments[];
+          Completed: TaskWithAssignments[];
         },
       );
 
