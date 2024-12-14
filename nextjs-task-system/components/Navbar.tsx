@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 const customNavbarTheme: CustomFlowbiteTheme["navbar"] = {
   root: {
-    base: "sticky top-0 z-[60] mx-auto flex w-full items-center justify-between border-b border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400",
+    base: "sticky top-0 mx-auto flex w-full items-center justify-between border-b border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400",
     inner: {
       base: "mx-auto flex w-full max-w-screen-xl flex-wrap items-center justify-between px-4 py-2.5 lg:px-4",
     },
@@ -44,7 +44,7 @@ export function Navbar() {
             label={<Avatar alt="User" rounded />}
           >
             <Dropdown.Header>
-              <span className="block text-sm">{user.username}</span>
+              <span className="block text-sm">{user.name}</span>
               <span className="block truncate text-sm font-medium">
                 {user.group}
               </span>
@@ -54,14 +54,16 @@ export function Navbar() {
         )}
         <FlowbiteNavbar.Toggle />
       </div>
-      {user?.role === "admin" && (
+      {user && (
         <FlowbiteNavbar.Collapse>
           <FlowbiteNavbar.Link href="/dashboard" active>
             Home
           </FlowbiteNavbar.Link>
-          <FlowbiteNavbar.Link href="/tasks/create">
-            Create Task
-          </FlowbiteNavbar.Link>
+          {user.role === "admin" && (
+            <FlowbiteNavbar.Link href="/tasks/create">
+              Create Task
+            </FlowbiteNavbar.Link>
+          )}
         </FlowbiteNavbar.Collapse>
       )}
     </FlowbiteNavbar>

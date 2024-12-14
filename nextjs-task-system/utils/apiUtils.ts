@@ -3,6 +3,7 @@ import { ApiRequestParams, ApiResponse } from "@/types/apiTypes";
 export const handleResponse = async <T>(response: Response): Promise<T> => {
   const result: ApiResponse<T> = await response.json();
 
+  console.log(`API Response: ${response.status}`, result);
   if (!response.ok || !result.success) {
     const errorMessage = result.message
       ? typeof result.message === "string"
@@ -10,17 +11,8 @@ export const handleResponse = async <T>(response: Response): Promise<T> => {
         : JSON.stringify(result.message)
       : `Error ${response.status}: ${response.statusText}`;
 
-    if (result.errors) {
-      console.log("errors from api: ", result.errors);
-    }
-
     throw new Error(errorMessage);
   }
-
-  console.log(
-    `API Response: ${response.status} ${response.statusText}`,
-    result,
-  );
 
   return result.data as T;
 };
