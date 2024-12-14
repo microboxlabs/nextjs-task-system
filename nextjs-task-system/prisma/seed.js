@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 
-const SALTS = 10
+const SALTS = 10;
 const prisma = new PrismaClient();
 
 async function main() {
@@ -43,6 +43,48 @@ async function main() {
     console.log("user with role user created");
   } else {
     console.log("User user already exists, skipping creation.");
+  }
+
+  // add more users
+  const moreUsersToAdd = [
+    {
+      name: "Emma Davis",
+      email: "user1@gmail.com",
+      password: userHashedPassword,
+      role: "User",
+    },
+    {
+      name: "Liam Johnson",
+      email: "user2@gmail.com",
+      password: userHashedPassword,
+      role: "User",
+    },
+    {
+      name: "Olivia Brown",
+      email: "user3@gmail.com",
+      password: userHashedPassword,
+      role: "User",
+    },
+    {
+      name: "Noah Miller",
+      email: "user4@gmail.com",
+      password: userHashedPassword,
+      role: "User",
+    },
+  ];
+
+  for (const user of moreUsersToAdd) {
+    const existingUser = await prisma.user.findFirst({
+      where: { email: user.email },
+    });
+    if (!existingUser) {
+      await prisma.user.create({
+        data: user,
+      });
+      console.log(`User with email ${user.email} created.`);
+    } else {
+      console.log(`User with email ${user.email} already exists, skipping creation.`);
+    }
   }
 }
 
