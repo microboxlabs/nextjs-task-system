@@ -5,7 +5,7 @@ import {
   Button,
   DarkThemeToggle,
   Dropdown,
-  Navbar,
+  Navbar as NavbarFlowBite,
 } from "flowbite-react";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { getAvatarUrl } from "../utils/getAvatarUrl";
 
-export const Header = () => {
+export const Navbar = () => {
   const { data: session, status } = useSession();
   const pathname = usePathname();
 
@@ -23,9 +23,9 @@ export const Header = () => {
 
   if (status === "loading") return null;
   return (
-    <Navbar fluid rounded>
+    <NavbarFlowBite fluid rounded className="sticky top-0 z-10">
       <Link href="/">
-        <Navbar.Brand>
+        <NavbarFlowBite.Brand>
           <img
             src="https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/15729/MBL_2_SIN_FONDO(2).png"
             className="mr-3 h-6 sm:h-9"
@@ -34,7 +34,7 @@ export const Header = () => {
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
             Tasks System
           </span>
-        </Navbar.Brand>
+        </NavbarFlowBite.Brand>
       </Link>
       <div className="flex gap-2 md:order-2">
         <DarkThemeToggle />
@@ -61,20 +61,22 @@ export const Header = () => {
             <Button>Sign In</Button>
           </Link>
         )}
-        {session && <Navbar.Toggle />}
+        {session && <NavbarFlowBite.Toggle />}
       </div>
       {session && (
-        <Navbar.Collapse>
+        <NavbarFlowBite.Collapse>
           <Link href="/">
-            <Navbar.Link active={pathname === "/"}>Dashboard</Navbar.Link>
+            <NavbarFlowBite.Link active={pathname === "/"}>
+              Dashboard
+            </NavbarFlowBite.Link>
           </Link>
           <Link href="/tasks/create">
-            <Navbar.Link active={pathname === "/tasks/create"}>
+            <NavbarFlowBite.Link active={pathname === "/tasks/create"}>
               Create Task
-            </Navbar.Link>
+            </NavbarFlowBite.Link>
           </Link>
-        </Navbar.Collapse>
+        </NavbarFlowBite.Collapse>
       )}
-    </Navbar>
+    </NavbarFlowBite>
   );
 };

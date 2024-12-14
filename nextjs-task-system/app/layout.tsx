@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
 import { SessionWrapper } from "./components/SessionWrapper";
-import { Header } from "./components/Header";
+import { Navbar } from "./components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +26,7 @@ export default function RootLayout({
         <body
           className={`${inter.className} flex min-h-screen flex-col dark:bg-gray-800`}
         >
-          <Header />
+          <Navbar />
           {children}
         </body>
       </html>
