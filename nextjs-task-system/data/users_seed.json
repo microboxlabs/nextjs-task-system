@@ -2,21 +2,24 @@
   {
     "id": 1,
     "username": "admin",
-    "password": "adminPass",
+    "name": "Admin",
+    "password": "admin123",
     "role": "admin",
     "group": "Admin Team"
   },
   {
     "id": 2,
-    "username": "Jane Smith",
-    "password": "userPass",
+    "username": "jsmith",
+    "name": "Jane Smith",
+    "password": "user123",
     "role": "user",
     "group": "Frontend Team"
   },
   {
     "id": 3,
-    "username": "John Doe",
-    "password": "userPass",
+    "username": "jdoe",
+    "name": "John Doe",
+    "password": "user123",
     "role": "user",
     "group": "Backend Team"
   }
