@@ -1,3 +1,4 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
@@ -26,7 +27,7 @@ export default function RootLayout({
       >
         <div className="flex h-screen flex-col">
           <Navbar />
-          <main className="mx-auto flex w-full flex-1 flex-col p-2 md:p-4">
+          <main className="mx-auto flex w-full max-w-screen-xl flex-1 flex-col p-2 md:p-4">
             {children}
             <Toast />
           </main>

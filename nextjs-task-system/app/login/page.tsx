@@ -3,28 +3,30 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Label, TextInput, Button } from "flowbite-react";
-import { useNotificationStore } from "@/stores/notificationStore";
+import { useNotificationStore, useAuthStore } from "@/stores";
 import { apiRequest } from "@/utils/apiUtils";
 import { User } from "@/types";
+import { LoginForm } from "@/components/LoginForm";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuthStore();
+
   const { addNotification } = useNotificationStore();
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (username: string, password: string) => {
     setLoading(true);
 
     try {
-      await apiRequest<User>({
+      const response = await apiRequest<User>({
         url: "/api/auth",
         method: "POST",
         body: { username, password },
       });
+
+      const user = response;
+      login(user);
       router.push("/dashboard");
     } catch (error) {
       addNotification({
@@ -37,38 +39,13 @@ export default function LoginPage() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-2 md:gap-4"
-    >
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="username" value="Username" />
-        </div>
-        <TextInput
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          disabled={loading}
-        />
+    <div className="flex flex-1 flex-col items-center justify-center p-2 md:p-4">
+      <div className="w-full max-w-md">
+        <h2 className="mb-2 text-2xl font-semibold text-gray-900 dark:text-white md:mb-4">
+          Login
+        </h2>
+        <LoginForm onSubmit={handleSubmit} loading={loading} />
       </div>
-      <div>
-        <div className="mb-2 block">
-          <Label htmlFor="password" value="Password" />
-        </div>
-        <TextInput
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-        />
-      </div>
-      <div className="mt-4 flex flex-col gap-4 md:flex-row">
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Logging in..." : "Login"}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 }
