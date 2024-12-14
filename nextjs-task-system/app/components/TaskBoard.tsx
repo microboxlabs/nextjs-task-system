@@ -4,6 +4,9 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import TaskColumn from "./TaskColumn";
 import { BoardData } from "../types";
 import { Task } from "@prisma/client";
+import Filters from "./Filters";
+import Sort from "./Sort";
+import { useSession } from "next-auth/react";
 
 type TaskStatus = "Pending" | "InProgress" | "Completed";
 
@@ -11,32 +14,7 @@ const initialData: BoardData = {
   columns: {
     Pending: {
       name: "Pending",
-      tasks: [
-        /*         {
-          id: 1,
-          title: "Task 1",
-          description: "Details of task 1",
-          assignedTo: "User A",
-          dueDate: "2024-12-15",
-          priority: "High",
-        },
-        {
-          id: 2,
-          title: "Task 2",
-          description: "Details of task 2",
-          assignedTo: "User B",
-          dueDate: "2024-12-20",
-          priority: "Medium",
-        },
-        {
-          id: 3,
-          title: "Task 3",
-          description: "Details of task 2",
-          assignedTo: "User B",
-          dueDate: "2024-12-20",
-          priority: "Medium",
-        }, */
-      ],
+      tasks: [],
     },
     InProgress: {
       name: "In Progress",
@@ -50,53 +28,79 @@ const initialData: BoardData = {
 };
 
 const TaskBoard: React.FC = () => {
+  const { data: session } = useSession();
   const [data, setData] = useState<BoardData>(initialData);
+  const [filters, setFilters] = useState({
+    status: "",
+    userId: "",
+  });
+
+  const [sort, setSort] = useState({
+    sortBy: "createdAt",
+    direction: "desc",
+  });
+
+  const fetchTasks = async () => {
+    try {
+      if (session === null || !session?.user) return;
+      const queryParams = new URLSearchParams();
+
+      if (filters.userId) queryParams.append("userId", filters.userId);
+      if (filters.status) queryParams.append("status", filters.status);
+      if (sort.sortBy) queryParams.append("sortBy", sort.sortBy);
+      if (sort.direction) queryParams.append("direction", sort.direction);
+
+      const response = await fetch(`/api/tasks?${queryParams}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch tasks");
+      }
+
+      const tasks: Task[] = await response.json();
+
+      const { Pending, InProgress, Completed } = tasks.reduce(
+        (columns, task) => {
+          columns[task.status as TaskStatus] = [
+            ...columns[task.status as TaskStatus],
+            task,
+          ];
+          return columns;
+        },
+        { Pending: [], InProgress: [], Completed: [] } as {
+          Pending: Task[];
+          InProgress: Task[];
+          Completed: Task[];
+        },
+      );
+
+      const updatedData = { ...initialData };
+      updatedData.columns["Pending"] = {
+        name: initialData.columns["Pending"].name,
+        tasks: Pending,
+      };
+      updatedData.columns["InProgress"] = {
+        name: initialData.columns["InProgress"].name,
+        tasks: InProgress,
+      };
+      updatedData.columns["Completed"] = {
+        name: initialData.columns["Completed"].name,
+        tasks: Completed,
+      };
+
+      setData(updatedData);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch("/api/tasks");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tasks");
-        }
-        const tasks: Task[] = await response.json();
-        console.log(tasks, "tasks<");
-
-        const { Pending, InProgress, Completed } = tasks.reduce(
-          (colums, task) => {
-            colums[task.status as TaskStatus] = [
-              ...colums[task.status as TaskStatus],
-              task,
-            ];
-            return colums;
-          },
-          { Pending: [], InProgress: [], Completed: [] } as {
-            Pending: Task[];
-            InProgress: Task[];
-            Completed: Task[];
-          },
-        );
-        const data = { ...initialData };
-        data.columns["Pending"] = {
-          ...data.columns["[Pending"],
-          tasks: Pending,
-        };
-        data.columns["InProgress"] = {
-          ...data.columns["[InProgress"],
-          tasks: InProgress,
-        };
-        data.columns["Completed"] = {
-          ...data.columns["[Completed"],
-          tasks: Completed,
-        };
-        setData(data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
     fetchTasks();
-  }, []);
+  }, [filters, sort]);
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -136,14 +140,44 @@ const TaskBoard: React.FC = () => {
     }
   };
 
+  const handleStatusChange = (status: string) => {
+    setFilters((prev) => ({ ...prev, status }));
+  };
+
+  const handleUserIdChange = (userId: string) => {
+    setFilters((prev) => ({ ...prev, userId }));
+  };
+
+  const handleSortChange = (sortBy: string) => {
+    setSort((prev) => ({ ...prev, sortBy }));
+  };
+
+  const handleDirectionChange = (direction: "asc" | "desc") => {
+    setSort((prev) => ({ ...prev, direction }));
+  };
+
+  if (session === null || !session?.user) return null;
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex justify-center gap-5">
-        {Object.entries(data.columns).map(([columnId, column]) => (
-          <TaskColumn key={columnId} columnId={columnId} column={column} />
-        ))}
+    <div>
+      <div className="mx-auto flex max-w-[1000px] flex-wrap justify-end gap-3 md:justify-between">
+        <Filters
+          onChangeStatus={handleStatusChange}
+          onChangeUserId={handleUserIdChange}
+        />
+        <Sort
+          onChangeSort={handleSortChange}
+          onChangeDirection={handleDirectionChange}
+        />
       </div>
-    </DragDropContext>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex justify-center gap-5 py-3">
+          {Object.entries(data.columns).map(([columnId, column]) => (
+            <TaskColumn key={columnId} columnId={columnId} column={column} />
+          ))}
+        </div>
+      </DragDropContext>
+    </div>
   );
 };
 

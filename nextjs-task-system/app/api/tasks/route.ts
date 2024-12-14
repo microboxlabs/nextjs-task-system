@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
+import { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -11,10 +12,68 @@ export async function GET(req: Request) {
 
   const { user } = session;
 
+  // get params
+  const url = new URL(req.url);
+  const userId = url.searchParams.get("userId");
+  const status = url.searchParams.get("status");
+  const sortBy = url.searchParams.get("sortBy") || "createdAt";
+  const direction = url.searchParams.get("direction") || "desc";
+
+  // validate userId
+  const userIdInt = userId ? parseInt(userId, 10) : undefined;
+  if (userId && isNaN(userIdInt as any)) {
+    return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
+  }
+
+  // Validate sortBy
+  const validSortFields = ["dueDate", "priority", "createdAt"];
+  if (!validSortFields.includes(sortBy)) {
+    return NextResponse.json(
+      {
+        error: `Invalid sortBy value. Allowed values are: ${validSortFields.join(", ")}`,
+      },
+      { status: 400 },
+    );
+  }
+
+  // Validate direction
+  if (direction !== "asc" && direction !== "desc") {
+    return NextResponse.json(
+      { error: "Invalid direction value. Allowed values are: 'asc', 'desc'" },
+      { status: 400 },
+    );
+  }
+
+  // build dinamyc filter
+  const filter: Prisma.TaskWhereInput =
+    user.role === "Admin"
+      ? {}
+      : {
+          assignments: {
+            some: { userId: parseInt(user.id) },
+          },
+        };
+
+  // Filter by userId if exist
+  if (userIdInt) {
+    filter.assignments = {
+      ...filter.assignments,
+      some: { ...filter.assignments?.some, userId: userIdInt },
+    };
+  }
+
+  // Filter by status if exist
+  if (status) {
+    filter.status = status;
+  }
+
+  // build dynamic sort
+  const orderBy = {
+    [sortBy]: direction,
+  };
+
   const tasks = await prisma.task.findMany({
-    //@ts-ignore
-    where:
-      user.role === "Admin" ? {} : { assignments: { some: { id: user.id } } }, // filter only to the user
+    where: filter,
     include: {
       assignments: {
         select: {
@@ -29,6 +88,7 @@ export async function GET(req: Request) {
         },
       },
     },
+    orderBy,
   });
 
   return NextResponse.json(tasks);
