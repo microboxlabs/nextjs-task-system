@@ -40,6 +40,8 @@ export const authOptions: AuthOptions = {
       if (token && session.user) {
         //@ts-ignore
         session.user.role = token.role; // add role to session
+        //@ts-ignore
+        session.user.id = parseInt(token.sub); // add id
       }
       return session;
     },

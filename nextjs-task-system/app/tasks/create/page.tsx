@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Select, Textarea, TextInput } from "flowbite-react";
+import {
+  Alert,
+  Button,
+  Card,
+  Select,
+  Textarea,
+  TextInput,
+} from "flowbite-react";
 import MultiSelect, { Option } from "@/app/components/MultiSelect";
 import { Task } from "@prisma/client";
 
@@ -21,6 +28,7 @@ const CreateTask = () => {
 
   const [users, setUsers] = useState<Option[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
@@ -37,9 +45,12 @@ const CreateTask = () => {
       if (response.ok) {
         router.push("/");
       } else {
-        console.error("Failed to create task");
+        console.error("Unable to create task");
+        setError("Unable to create task");
       }
     } catch (error) {
+      //@ts-ignore
+      setError(error.message);
       console.log(error);
     }
   };
@@ -73,6 +84,7 @@ const CreateTask = () => {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Create Task
         </h1>
+        {error && <Alert color="failure">{error}</Alert>}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <TextInput
             type="text"

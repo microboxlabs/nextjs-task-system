@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Select, Button } from "flowbite-react";
+import { useSession } from "next-auth/react";
 
 interface FiltersProps {
   onChangeUserId: (userId: string) => void;
@@ -12,6 +13,7 @@ const Filters: React.FC<FiltersProps> = ({
 }) => {
   const [users, setUsers] = useState<{ id: number; name: string }[]>([]);
   const [activeStatus, setActiveStatus] = useState<string>("All");
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -41,18 +43,20 @@ const Filters: React.FC<FiltersProps> = ({
   return (
     <div className="flex flex-col gap-4 md:flex-row">
       {/* User Select */}
-      <Select
-        id="user-select"
-        onChange={handleUserIdChange}
-        className="w-full md:w-auto md:min-w-24"
-      >
-        <option value="">All users</option>
-        {users.map((user) => (
-          <option key={user.id} value={user.id}>
-            {user.name}
-          </option>
-        ))}
-      </Select>
+      {session?.user.role === "Admin" && (
+        <Select
+          id="user-select"
+          onChange={handleUserIdChange}
+          className="w-full md:w-auto md:min-w-24"
+        >
+          <option value="">All users</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name}
+            </option>
+          ))}
+        </Select>
+      )}
 
       {/* Status Buttons */}
       <div className="flex gap-2">

@@ -16,7 +16,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({ assignments }) => {
           content={
             <div className="space-y-1 font-medium">
               <div>{assignment.user.name}</div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-300">
                 {assignment.user.email}
               </div>
             </div>
