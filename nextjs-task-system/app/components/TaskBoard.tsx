@@ -101,7 +101,29 @@ const TaskBoard: React.FC = () => {
     fetchTasks();
   }, [filters, sort]);
 
-  const onDragEnd = (result: DropResult) => {
+  const updateTaskStatus = async (
+    taskId: number,
+    newStatus: string,
+  ): Promise<void> => {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update task status");
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
+      throw new Error("Failed to update task status");
+    }
+  };
+
+  const onDragEnd = async (result: DropResult): Promise<void> => {
     const { source, destination } = result;
 
     if (!destination) return;
@@ -110,32 +132,42 @@ const TaskBoard: React.FC = () => {
     const destinationColumn = data.columns[destination.droppableId];
 
     const sourceTasks = [...sourceColumn.tasks];
-    const [movedTask] = sourceTasks.splice(source.index, 1);
+    let [movedTask] = sourceTasks.splice(source.index, 1);
 
-    if (source.droppableId === destination.droppableId) {
-      sourceTasks.splice(destination.index, 0, movedTask);
-      setData({
-        ...data,
-        columns: {
-          ...data.columns,
-          [source.droppableId]: { ...sourceColumn, tasks: sourceTasks },
-        },
-      });
-    } else {
-      const destinationTasks = [...destinationColumn.tasks];
-      destinationTasks.splice(destination.index, 0, movedTask);
+    try {
+      if (movedTask.status !== destination.droppableId) {
+        // only if status changed
+        await updateTaskStatus(movedTask.id, destination.droppableId);
+        movedTask.status = destination.droppableId;
+      }
 
-      setData({
-        ...data,
-        columns: {
-          ...data.columns,
-          [source.droppableId]: { ...sourceColumn, tasks: sourceTasks },
-          [destination.droppableId]: {
-            ...destinationColumn,
-            tasks: destinationTasks,
+      if (source.droppableId === destination.droppableId) {
+        sourceTasks.splice(destination.index, 0, movedTask);
+        setData({
+          ...data,
+          columns: {
+            ...data.columns,
+            [source.droppableId]: { ...sourceColumn, tasks: sourceTasks },
           },
-        },
-      });
+        });
+      } else {
+        const destinationTasks = [...destinationColumn.tasks];
+        destinationTasks.splice(destination.index, 0, movedTask);
+
+        setData({
+          ...data,
+          columns: {
+            ...data.columns,
+            [source.droppableId]: { ...sourceColumn, tasks: sourceTasks },
+            [destination.droppableId]: {
+              ...destinationColumn,
+              tasks: destinationTasks,
+            },
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
     }
   };
 
