@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import {
   Alert,
   Button,
@@ -11,6 +11,7 @@ import {
 } from "flowbite-react";
 import MultiSelect, { Option } from "@/app/components/MultiSelect";
 import { Task } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 interface TaskForm extends Pick<Task, "title" | "description" | "priority"> {
   assignedTo: string[];
@@ -18,6 +19,7 @@ interface TaskForm extends Pick<Task, "title" | "description" | "priority"> {
 }
 
 const CreateTask = () => {
+  const { data: session } = useSession();
   const [task, setTask] = useState<TaskForm>({
     title: "",
     description: "",
@@ -77,6 +79,8 @@ const CreateTask = () => {
 
     fetchUsers();
   }, []);
+
+  if (!session) redirect("/auth/signin");
 
   return (
     <div className="px-2 py-8">

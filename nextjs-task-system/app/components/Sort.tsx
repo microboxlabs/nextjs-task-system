@@ -33,7 +33,7 @@ const Sort: React.FC<SortProps> = ({ onChangeSort, onChangeDirection }) => {
         style={{ borderEndEndRadius: 0, borderStartEndRadius: 0 }}
         aria-label="Sort by"
       >
-        <option value="createdAt">Created At</option>
+        <option value="createdAt">Creation Date</option>
         <option value="dueDate">Due Date</option>
         <option value="priority">Priority</option>
       </Select>

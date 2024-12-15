@@ -47,14 +47,19 @@ export const Navbar = () => {
             <Dropdown.Header>
               <span className="block text-sm">{session.user?.name}</span>
               <Badge className="ml-auto inline-block" color="gray">
-                {(session.user as any).role}
+                {session.user.role}
               </Badge>
               <span className="block truncate text-sm font-medium">
                 {session.user?.email}
               </span>
             </Dropdown.Header>
-            {/* <Dropdown.Divider /> */}
-            <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
+            <Dropdown.Item
+              onClick={() =>
+                signOut({ callbackUrl: "/auth/signin", redirect: true })
+              }
+            >
+              Sign out
+            </Dropdown.Item>
           </Dropdown>
         ) : (
           <Link href="/auth/signin">

@@ -1,13 +1,18 @@
+import { getServerSession } from "next-auth";
 import TaskBoard from "./components/TaskBoard";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/authOptions";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/auth/signin");
+  }
+
   return (
     <main className="p-2">
-      {/* <h1 className="text-2xl dark:text-white">Flowbite React + Next.js</h1>
-      <DarkThemeToggle /> */}
-      <div className="">
-        <TaskBoard />
-      </div>
+      <TaskBoard />
     </main>
   );
 }

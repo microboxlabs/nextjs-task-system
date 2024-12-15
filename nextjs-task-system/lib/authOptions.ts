@@ -2,6 +2,8 @@ import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authenticateUser } from "./auth";
 
+export const MY_NEXT_SECRET = "my-jwt-secret";
+
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -33,7 +35,7 @@ export const authOptions: AuthOptions = {
     strategy: "jwt", // to manage session
   },
   jwt: {
-    secret: process.env.NEXTAUTH_SECRET || "my-jwt-secret",
+    secret: process.env.NEXTAUTH_SECRET || MY_NEXT_SECRET,
   },
   callbacks: {
     async session({ session, token }) {
