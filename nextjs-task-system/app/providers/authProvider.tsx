@@ -109,6 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     message: "User Logged out successfully!"
                 }
             })
+            localStorage.removeItem('token');
         }
 
 
