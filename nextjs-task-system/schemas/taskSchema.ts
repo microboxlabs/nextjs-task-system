@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const assignedToSchema = z.object({
+  type: z.enum(["user", "group"]),
+  id: z.number().min(1, "Assigned ID is required"),
+});
+
 export const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
@@ -10,7 +15,7 @@ export const taskSchema = z.object({
       message: "Invalid date format",
     })
     .optional(),
-  assignedTo: z.string().min(1, "Assigned to is required").optional(),
+  assignedTo: assignedToSchema.optional(),
   priority: z.enum(["low", "medium", "high"]).default("medium"),
 });
 
@@ -27,6 +32,6 @@ export const updateTaskSchema = z.object({
       message: "Invalid date format",
     })
     .optional(),
-  assignedTo: z.string().min(1, "Assigned to is required").optional(),
+  assignedTo: assignedToSchema.optional(),
   priority: z.enum(["low", "medium", "high"]).default("medium").optional(),
 });
