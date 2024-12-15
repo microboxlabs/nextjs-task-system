@@ -16,6 +16,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
   const status = url.searchParams.get("status");
+  const priority = url.searchParams.get("priority");
   const sortBy = url.searchParams.get("sortBy") || "createdAt";
   const direction = url.searchParams.get("direction") || "desc";
 
@@ -65,6 +66,11 @@ export async function GET(req: Request) {
   // Filter by status if exist
   if (status) {
     filter.status = status;
+  }
+
+  // Filter by priority if exist
+  if (priority) {
+    filter.priority = priority;
   }
 
   // build dynamic sort

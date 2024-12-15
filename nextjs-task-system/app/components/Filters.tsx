@@ -2,17 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Select, Button } from "flowbite-react";
 import { useSession } from "next-auth/react";
 
+const statusOptions = ["Pending", "InProgress", "Completed"];
+const priorityOptions = ["High", "Medium", "Low"];
+
 interface FiltersProps {
   onChangeUserId: (userId: string) => void;
   onChangeStatus: (status: string) => void;
+  onChangePriority: (status: string) => void;
 }
 
 const Filters: React.FC<FiltersProps> = ({
   onChangeUserId,
   onChangeStatus,
+  onChangePriority,
 }) => {
   const [users, setUsers] = useState<{ id: number; name: string }[]>([]);
-  const [activeStatus, setActiveStatus] = useState<string>("All");
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -33,15 +37,18 @@ const Filters: React.FC<FiltersProps> = ({
     onChangeUserId(event.target.value);
   };
 
-  const handleStatusClick = (status: string) => {
-    setActiveStatus(status);
-    onChangeStatus(status === "All" ? "" : status);
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onChangeStatus(event.target.value);
   };
 
-  const statusOptions = ["All", "Pending", "InProgress", "Completed"];
+  const handlePriorityChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    onChangePriority(event.target.value);
+  };
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row">
+    <div className="flex gap-4">
       {/* User Select */}
       {session?.user.role === "Admin" && (
         <Select
@@ -58,20 +65,33 @@ const Filters: React.FC<FiltersProps> = ({
         </Select>
       )}
 
-      {/* Status Buttons */}
-      <div className="max-w-[86vw] overflow-x-auto">
-        <div className="flex gap-2">
-          {statusOptions.map((status) => (
-            <Button
-              key={status}
-              color={activeStatus === status ? undefined : "gray"}
-              onClick={() => handleStatusClick(status)}
-            >
-              {status}
-            </Button>
-          ))}
-        </div>
-      </div>
+      {/* Status Select */}
+      <Select
+        id="status-select"
+        onChange={handleStatusChange}
+        className="w-full md:w-auto md:min-w-24"
+      >
+        <option value="">All status</option>
+        {statusOptions.map((status) => (
+          <option key={status} value={status}>
+            {status}
+          </option>
+        ))}
+      </Select>
+
+      {/* Priority Select */}
+      <Select
+        id="priority-select"
+        onChange={handlePriorityChange}
+        className="w-full md:w-auto md:min-w-24"
+      >
+        <option value="">All priority</option>
+        {priorityOptions.map((priority) => (
+          <option key={priority} value={priority}>
+            {priority}
+          </option>
+        ))}
+      </Select>
     </div>
   );
 };

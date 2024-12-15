@@ -32,6 +32,7 @@ const TaskBoard: React.FC = () => {
   const [filters, setFilters] = useState({
     status: "",
     userId: "",
+    priority: "",
   });
 
   const [sort, setSort] = useState({
@@ -46,6 +47,7 @@ const TaskBoard: React.FC = () => {
 
       if (filters.userId) queryParams.append("userId", filters.userId);
       if (filters.status) queryParams.append("status", filters.status);
+      if (filters.priority) queryParams.append("priority", filters.priority);
       if (sort.sortBy) queryParams.append("sortBy", sort.sortBy);
       if (sort.direction) queryParams.append("direction", sort.direction);
 
@@ -171,12 +173,16 @@ const TaskBoard: React.FC = () => {
     }
   };
 
+  const handleUserIdChange = (userId: string) => {
+    setFilters((prev) => ({ ...prev, userId }));
+  };
+
   const handleStatusChange = (status: string) => {
     setFilters((prev) => ({ ...prev, status }));
   };
 
-  const handleUserIdChange = (userId: string) => {
-    setFilters((prev) => ({ ...prev, userId }));
+  const handlePriorityChange = (priority: string) => {
+    setFilters((prev) => ({ ...prev, priority }));
   };
 
   const handleSortChange = (sortBy: string) => {
@@ -193,8 +199,9 @@ const TaskBoard: React.FC = () => {
     <div>
       <div className="mx-auto flex max-w-[1000px] flex-wrap justify-end gap-3 md:justify-between">
         <Filters
-          onChangeStatus={handleStatusChange}
           onChangeUserId={handleUserIdChange}
+          onChangeStatus={handleStatusChange}
+          onChangePriority={handlePriorityChange}
         />
         <Sort
           onChangeSort={handleSortChange}
