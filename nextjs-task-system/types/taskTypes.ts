@@ -15,5 +15,12 @@ export interface Task {
   assignedTo?: AssignedTo;
   priority: TaskPriority;
   comments: string[];
-  createdAt?: string;
+  createdAt: string;
+}
+
+export interface CreateTask
+  extends Omit<Task, "id" | "createdAt" | "comments"> {}
+
+export interface UpdateTask extends Omit<Task, "createdAt" | "comments"> {
+  comments?: string[];
 }
