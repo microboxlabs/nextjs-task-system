@@ -5,6 +5,7 @@ import {
   Alert,
   Button,
   Card,
+  Label,
   Select,
   Textarea,
   TextInput,
@@ -83,66 +84,81 @@ const CreateTask = () => {
   if (!session) redirect("/auth/signin");
 
   return (
-    <div className="px-2 py-8">
-      <Card className="mx-auto max-w-sm">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+    <main className="p-2">
+      <Card className="mx-auto max-w-sm gap-1">
+        <h1 className="text-lg font-bold text-gray-900 dark:text-white">
           Create Task
         </h1>
         {error && <Alert color="failure">{error}</Alert>}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <TextInput
-            type="text"
-            placeholder="Title"
-            className="input input-bordered w-full"
-            value={task.title}
-            onChange={(e) => setTask({ ...task, title: e.target.value })}
-          />
-          <Textarea
-            placeholder="Description"
-            className="textarea textarea-bordered w-full"
-            value={task.description}
-            onChange={(e) => setTask({ ...task, description: e.target.value })}
-          />
-          {/* <TextInput
-            type="text"
-            placeholder="Assigned To"
-            className="input input-bordered w-full"
-            value={task.assignedTo}
-            onChange={(e) => setTask({ ...task, assignedTo: e.target.value })}
-          /> */}
-          <MultiSelect
-            options={users}
-            selected={selectedOptions}
-            onChange={(options) => {
-              setSelectedOptions(options);
-              setTask((task) => ({
-                ...task,
-                assignedTo: options.map((option) => option.value),
-              }));
-            }}
-            placeholder="Assigned To"
-          />
-          <TextInput
-            type="datetime-local"
-            className="input input-bordered w-full dark:fill-white"
-            value={task.dueDate}
-            onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
-          />
-          <Select
-            className="select select-bordered w-full pb-4"
-            value={task.priority}
-            onChange={(e) => setTask({ ...task, priority: e.target.value })}
-          >
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
-          </Select>
+          <div>
+            <Label htmlFor="title">Title</Label>
+            <TextInput
+              id="title"
+              type="text"
+              placeholder="Title"
+              className="input input-bordered w-full"
+              value={task.title}
+              onChange={(e) => setTask({ ...task, title: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              placeholder="Description"
+              className="textarea textarea-bordered w-full"
+              value={task.description}
+              onChange={(e) =>
+                setTask({ ...task, description: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Label>Assigned To</Label>
+            <MultiSelect
+              options={users}
+              selected={selectedOptions}
+              onChange={(options) => {
+                setSelectedOptions(options);
+                setTask((task) => ({
+                  ...task,
+                  assignedTo: options.map((option) => option.value),
+                }));
+              }}
+              placeholder="Assigned To"
+            />
+          </div>
+          <div>
+            <Label htmlFor="dueDate">Due Date</Label>
+            <TextInput
+              id="dueDate"
+              type="datetime-local"
+              className="input input-bordered w-full dark:fill-white"
+              value={task.dueDate}
+              onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="priority">Priority</Label>
+
+            <Select
+              id="priority"
+              className="select select-bordered w-full pb-4"
+              value={task.priority}
+              onChange={(e) => setTask({ ...task, priority: e.target.value })}
+            >
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </Select>
+          </div>
           <Button type="submit" className="btn btn-primary w-full">
             Create
           </Button>
         </form>
       </Card>
-    </div>
+    </main>
   );
 };
 

@@ -54,7 +54,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     <div className="relative w-full max-w-sm" ref={dropdownRef}>
       {/* Input Field */}
       <div
-        className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-2 shadow-sm"
+        className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-2 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         onClick={toggleDropdown}
       >
         <div className="flex flex-wrap gap-2">
@@ -68,7 +68,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               </span>
             ))
           ) : (
-            <span className="text-gray-400">
+            <span className="text-gray-400  dark:text-gray-400">
               {placeholder || "Select options..."}
             </span>
           )}
@@ -95,8 +95,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           {options.map((option) => (
             <div
               key={option.value}
-              className={`flex cursor-pointer items-center px-4 py-2 hover:bg-blue-100 ${
-                isSelected(option) ? "bg-blue-50 text-blue-600" : ""
+              className={`flex cursor-pointer items-center px-4 py-2  hover:bg-blue-100 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-500 ${
+                isSelected(option)
+                  ? "bg-blue-50 text-blue-600 dark:bg-gray-800 dark:text-blue-600"
+                  : ""
               }`}
               onClick={() => handleSelect(option)}
             >

@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { Button, TextInput, Alert } from "flowbite-react";
+import { Button, TextInput, Alert, Card, Label } from "flowbite-react";
 import { useRouter } from "next/navigation";
 
 const SignInPage = () => {
@@ -33,9 +33,11 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold">Sign In</h1>
+    <div className="flex flex-1 items-center justify-center">
+      <Card className="w-full max-w-md rounded-lg p-6 shadow-md">
+        <h1 className="mb-6 text-center text-2xl font-bold dark:text-gray-200">
+          Sign In
+        </h1>
         {error && (
           <Alert color="failure" className="mb-4">
             {error}
@@ -43,12 +45,9 @@ const SignInPage = () => {
         )}
         <form onSubmit={handleSignIn} className="space-y-4">
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium text-gray-700"
-            >
+            <Label htmlFor="email" className="mb-1 block text-sm font-medium">
               Email
-            </label>
+            </Label>
             <TextInput
               id="email"
               type="email"
@@ -59,12 +58,12 @@ const SignInPage = () => {
             />
           </div>
           <div>
-            <label
+            <Label
               htmlFor="password"
-              className="mb-1 block text-sm font-medium text-gray-700"
+              className="mb-1 block text-sm font-medium"
             >
               Password
-            </label>
+            </Label>
             <TextInput
               id="password"
               type="password"
@@ -74,17 +73,17 @@ const SignInPage = () => {
               required
             />
           </div>
-          <Button type="submit" color="primary" className="w-full">
+          <Button type="submit" className="w-full">
             Sign In
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
           Don't have an account?{" "}
           <a href="/auth/signup" className="text-blue-500 hover:underline">
             Sign up
           </a>
         </p>
-      </div>
+      </Card>
     </div>
   );
 };
