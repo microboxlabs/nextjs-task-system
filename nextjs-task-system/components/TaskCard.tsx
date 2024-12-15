@@ -1,3 +1,5 @@
+"use client";
+
 import { Task } from "@/types/taskTypes";
 import { Card, CustomFlowbiteTheme } from "flowbite-react";
 import {
@@ -8,6 +10,9 @@ import {
 import { FaUser } from "react-icons/fa";
 import { format } from "date-fns";
 import Link from "next/link";
+import { useUsersStore } from "@/stores/usersStore";
+import { getAssignedName } from "@/utils/taskUtils";
+import { useEffect } from "react";
 
 interface TaskCardProps {
   task: Task;
@@ -24,6 +29,18 @@ const formatDate = (date: string) => {
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
+  const { users, getUsers } = useUsersStore();
+
+  useEffect(() => {
+    if (users.length === 0) {
+      getUsers();
+    }
+  }, [users, getUsers]);
+
+  const assignedName = task.assignedTo
+    ? getAssignedName(task.assignedTo, users)
+    : "Unassigned";
+
   const getPriorityIcon = () => {
     switch (task.priority) {
       case "high":
@@ -55,7 +72,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
           {task.assignedTo && (
             <div className="flex items-center gap-2 truncate">
               <FaUser className="ml-2" />
-              <span className="truncate">{task.assignedTo}</span>
+              <span className="truncate">{assignedName}</span>
             </div>
           )}
         </div>
