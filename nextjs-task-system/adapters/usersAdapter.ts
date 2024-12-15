@@ -1,7 +1,12 @@
+// adapters/usersAdapter.ts
 import users from "@/data/users_seed.json";
-import { User } from "@/types/userTypes";
+import { User, UserRole } from "@/types/userTypes";
 
-let userList = [...users]; // Simulating an in-memory database
+// Map the incoming users to ensure they conform to the User type
+const userList: User[] = users.map((user) => ({
+  ...user,
+  role: user.role as UserRole,
+}));
 
 export const usersAdapter = {
   getUsers: async (): Promise<User[]> => {
