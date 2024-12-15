@@ -1,8 +1,8 @@
 "use client";
 
 import { TaskList } from "@/components/TaskList";
-import { useTasksStore } from "@/stores/tasksStore";
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore, useTasksStore } from "@/stores";
+import { filterTasks } from "@/utils/taskUtils";
 import { useEffect } from "react";
 
 export default function DashboardPage() {
@@ -11,8 +11,10 @@ export default function DashboardPage() {
   const isAdmin = user?.role === "admin";
 
   useEffect(() => {
-    getTasks();
-  }, [getTasks]);
+    if (tasks.length === 0) {
+      getTasks();
+    }
+  }, [getTasks, tasks.length]);
 
   if (loading) {
     return (
@@ -37,18 +39,7 @@ export default function DashboardPage() {
   }
 
   // Filter tasks based on user role and assignment
-  // If the user is an admin, all tasks are returned.
-  // If the user is not an admin, only tasks assigned to the user or their group are returned.
-  const filteredTasks = isAdmin
-    ? tasks
-    : tasks.filter(
-        (task) =>
-          task.assignedTo &&
-          ((task.assignedTo.type === "user" &&
-            task.assignedTo.id === user.id) ||
-            (task.assignedTo.type === "group" &&
-              task.assignedTo.id === user.group.id)),
-      );
+  const filteredTasks = filterTasks(tasks, user, isAdmin);
 
   return (
     <div className="flex flex-1 flex-col gap-2 md:gap-4 lg:flex-row">
