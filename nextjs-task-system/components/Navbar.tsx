@@ -22,10 +22,11 @@ const customNavbarTheme: CustomFlowbiteTheme["navbar"] = {
 export function Navbar() {
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const isAdmin = user?.role === "admin";
 
   const handleLogout = () => {
-    logout();
     router.push("/login");
+    logout();
   };
 
   return (
@@ -46,7 +47,7 @@ export function Navbar() {
             <Dropdown.Header>
               <span className="block text-sm">{user.name}</span>
               <span className="block truncate text-sm font-medium">
-                {user.group}
+                {user.group.name}
               </span>
             </Dropdown.Header>
             <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
@@ -59,7 +60,7 @@ export function Navbar() {
           <FlowbiteNavbar.Link href="/dashboard" active>
             Home
           </FlowbiteNavbar.Link>
-          {user.role === "admin" && (
+          {isAdmin && (
             <FlowbiteNavbar.Link href="/tasks/create">
               Create Task
             </FlowbiteNavbar.Link>
