@@ -5,7 +5,10 @@
     "description": "Details about feature A.",
     "status": "completed",
     "dueDate": "2024-12-20",
-    "assignedTo": "Admin",
+    "assignedTo": {
+      "type": "user",
+      "id": 1
+    },
     "priority": "high",
     "comments": [],
     "createdAt": "2024-12-01T12:00:00Z"
@@ -16,7 +19,10 @@
     "description": "Resolve the issue with the login form.",
     "status": "inProgress",
     "dueDate": "2024-12-15",
-    "assignedTo": "Frontend Team",
+    "assignedTo": {
+      "type": "group",
+      "id": 2
+    },
     "priority": "medium",
     "comments": [],
     "createdAt": "2024-12-02T12:00:00Z"
@@ -27,7 +33,10 @@
     "description": "Ensure all endpoints are documented.",
     "status": "inProgress",
     "dueDate": "2024-12-25",
-    "assignedTo": "John Doe",
+    "assignedTo": {
+      "type": "user",
+      "id": 3
+    },
     "priority": "low",
     "comments": [],
     "createdAt": "2024-12-03T12:00:00Z"
@@ -38,7 +47,10 @@
     "description": "Create slides for the upcoming client meeting.",
     "status": "pending",
     "dueDate": "2024-12-18",
-    "assignedTo": "Jane Smith",
+    "assignedTo": {
+      "type": "user",
+      "id": 2
+    },
     "priority": "high",
     "comments": [],
     "createdAt": "2024-12-04T12:00:00Z"
@@ -49,7 +61,10 @@
     "description": "Improve the performance of the backend services.",
     "status": "pending",
     "dueDate": "2024-12-30",
-    "assignedTo": "Backend Team",
+    "assignedTo": {
+      "type": "group",
+      "id": 2
+    },
     "priority": "medium",
     "comments": [],
     "createdAt": "2024-12-05T12:00:00Z"
@@ -60,7 +75,10 @@
     "description": "Deploy the application to the production environment.",
     "status": "pending",
     "dueDate": "2024-12-31",
-    "assignedTo": "Admin",
+    "assignedTo": {
+      "type": "user",
+      "id": 1
+    },
     "priority": "high",
     "comments": [],
     "createdAt": "2024-12-06T12:00:00Z"

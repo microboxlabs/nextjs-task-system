@@ -5,7 +5,10 @@
     "name": "Admin",
     "password": "admin123",
     "role": "admin",
-    "group": "Admin Team"
+    "group": {
+      "id": 1,
+      "name": "Admin Team"
+    }
   },
   {
     "id": 2,
@@ -13,7 +16,10 @@
     "name": "Jane Smith",
     "password": "user123",
     "role": "user",
-    "group": "Frontend Team"
+    "group": {
+      "id": 2,
+      "name": "Frontend Team"
+    }
   },
   {
     "id": 3,
@@ -21,6 +27,9 @@
     "name": "John Doe",
     "password": "user123",
     "role": "user",
-    "group": "Backend Team"
+    "group": {
+      "id": 3,
+      "name": "Backend Team"
+    }
   }
 ]
