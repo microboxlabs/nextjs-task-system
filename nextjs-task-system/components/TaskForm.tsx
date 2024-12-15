@@ -1,10 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuthStore } from "@/stores/authStore";
+import { priorityOptions, statusOptions } from "@/utils/taskConstants";
 import { Label, TextInput, Textarea, Select, Button } from "flowbite-react";
 import { Task, TaskPriority, TaskStatus } from "@/types/taskTypes";
-import { priorityOptions } from "@/utils/taskConstants";
-import { useRouter } from "next/navigation";
 
 interface TaskFormProps {
   task?: Task;
@@ -18,11 +19,14 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
   const [description, setDescription] = useState(task?.description || "");
   const [assignedTo, setAssignedTo] = useState(task?.assignedTo || "");
   const [dueDate, setDueDate] = useState(task?.dueDate || "");
+  const [status, setStatus] = useState<TaskStatus>(task?.status || "pending");
   const [priority, setPriority] = useState<TaskPriority>(
     task?.priority || "medium",
   );
-  const [status, setStatus] = useState<TaskStatus>(task?.status || "pending");
+  const { user } = useAuthStore();
   const router = useRouter();
+
+  const isAdmin = user?.role === "admin";
 
   const handleCancel = () => {
     router.push("/dashboard");
@@ -68,7 +72,7 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          disabled={loading}
+          disabled={loading || !isAdmin}
         />
       </div>
       <div>
@@ -79,7 +83,7 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          disabled={loading}
+          disabled={loading || !isAdmin}
         />
       </div>
 
@@ -92,7 +96,7 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
             id="assignedTo"
             value={assignedTo}
             onChange={(e) => setAssignedTo(e.target.value)}
-            disabled={loading}
+            disabled={loading || !isAdmin}
           />
         </div>
         <div>
@@ -104,7 +108,7 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            disabled={loading}
+            disabled={loading || !isAdmin}
           />
         </div>
         <div>
@@ -115,9 +119,9 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
             id="priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value as TaskPriority)}
-            disabled={loading}
+            disabled={loading || !isAdmin}
           >
-            {Object.values(priorityOptions).map(({ label, value }) => (
+            {priorityOptions.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
               </option>
@@ -134,9 +138,11 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
             onChange={(e) => setStatus(e.target.value as TaskStatus)}
             disabled={loading}
           >
-            <option value="pending">Pending</option>
-            <option value="inProgress">In Progress</option>
-            <option value="completed">Completed</option>
+            {statusOptions.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </Select>
         </div>
       </div>
@@ -156,7 +162,7 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
             Save
           </Button>
         </div>
-        {onDelete && (
+        {isAdmin && onDelete && (
           <div className="w-full md:w-1/3">
             <Button
               color="failure"

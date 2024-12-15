@@ -1,9 +1,13 @@
-import { TaskPriority } from "@/types/taskTypes";
+import { TaskPriority, TaskStatus } from "@/types/taskTypes";
 
-export const priorityOptions: {
-  [key: string]: { label: string; value: TaskPriority };
-} = {
-  low: { label: "Low", value: "low" },
-  medium: { label: "Medium", value: "medium" },
-  high: { label: "High", value: "high" },
-};
+export const priorityOptions: { label: string; value: TaskPriority }[] = [
+  { label: "Low", value: "low" },
+  { label: "Medium", value: "medium" },
+  { label: "High", value: "high" },
+];
+
+export const statusOptions: { label: string; value: TaskStatus }[] = [
+  { label: "Pending", value: "pending" },
+  { label: "In Progress", value: "inProgress" },
+  { label: "Completed", value: "completed" },
+];
