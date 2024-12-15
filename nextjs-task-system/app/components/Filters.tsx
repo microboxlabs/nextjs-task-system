@@ -59,16 +59,18 @@ const Filters: React.FC<FiltersProps> = ({
       )}
 
       {/* Status Buttons */}
-      <div className="flex gap-2">
-        {statusOptions.map((status) => (
-          <Button
-            key={status}
-            color={activeStatus === status ? undefined : "gray"}
-            onClick={() => handleStatusClick(status)}
-          >
-            {status}
-          </Button>
-        ))}
+      <div className="max-w-[86vw] overflow-x-auto">
+        <div className="flex gap-2">
+          {statusOptions.map((status) => (
+            <Button
+              key={status}
+              color={activeStatus === status ? undefined : "gray"}
+              onClick={() => handleStatusClick(status)}
+            >
+              {status}
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   );

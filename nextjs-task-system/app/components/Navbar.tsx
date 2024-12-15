@@ -63,7 +63,7 @@ export const Navbar = () => {
         )}
         {session && <NavbarFlowBite.Toggle />}
       </div>
-      {session && (
+      {session && session.user.role === "Admin" && (
         <NavbarFlowBite.Collapse>
           <Link href="/">
             <NavbarFlowBite.Link active={pathname === "/"}>

@@ -201,13 +201,21 @@ const TaskBoard: React.FC = () => {
           onChangeDirection={handleDirectionChange}
         />
       </div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex justify-center gap-5 py-3">
-          {Object.entries(data.columns).map(([columnId, column]) => (
-            <TaskColumn key={columnId} columnId={columnId} column={column} />
-          ))}
+      <div className="overflow-x-auto">
+        <div className="min-w-[800px]">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex justify-center gap-5 py-3">
+              {Object.entries(data.columns).map(([columnId, column]) => (
+                <TaskColumn
+                  key={columnId}
+                  columnId={columnId}
+                  column={column}
+                />
+              ))}
+            </div>
+          </DragDropContext>
         </div>
-      </DragDropContext>
+      </div>
     </div>
   );
 };
