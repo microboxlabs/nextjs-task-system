@@ -30,7 +30,8 @@ export async function POST(request) {
     { expiresIn: "1h" },
   );
 
-  return new Response(JSON.stringify({ token }), { status: 200 });
+  const userLogged = {id: user.id, username: user.username, email: user.email, rol: user.rol}
+  return new Response(JSON.stringify({ token, user: userLogged }), { status: 200 });
 
   } catch (error) {
     return new Response(JSON.stringify({ error: token }), { status: 400 });
