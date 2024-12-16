@@ -89,7 +89,6 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const updateTask = async (data: any) => {
         try {
 
-            console.log(data)
             await axiosApi.put('/tasks',
                 {
                     id: data.id,
