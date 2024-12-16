@@ -4,10 +4,40 @@ import { Form } from "./form";
 interface ModalFormProps {
     openModal: boolean;
     setOpenModal: (value: boolean) => void;
+    task: any;
 }
 
-export function ModalView({ openModal, setOpenModal }: ModalFormProps) {
-    const handleClose = () => setOpenModal(false);
+export const getPriorityColor = (priority : string) => {
+    switch (priority) {
+        case 'low':
+            return 'green';
+        case 'medium':
+            return 'yellow'; 
+        case 'high':
+            return 'red'; 
+        default:
+            return 'gray'; 
+    }
+};
+
+export const getStatusColor = (status: string) => {
+    switch (status) {
+        case 'pending':
+            return 'yellow';
+        case 'in progress':
+            return 'blue'; 
+        case 'completed':
+            return 'green';
+        default:
+            return 'gray'; 
+    }
+};
+
+export function ModalView({ openModal, setOpenModal, task }: ModalFormProps) {
+    
+    const handleClose = () => {
+        setOpenModal(false);
+    } 
 
     return (
         <Modal show={openModal} onClose={handleClose}>
@@ -17,22 +47,38 @@ export function ModalView({ openModal, setOpenModal }: ModalFormProps) {
                     <Card href="#" className="w-100">
                         <div className="flex w-100 justify-between">
                             <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                Titulo tarea
+                                {task?.title}
                             </h5>
-                            <Badge size="sm" color="info">Complete</Badge>
+                            <Badge
+                                size="sm"
+                                color={getStatusColor(task?.status)}
+                                className="uppercase"
+                            >
+                                {task?.status}
+                            </Badge>
                         </div>
 
                         <p className="font-normal text-gray-700 dark:text-gray-400">
-                            Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.
+                            {task?.description}
                         </p>
                         <p className="font-normal text-gray-700 dark:text-gray-400 flex gap-2">
-                            Assigned To: <Badge size="sm" color="info">Usuario</Badge>
+                            Assigned To:
+                            <Badge size="sm" color="info" className="uppercase">
+                                {task?.assigned_to || 'Unassigned'}
+                            </Badge>
                         </p>
                         <p className="font-normal text-gray-700 dark:text-gray-400">
-                            Due Date: 10/02/99
+                            Due Date: {task?.due_date}
                         </p>
                         <p className="font-normal text-gray-700 dark:text-gray-400 flex gap-2">
-                            Priority: <Badge size="sm" color="info">Low</Badge>
+                            Priority:
+                            <Badge
+                                size="sm"
+                                color={getPriorityColor(task?.priority)}
+                                className="uppercase"
+                            >
+                                {task?.priority}
+                            </Badge>
                         </p>
                     </Card>
                 </div>

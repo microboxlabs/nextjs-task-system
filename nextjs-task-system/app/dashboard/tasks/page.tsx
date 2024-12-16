@@ -20,7 +20,7 @@ export default function Tasks() {
             <Button onClick={() => setOpenModal(true)}>Create Task</Button>
           }
         </div>
-        <ModalForm openModal={openModal} setOpenModal={setOpenModal} />
+        <ModalForm openModal={openModal} setOpenModal={setOpenModal} task={null} />
         <div className="">
           <CardTasks />
         </div>
