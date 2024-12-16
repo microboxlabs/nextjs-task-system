@@ -24,9 +24,9 @@ export const getStatusColor = (status: string) => {
     switch (status) {
         case 'pending':
             return 'yellow';
-        case 'in progress':
+        case 'in_progress':
             return 'blue'; 
-        case 'completed':
+        case 'complete':
             return 'green';
         default:
             return 'gray'; 
