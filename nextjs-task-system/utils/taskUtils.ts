@@ -30,6 +30,12 @@ export const groupOptions: { label: string; value: number }[] = [
   { label: "Backend Team", value: 3 },
 ];
 
+export const priorityOrder = {
+  low: 3,
+  medium: 2,
+  high: 1,
+};
+
 // Function to get the name of the assigned user or group based on the assignedTo object
 export const getAssignedName = (assignedTo: AssignedTo, users: User[]) => {
   if (assignedTo.type === "user") {
@@ -98,5 +104,29 @@ export const filterByAssigned = (
       }
     }
     return false;
+  });
+};
+
+// Function to sort tasks based on the specified criteria
+export const sortTasks = (tasks: Task[], sortBy: string) => {
+  return tasks.sort((a, b) => {
+    if (sortBy === "dueDate") {
+      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+      return dateA - dateB;
+    } else if (sortBy === "priority") {
+      return (
+        (priorityOrder[a.priority] || 0) - (priorityOrder[b.priority] || 0)
+      );
+    } else if (sortBy === "creationDate") {
+      const createdAtA = a.createdAt
+        ? new Date(a.createdAt).getTime()
+        : Infinity;
+      const createdAtB = b.createdAt
+        ? new Date(b.createdAt).getTime()
+        : Infinity;
+      return createdAtA - createdAtB;
+    }
+    return 0;
   });
 };
