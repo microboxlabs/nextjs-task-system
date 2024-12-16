@@ -27,11 +27,11 @@ const initialData: BoardData = {
 };
 
 const TaskBoard: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [data, setData] = useState<BoardData>(initialData);
   const [filters, setFilters] = useState({
     status: "",
-    userId: "",
+    userIdOrGroupId: "",
     priority: "",
   });
 
@@ -45,7 +45,8 @@ const TaskBoard: React.FC = () => {
       if (session === null || !session?.user) return;
       const queryParams = new URLSearchParams();
 
-      if (filters.userId) queryParams.append("userId", filters.userId);
+      if (filters.userIdOrGroupId)
+        queryParams.append("userIdOrGroupId", filters.userIdOrGroupId);
       if (filters.status) queryParams.append("status", filters.status);
       if (filters.priority) queryParams.append("priority", filters.priority);
       if (sort.sortBy) queryParams.append("sortBy", sort.sortBy);
@@ -101,7 +102,7 @@ const TaskBoard: React.FC = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [filters, sort]);
+  }, [filters, sort, status]);
 
   const updateTaskStatus = async (
     taskId: number,
@@ -173,8 +174,8 @@ const TaskBoard: React.FC = () => {
     }
   };
 
-  const handleUserIdChange = (userId: string) => {
-    setFilters((prev) => ({ ...prev, userId }));
+  const handleUserIdChange = (userIdOrGroupId: string) => {
+    setFilters((prev) => ({ ...prev, userIdOrGroupId }));
   };
 
   const handleStatusChange = (status: string) => {
@@ -193,7 +194,8 @@ const TaskBoard: React.FC = () => {
     setSort((prev) => ({ ...prev, direction }));
   };
 
-  if (session === null || !session?.user) return null;
+  if (session === null || !session?.user || status !== "authenticated")
+    return null;
 
   return (
     <div>

@@ -12,18 +12,22 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({ assignments }) => {
     <Avatar.Group>
       {assignments.map((assignment) => (
         <Tooltip
-          key={assignment.user.id}
+          key={assignment.user?.id || assignment.group?.id}
           content={
             <div className="space-y-1 font-medium">
-              <div>{assignment.user.name}</div>
-              <div className="text-sm text-gray-300">
-                {assignment.user.email}
-              </div>
+              <div>{assignment.user?.name || assignment.group?.name}</div>
+              {assignment.user && (
+                <div className="text-sm text-gray-300">
+                  {assignment.user.email}
+                </div>
+              )}
             </div>
           }
         >
           <Avatar
-            img={getAvatarUrl(assignment.user.name)}
+            img={getAvatarUrl(
+              assignment.user?.name || assignment.group?.name || "nh",
+            )}
             rounded
             size="sm"
           ></Avatar>

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { Prisma } from "@prisma/client";
+import { CreateUserOrGroup } from "@/app/types";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -14,16 +15,24 @@ export async function GET(req: Request) {
 
   // get params
   const url = new URL(req.url);
-  const userId = url.searchParams.get("userId");
+  const userIdOrGroupId = url.searchParams.get("userIdOrGroupId");
   const status = url.searchParams.get("status");
   const priority = url.searchParams.get("priority");
   const sortBy = url.searchParams.get("sortBy") || "createdAt";
   const direction = url.searchParams.get("direction") || "desc";
 
+  console.log(userIdOrGroupId, "userIdOrGroupId");
+
   // validate userId
-  const userIdInt = userId ? parseInt(userId, 10) : undefined;
-  if (userId && isNaN(userIdInt as any)) {
+  const [type, id] = userIdOrGroupId?.split(",") || ["", ""];
+  const userIdInt = type === "user" && id ? parseInt(id, 10) : undefined;
+  const groupIdInt = type === "group" && id ? parseInt(id, 10) : undefined;
+  if (type === "user" && isNaN(parseInt(id))) {
     return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
+  }
+
+  if (type === "group" && isNaN(parseInt(id))) {
+    return NextResponse.json({ error: "Invalid groupId" }, { status: 400 });
   }
 
   // Validate sortBy
@@ -45,30 +54,65 @@ export async function GET(req: Request) {
     );
   }
 
-  // build dinamyc filter
+  // build dynamic filter
   const filter: Prisma.TaskWhereInput =
     user.role === "Admin"
-      ? {}
+      ? {} // If the user is Admin, fetch all tasks
       : {
-          assignments: {
-            some: { userId: parseInt(user.id) },
-          },
+          OR: [
+            {
+              assignments: {
+                some: { userId: parseInt(user.id) }, // Filter by user assignments
+              },
+            },
+            {
+              assignments: {
+                some: {
+                  groupId: {
+                    in: await prisma.groupMembership
+                      .findMany({
+                        where: { userId: parseInt(user.id) }, // Get the groups the user belongs to
+                        select: { groupId: true }, // Only fetch the groupId
+                      })
+                      .then((memberships) =>
+                        memberships.map((membership) => membership.groupId),
+                      ), // Map to get only the groupIds
+                  },
+                }, // Filter by group memberships
+              },
+            },
+          ],
         };
 
-  // Filter by userId if exist
+  // Filter by userId if exists
   if (userIdInt) {
-    filter.assignments = {
-      ...filter.assignments,
-      some: { ...filter.assignments?.some, userId: userIdInt },
-    };
+    filter.OR = [
+      ...(filter.OR || []),
+      {
+        assignments: {
+          some: { userId: userIdInt },
+        },
+      },
+    ];
+  }
+  // Filter by groupId if exists
+  if (groupIdInt) {
+    filter.OR = [
+      ...(filter.OR || []),
+      {
+        assignments: {
+          some: { groupId: groupIdInt },
+        },
+      },
+    ];
   }
 
-  // Filter by status if exist
+  // Filter by status if exists
   if (status) {
     filter.status = status;
   }
 
-  // Filter by priority if exist
+  // Filter by priority if exists
   if (priority) {
     filter.priority = priority;
   }
@@ -78,6 +122,7 @@ export async function GET(req: Request) {
     [sortBy]: direction,
   };
 
+  // Fetch tasks with assignments (users and groups)
   const tasks = await prisma.task.findMany({
     where: filter,
     include: {
@@ -89,6 +134,13 @@ export async function GET(req: Request) {
               email: true,
               name: true,
               role: true,
+            },
+          },
+          group: {
+            // Include group information
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
@@ -112,10 +164,25 @@ export async function POST(req: Request) {
 
     if (!Array.isArray(assignedTo) || assignedTo.length === 0) {
       return NextResponse.json(
-        { error: "AssignedTo must be a non-empty array of user IDs" },
+        { error: "AssignedTo must be a non-empty array of user/group IDs" },
         { status: 400 },
       );
     }
+
+    // Validate assignments
+    const validAssignments = assignedTo.map((assignment: CreateUserOrGroup) => {
+      if (assignment.type === "user" && !assignment.userId) {
+        throw new Error("User ID is required for user type assignment");
+      }
+      if (assignment.type === "group" && !assignment.groupId) {
+        throw new Error("Group ID is required for group type assignment");
+      }
+
+      return {
+        userId: assignment.type === "user" ? assignment.userId : undefined,
+        groupId: assignment.type === "group" ? assignment.groupId : undefined,
+      };
+    });
 
     const newTask = await prisma.task.create({
       data: {
@@ -124,9 +191,9 @@ export async function POST(req: Request) {
         dueDate: new Date(dueDate),
         priority,
         assignments: {
-          //@ts-ignore
-          create: assignedTo.map((userId: string) => ({
-            userId,
+          create: validAssignments.map((assignment) => ({
+            userId: assignment.userId,
+            groupId: assignment.groupId,
           })),
         },
       },

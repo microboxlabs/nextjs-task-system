@@ -11,11 +11,12 @@ import {
   TextInput,
 } from "flowbite-react";
 import MultiSelect, { Option } from "@/app/components/MultiSelect";
-import { Task } from "@prisma/client";
+import { Group, Task } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { CreateUserOrGroup, UserOrGroup, UserPartial } from "@/app/types";
 
 interface TaskForm extends Pick<Task, "title" | "description" | "priority"> {
-  assignedTo: string[];
+  assignedTo: CreateUserOrGroup[];
   dueDate: string;
 }
 
@@ -29,7 +30,7 @@ const CreateTask = () => {
     priority: "Medium",
   });
 
-  const [users, setUsers] = useState<Option[]>([]);
+  const [usersAndGroups, setUsersAndGroups] = useState<Option[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
   const [error, setError] = useState("");
 
@@ -59,26 +60,39 @@ const CreateTask = () => {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndGroups = async () => {
       try {
-        const response = await fetch("/api/users");
-        if (!response.ok) {
+        const [responseUsers, responseGroups] = await Promise.all([
+          fetch("/api/users"),
+          fetch("/api/groups"),
+        ]);
+        if (!responseUsers.ok) {
           throw new Error("Failed to fetch users");
         }
-        const data = await response.json();
+        if (!responseGroups.ok) {
+          throw new Error("Failed to fetch groups");
+        }
+        const users: UserPartial[] = await responseUsers.json();
+        const groups: Group[] = await responseGroups.json();
 
-        const userOptions = data.map((user: { id: string; name: string }) => ({
-          label: user.name,
-          value: user.id,
-        }));
+        const usersAndGroups = [
+          ...(groups.map((group) => ({
+            label: group.name,
+            value: `group-${group.id}`,
+          })) as Option[]),
+          ...(users.map((user) => ({
+            label: user.name,
+            value: `user-${user.id}`,
+          })) as Option[]),
+        ];
 
-        setUsers(userOptions);
+        setUsersAndGroups(usersAndGroups);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchUsers();
+    fetchUsersAndGroups();
   }, []);
 
   if (!session) redirect("/auth/signin");
@@ -117,13 +131,20 @@ const CreateTask = () => {
           <div>
             <Label>Assigned To</Label>
             <MultiSelect
-              options={users}
+              options={usersAndGroups}
               selected={selectedOptions}
               onChange={(options) => {
                 setSelectedOptions(options);
                 setTask((task) => ({
                   ...task,
-                  assignedTo: options.map((option) => option.value),
+                  assignedTo: options.map((option) => {
+                    const [type, id] = option.value.split("-");
+                    const res = {
+                      type: type as UserOrGroup,
+                      [`${type}Id`]: parseInt(id),
+                    };
+                    return res;
+                  }),
                 }));
               }}
               placeholder="Assigned To"

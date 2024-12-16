@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button } from "flowbite-react";
+import { Select } from "flowbite-react";
 import { useSession } from "next-auth/react";
+import { UserPartial } from "../types";
+import { Group } from "@prisma/client";
 
 const statusOptions = ["Pending", "InProgress", "Completed"];
 const priorityOptions = ["High", "Medium", "Low"];
@@ -11,26 +13,53 @@ interface FiltersProps {
   onChangePriority: (status: string) => void;
 }
 
+interface Option {
+  id: string;
+  name: string;
+}
+
 const Filters: React.FC<FiltersProps> = ({
   onChangeUserId,
   onChangeStatus,
   onChangePriority,
 }) => {
-  const [users, setUsers] = useState<{ id: number; name: string }[]>([]);
+  const [usersAndGroups, setUsersAndGroups] = useState<Option[]>([]);
   const { data: session } = useSession();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndGroups = async () => {
       try {
-        const response = await fetch("/api/users");
-        const data = await response.json();
-        setUsers(data);
+        const [responseUsers, responseGroups] = await Promise.all([
+          fetch("/api/users"),
+          fetch("/api/groups"),
+        ]);
+        if (!responseUsers.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        if (!responseGroups.ok) {
+          throw new Error("Failed to fetch groups");
+        }
+        const users: UserPartial[] = await responseUsers.json();
+        const groups: Group[] = await responseGroups.json();
+
+        const usersAndGroups = [
+          ...groups.map((group) => ({
+            id: `group,${group.id}`,
+            name: group.name,
+          })),
+          ...users.map((user) => ({
+            id: `user,${user.id}`,
+            name: user.name,
+          })),
+        ];
+
+        setUsersAndGroups(usersAndGroups);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error(error);
       }
     };
 
-    fetchUsers();
+    fetchUsersAndGroups();
   }, []);
 
   const handleUserIdChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -52,12 +81,12 @@ const Filters: React.FC<FiltersProps> = ({
       {/* User Select */}
       {session?.user.role === "Admin" && (
         <Select
-          id="user-select"
+          id="user-group-select"
           onChange={handleUserIdChange}
           className="w-full md:w-auto md:min-w-24"
         >
-          <option value="">All users</option>
-          {users.map((user) => (
+          <option value="">All</option>
+          {usersAndGroups.map((user) => (
             <option key={user.id} value={user.id}>
               {user.name}
             </option>

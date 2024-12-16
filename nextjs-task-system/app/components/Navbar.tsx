@@ -28,10 +28,10 @@ export const Navbar = () => {
         <NavbarFlowBite.Brand>
           <img
             src="https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/15729/MBL_2_SIN_FONDO(2).png"
-            className="mr-3 h-6 sm:h-9"
+            className="h-6 sm:h-9"
             alt="ML Logo"
           />
-          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+          <span className="text-md self-center whitespace-nowrap font-semibold dark:text-white">
             Tasks System
           </span>
         </NavbarFlowBite.Brand>
@@ -78,6 +78,11 @@ export const Navbar = () => {
           <Link href="/tasks/create">
             <NavbarFlowBite.Link active={pathname === "/tasks/create"}>
               Create Task
+            </NavbarFlowBite.Link>
+          </Link>
+          <Link href="/groups/create">
+            <NavbarFlowBite.Link active={pathname === "/groups/create"}>
+              Create Group
             </NavbarFlowBite.Link>
           </Link>
         </NavbarFlowBite.Collapse>
