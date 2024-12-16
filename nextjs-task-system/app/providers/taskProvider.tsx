@@ -89,6 +89,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const updateTask = async (data: any) => {
         try {
 
+            console.log(data)
             await axiosApi.put('/tasks',
                 {
                     id: data.id,
@@ -97,6 +98,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     assigned_to: data.assigned_to,
                     due_date: data.due_date,
                     priority: data.priority,
+                    status: data.statusNew ? data.statusNew : data.status
                 });
 
 
@@ -119,6 +121,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             })
         }
     }
+
+
 
     const deleteTask = async (id: number) => {
         try {
