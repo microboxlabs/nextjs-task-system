@@ -11,10 +11,8 @@ export default function DashboardPage() {
   const isAdmin = user?.role === "admin";
 
   useEffect(() => {
-    if (tasks.length === 0) {
-      getTasks();
-    }
-  }, [getTasks, tasks.length]);
+    getTasks();
+  }, [getTasks]);
 
   if (loading) {
     return (
