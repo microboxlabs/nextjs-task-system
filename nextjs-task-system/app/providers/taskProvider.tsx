@@ -50,17 +50,17 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
-    const createTask = async (title: string, description: string, assigned_to: number, due_date: Date, priority: string, comments: string) => {
-        createTask
+    const createTask = async (data: any) => {
+        
         try {
 
-            await axiosApi.post('/app/tasks/create',
+            await axiosApi.post('/tasks',
                 {
-                    title: title,
-                    description: description,
-                    assigned_to: assigned_to,
-                    due_date: due_date,
-                    priority: priority,
+                    title: data.title,
+                    description: data.description ?? null,
+                    assigned_to: data.assigned_to  ?? null,
+                    due_date: data.due_date  ?? null,
+                    priority: data.priority  ?? null,
                     status: 'pending'
                 });
 
@@ -74,6 +74,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             })
 
         } catch (error) {
+            console.log(error)
             dispatch({
                 type: 'CREATE TASK',
                 payload: {
@@ -85,17 +86,17 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
-    const updateTask = async (title: string, description: string, assigned_to: number, due_date: Date, priority: string, comments: string) => {
+    const updateTask = async (data: any) => {
         try {
 
-            const { data } = await axiosApi.put('/app/tasks/update',
+            await axiosApi.put('/tasks',
                 {
-                    title: title,
-                    description: description,
-                    assigned_to: assigned_to,
-                    due_date: due_date,
-                    priority: priority,
-                    status: 'pending'
+                    id: data.id,
+                    title: data.title,
+                    description: data.description,
+                    assigned_to: data.assigned_to,
+                    due_date: data.due_date,
+                    priority: data.priority,
                 });
 
 
@@ -105,14 +106,15 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     isLoading: false,
                     msg: 'Task updated successfully!'
                 }
-            })
+            });
 
         } catch (error) {
+            console.log(error);
             dispatch({
                 type: 'UPDATED TASK',
                 payload: {
                     isLoading: false,
-                    msg: 'Error updating task: {{error}}'
+                    msg: 'Error updating task'
                 }
             })
         }
@@ -120,10 +122,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     const deleteTask = async (id: number) => {
         try {
-
-            const { data } = await axiosApi.delete('/app/task',
-                );
-
+            const { data } = await axiosApi.delete(`/tasks?id=${id}`); 
 
             dispatch({
                 type: 'DELETE TASK',
@@ -131,19 +130,18 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     isLoading: false,
                     msg: 'Task deleted successfully!'
                 }
-            })
-
-        } catch (error) {
+            });
+        } catch (error: any) {
+            console.log(error)
             dispatch({
                 type: 'DELETE TASK',
                 payload: {
                     isLoading: false,
-                    msg: 'Error deleting task: {{error}}'
+                    msg: 'Error deleting task'
                 }
-            })
+            });
         }
-    }
-
+    };
 
 
 
