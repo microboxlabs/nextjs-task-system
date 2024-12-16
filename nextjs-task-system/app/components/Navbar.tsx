@@ -46,7 +46,10 @@ export const Navbar = () => {
           >
             <Dropdown.Header>
               <span className="block text-sm">{session.user?.name}</span>
-              <Badge className="ml-auto inline-block" color="gray">
+              <Badge
+                className="inline-block"
+                color={session.user.role === "Admin" ? "purple" : "gray"}
+              >
                 {session.user.role}
               </Badge>
               <span className="block truncate text-sm font-medium">
