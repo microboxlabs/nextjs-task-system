@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
 import { AuthProvider } from "./providers/authProvider";
+import { TaskProvider } from "./providers/taskProvider";
+import { UserProvider } from "./providers/userProvider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,9 +25,13 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={inter.className}>
-        
+
         <AuthProvider>
-          {children}
+          <TaskProvider>
+            <UserProvider>
+              {children}
+            </UserProvider>
+          </TaskProvider>
         </AuthProvider>
       </body>
     </html>
