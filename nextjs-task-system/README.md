@@ -1,16 +1,43 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Steeps
 
-## migrations prisma
-npx prisma migrate dev
+## Install Dependencies
+There might be some issues when installing Jest. To resolve them, use the following command:
 
-## apply migrations
-npx prisma migrate deploy
+```bash
+npm install --force
+```
 
-## run seeds
+## Prisma Migrations
+
+1. **Run Development Migrations**  
+   This will apply any pending migrations to your local database:
+   
+   ```bash
+   npx prisma migrate dev
+   ```
+
+2. **Apply Migrations**  
+   Apply migrations to the production database:
+
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+## Run Seeds
+
+To populate the database with initial data, use the following command:
+
+```bash
 npm run seed
+```
 
-## run tests
+## Run Tests
+
+Execute the tests using Jest:
+
+```bash
 npx jest
+```
 
 ## Getting Started
 
@@ -18,31 +45,42 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Core Features
 
-## Learn More
+###  Role-Based Authentication
+- Admins and users can sign in in the application using their own credentials
+### Role-Based Access Control:
+- **Admin users** can create, assign, edit, and delete tasks.
+- **Regular users** can view and update tasks assigned to them.
 
-To learn more about Next.js, take a look at the following resources:
+### Task Creation and Management:
+- Tasks include fields for title, description, assignee to one or more (user or group), due date, and priority.
+- Admins can filter tasks by: user or group, status, and priority.
+- Admins can sort by: Creation Date, Due Date, Priority.
+- Users can mark tasks as completed or other status and also apply some filters: status, priority and sort in the same way of admin.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Comments Management:
+- Admins and Users can add comments to the tasks.
+- 
+### Groups Management:
+- Admins can create a group: selecting a group of users by name.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Responsive Design:
+- Built with **Next.js**, **Tailwind CSS**, and **Flowbite** to ensure a modern, clean, and user-friendly interface.
 
-## Deploy on Vercel
+### Drag-and-Drop Task Management:
+- Users can change task status through an intuitive drag-and-drop interface, improving workflow organization.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
+- **Documentation**: Full details provided in the `README.md`, including how to use the system.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Documentation
+- Updated `README.md` with steps to run the project.
+
+### Tests
+- Added unit tests for routes: task and group.
