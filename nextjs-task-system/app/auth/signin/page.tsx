@@ -23,7 +23,7 @@ const SignInPage = () => {
       });
 
       if (result?.error) {
-        setError(result.error);
+        setError("Invalid credentials");
       } else {
         router.push("/");
       }
