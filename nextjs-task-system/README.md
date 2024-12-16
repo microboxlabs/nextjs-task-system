@@ -1,6 +1,6 @@
-Here is the README in English:
-
 # Task Management System - Technical Challenge
+
+This project is a Task Management System designed to help users efficiently create, assign, and manage tasks. Built using Next.js, Tailwind CSS, and Flowbite, it provides a user-friendly interface for both Admin and Regular users.
 
 ## Project
 
@@ -10,123 +10,95 @@ Here is the README in English:
 - Flowbite React
 - Tailwind CSS
 
-## Project Status
+## Features
 
-### Day 1: Initial Setup
+### User Roles
 
-🔧 **Configuration**
+1. **Admin User**:
+   - Can create, assign, edit, and delete tasks.
+   - Can view and manage all tasks.
+2. **Regular User**:
+   - Can view tasks assigned to them or their group.
+   - Can mark tasks as Completed or In Progress.
 
-- Development environment configured
-- Dependencies installed
-- Application running at `http://localhost:3000`
+### Core Functionalities
 
-🛡️ **Security**
+1. **Task Creation and Assignment (Admin Only)**
 
-- Next.js updated to v14.2.20
-- Critical vulnerabilities resolved:
-  - Cache Poisoning
-  - Denial of Service
+   - Admin users can create tasks with fields for title, description, assigned user/group, due date, and priority.
+   - Tasks can be assigned to a specific user or a group.
 
-📊 **Data Structure**
+2. **Viewing Tasks**
 
-- Initial implementation with JSON
-- Preparation for future migration to SQLite
+   - Admin users can view all tasks, filtering by user, group, or status (completed, pending).
+   - Regular users can only view tasks assigned to them or their group.
 
-### Day 2: API Routes Implementation
+3. **Managing Tasks (Regular Users)**
 
-🛠️ **Backend**
+   - Users can mark their assigned tasks as complete.
+   - Users can change the status of their tasks to In Progress.
+   - Users can add comments to tasks for better communication.
 
-- Implemented API Routes for task management:
-  - **GET /api/tasks**: Fetch all tasks.
-  - **POST /api/tasks**: Create a new task.
-  - **PUT /api/tasks/:id**: Update an existing task.
-  - **DELETE /api/tasks/:id**: Delete a task.
-- Introduced reusable **handlers** and **adapters** for API logic.
-- Developed utility functions for API interactions.
+4. **Task Status Tracking**
 
-### Day 3: State Management and Frontend Components
+   - Tasks can have statuses such as Pending, In Progress, and Completed.
 
-🌀 **State Management**
+5. **Filtering and Sorting Tasks**
 
-- Integrated Zustand store for global state management.
-- Store handles tasks, loading states, and errors.
+   - Users can filter tasks by status, priority, or assigned user/group.
+   - Admin users can also sort tasks by due date, priority, or creation date.
 
-🎨 **Frontend Components**
+6. **Responsive User Interface**
 
-- Implemented the following components:
-  - **TaskCard**: Displays individual task details.
-  - **TaskList**: Groups tasks by status.
-  - **Navbar**: Responsive navigation bar with theme toggle and user menu.
-- Completed the **Dashboard** screen:
-  - Displays tasks organized by status (Pending, In Progress, Completed).
-  - Fully integrated with the Zustand store.
+   - Utilizes Tailwind CSS and Flowbite to create a simple and responsive interface.
+   - The application includes a navbar for navigation and a dashboard page for viewing and filtering tasks.
 
-### Day 4: Task Creation and Management
-
-📝 **Task Creation**
-
-- Completed the form for creating tasks (Admin):
-  - Captures title, description, assignment, due date, and priority.
-  - Connected the form to the API route `/api/tasks` to save new tasks.
-
-🛠️ **Task Management**
-
-- Created the component for the comments section.
-- Added the delete button to the task form.
-
-### Day 5: Task Details Page Integration
-
-🔗 **Task Details Page**
-
-- Integrated components into the task details page accessible at `http://localhost:3000/tasks/[id]`.
-- Users can view, update (information or add comments), or delete tasks.
-- Integrated with API routes for PUT and DELETE at `http://localhost:3000/api/tasks/[id]`.
-
----
+7. **Basic Authorization**
+   - Admin users can access task creation and management pages, while regular users can only access their assigned task list.
 
 ## Collaborators
 
 - @korutx
 - @odtorres
 
----
-
 ## Quick Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/Jonlle/nextjs-task-system
-cd nextjs-task-system/nextjs-task-system
+To run the application, follow these steps:
 
-# Install dependencies
-npm install
+1. Clone the repository:
 
-# Run in development
-npm run dev
-```
+   ```bash
+   git clone https://github.com/Jonlle/nextjs-task-system
+   cd nextjs-task-system/nextjs-task-system
+   ```
 
----
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Create a file (e.g., `.env.local`) to define the necessary environment variables as shown in the following example:
+
+   ```plaintext
+   # .env.example
+   NEXT_PUBLIC_API_URL=http://localhost:3000
+   ```
+
+4. Run in development:
+   ```bash
+   npm run dev
+   ```
 
 ## Next Steps
 
-### **Implementación de Roles y Autorización**
-
-1. **Definir Roles:**
-
-   - Añadir un campo `role` al usuario (Admin o Regular).
-   - Simular la autenticación añadiendo datos de usuario a un archivo `users.json`.
-
-2. **Autorización en la UI:**
-
-   - Mostrar opciones de administración (crear, editar, eliminar) solo a usuarios Admin.
-
-3. **Autorización en las API Routes:**
-   - Validar el rol del usuario en las rutas API.
-
----
+- **Form Validation**: Implement validation for task creation and editing forms to ensure data integrity.
+- **SQLite Database**: Integrate SQLite as the database for persistent task storage.
+- **Real-Time Updates**: Add functionality for real-time updates using WebSockets to notify users when new tasks are assigned.
+- **Drag-and-Drop Task Management**: Implement a feature that allows users to change task status using drag-and-drop functionality.
 
 ## License
 
 This project is licensed under the terms of the [MIT License](./LICENSE).
 
-**Note**: This is a work-in-progress technical challenge. Contributions are closed.
+**Note**: This is a completed technical challenge. Contributions are closed.
