@@ -9,6 +9,9 @@ npx prisma migrate deploy
 ## run seeds
 npm run seed
 
+## run tests
+npx jest
+
 ## Getting Started
 
 First, run the development server:
