@@ -63,7 +63,7 @@
     "dueDate": "2024-12-30",
     "assignedTo": {
       "type": "group",
-      "id": 2
+      "id": 3
     },
     "priority": "medium",
     "comments": [],
@@ -76,7 +76,7 @@
     "status": "pending",
     "dueDate": "2024-12-31",
     "assignedTo": {
-      "type": "user",
+      "type": "group",
       "id": 1
     },
     "priority": "high",

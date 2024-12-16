@@ -11,7 +11,7 @@ export const taskSchema = z.object({
   status: z.enum(["pending", "inProgress", "completed"]).default("pending"),
   dueDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
+    .refine((date) => date === "" || !isNaN(Date.parse(date)), {
       message: "Invalid date format",
     })
     .optional(),
