@@ -64,7 +64,8 @@ export default function DashboardPage() {
   filteredTasks = sortTasks(filteredTasks, sortBy);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4">
+      {/* Filter section */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div>
           <Label htmlFor="status" value="Status" />
@@ -128,26 +129,38 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Task list section */}
       <div className="flex flex-1 flex-col gap-2 md:gap-4 lg:flex-row">
         {statusFilter === "all" || statusFilter === "pending" ? (
-          <TaskList
-            title="Pending"
-            tasks={filteredTasks.filter((task) => task.status === "pending")}
-          />
+          <div className="flex-1 md:mx-auto md:w-1/3">
+            <TaskList
+              title="Pending"
+              tasks={filteredTasks.filter((task) => task.status === "pending")}
+            />
+          </div>
         ) : null}
 
         {statusFilter === "all" || statusFilter === "inProgress" ? (
-          <TaskList
-            title="In Progress"
-            tasks={filteredTasks.filter((task) => task.status === "inProgress")}
-          />
+          <div className="flex-1 md:mx-auto md:w-1/3">
+            <TaskList
+              title="In Progress"
+              tasks={filteredTasks.filter(
+                (task) => task.status === "inProgress",
+              )}
+            />
+          </div>
         ) : null}
 
         {statusFilter === "all" || statusFilter === "completed" ? (
-          <TaskList
-            title="Completed"
-            tasks={filteredTasks.filter((task) => task.status === "completed")}
-          />
+          <div className="flex-1 md:mx-auto md:w-1/3">
+            <TaskList
+              title="Completed"
+              tasks={filteredTasks.filter(
+                (task) => task.status === "completed",
+              )}
+            />
+          </div>
         ) : null}
       </div>
     </div>

@@ -15,7 +15,7 @@ const customCardTheme: CustomFlowbiteTheme["card"] = {
 
 export function TaskList({ title, tasks }: TaskListProps) {
   return (
-    <Card theme={customCardTheme} className="flex flex-1 flex-col">
+    <Card theme={customCardTheme} className="flex h-full flex-1 flex-col">
       <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
         {title}
       </h3>
