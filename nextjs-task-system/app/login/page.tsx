@@ -7,6 +7,7 @@ import { useNotificationStore, useAuthStore } from "@/stores";
 import { apiRequest } from "@/utils/apiUtils";
 import { User } from "@/types";
 import { LoginForm } from "@/components/LoginForm";
+import { AuthenticateUserSchema } from "@/schemas/authSchema";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,10 @@ export default function LoginPage() {
   const { addNotification } = useNotificationStore();
   const router = useRouter();
 
-  const handleSubmit = async (username: string, password: string) => {
+  const handleSubmit = async ({
+    username,
+    password,
+  }: AuthenticateUserSchema) => {
     setLoading(true);
 
     try {
