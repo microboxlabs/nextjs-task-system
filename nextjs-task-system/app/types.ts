@@ -1,4 +1,4 @@
-import { Group, Task, User } from "@prisma/client";
+import { Comment, Group, Task, User } from "@prisma/client";
 
 export interface UserPartial
   extends Pick<User, "id" | "name" | "email" | "role"> {}
@@ -26,4 +26,8 @@ export interface CreateUserOrGroup {
   type: UserOrGroup;
   userId?: number;
   groupId?: number;
+}
+
+export interface CommentWithUser extends Comment {
+  user: UserPartial;
 }

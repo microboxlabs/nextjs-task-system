@@ -8,9 +8,10 @@ import { TaskDueDate } from "./TaskDueDate";
 interface TaskCardProps {
   task: TaskWithAssignments;
   index: number;
+  onClick: () => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, index, onClick }) => {
   return (
     <Draggable draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (
@@ -22,6 +23,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
           style={{
             ...provided.draggableProps.style,
           }}
+          onClick={onClick}
         >
           <h3>{task.title}</h3>
           <p className="pb-2 text-sm text-gray-600">{task.description}</p>

@@ -6,6 +6,7 @@ import { BoardData, TaskWithAssignments } from "../types";
 import Filters from "./Filters";
 import Sort from "./Sort";
 import { useSession } from "next-auth/react";
+import { TaskModal } from "./TaskModal";
 
 type TaskStatus = "Pending" | "InProgress" | "Completed";
 
@@ -34,11 +35,14 @@ const TaskBoard: React.FC = () => {
     userIdOrGroupId: "",
     priority: "",
   });
-
   const [sort, setSort] = useState({
     sortBy: "createdAt",
     direction: "desc",
   });
+  const [openModal, setOpenModal] = useState(false);
+  const [workingTask, setWorkingTask] = useState<TaskWithAssignments | null>(
+    null,
+  );
 
   const fetchTasks = async () => {
     try {
@@ -194,8 +198,8 @@ const TaskBoard: React.FC = () => {
     setSort((prev) => ({ ...prev, direction }));
   };
 
-  if (session === null || !session?.user || status !== "authenticated")
-    return null;
+  /*   if (session === null || !session?.user || status !== "authenticated")
+    return null; */
 
   return (
     <div>
@@ -219,12 +223,23 @@ const TaskBoard: React.FC = () => {
                   key={columnId}
                   columnId={columnId}
                   column={column}
+                  onClickTask={(task) => {
+                    setWorkingTask(task);
+                    setOpenModal(true);
+                  }}
                 />
               ))}
             </div>
           </DragDropContext>
         </div>
       </div>
+      {workingTask && openModal && (
+        <TaskModal
+          task={workingTask}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+        />
+      )}
     </div>
   );
 };

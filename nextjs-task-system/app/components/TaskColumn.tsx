@@ -1,14 +1,19 @@
 import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import TaskCard from "./TaskCard";
-import { Column } from "../types";
+import { Column, TaskWithAssignments } from "../types";
 
 interface TaskColumnProps {
   columnId: string;
   column: Column;
+  onClickTask: (task: TaskWithAssignments) => void;
 }
 
-const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, column }) => {
+const TaskColumn: React.FC<TaskColumnProps> = ({
+  columnId,
+  column,
+  onClickTask,
+}) => {
   return (
     <Droppable droppableId={columnId}>
       {(provided, snapshot) => (
@@ -19,7 +24,14 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, column }) => {
         >
           <h2 className="pb-4 text-center font-semibold">{column.name}</h2>
           {column.tasks.map((task, index) => (
-            <TaskCard key={task.id} task={task} index={index} />
+            <TaskCard
+              key={task.id}
+              task={task}
+              index={index}
+              onClick={() => {
+                onClickTask(task);
+              }}
+            />
           ))}
 
           {/* visual snapshot*/}

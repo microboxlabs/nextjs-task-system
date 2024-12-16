@@ -1,10 +1,14 @@
 import React from "react";
 
-interface TaskProps {
+interface TaskDueDateProps {
   dueDate: string;
+  label?: string;
 }
 
-export const TaskDueDate: React.FC<TaskProps> = ({ dueDate }) => {
+export const TaskDueDate: React.FC<TaskDueDateProps> = ({
+  dueDate,
+  label = "Due Date:",
+}) => {
   const date = new Date(dueDate);
 
   const day = date.getDate();
@@ -18,7 +22,7 @@ export const TaskDueDate: React.FC<TaskProps> = ({ dueDate }) => {
 
   return (
     <div className="text-sm text-gray-500">
-      Due Date: <span className="font-medium">{formattedDate}</span>
+      {label} <span className="font-medium">{formattedDate}</span>
     </div>
   );
 };
