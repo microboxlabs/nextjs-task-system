@@ -34,7 +34,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, loading }) => {
     >
       <div>
         <div className="mb-2 block">
-          <Label htmlFor="username" value="Username" />
+          <Label
+            htmlFor="username"
+            value="Username"
+            color={errors.username ? "failure" : undefined}
+          />
         </div>
         <TextInput
           id="username"
@@ -49,7 +53,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, loading }) => {
 
       <div>
         <div className="mb-2 block">
-          <Label htmlFor="password" value="Password" />
+          <Label
+            htmlFor="password"
+            value="Password"
+            color={errors.password ? "failure" : undefined}
+          />
         </div>
         <TextInput
           id="password"
