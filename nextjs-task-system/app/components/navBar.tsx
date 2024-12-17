@@ -46,11 +46,9 @@ export function NavBar() {
                 <Navbar.Toggle />
             </div>
             <Navbar.Collapse>
-                <Navbar.Link href="#" active>
-                    Home
+                <Navbar.Link className="text-xxl" href="/dashboard/tasks" active>
+                    Manager Task
                 </Navbar.Link>
-                <Navbar.Link href="#">Tasks</Navbar.Link>
-                <Navbar.Link href="#">Managing Tasks</Navbar.Link>
             </Navbar.Collapse>
         </Navbar>
     );
