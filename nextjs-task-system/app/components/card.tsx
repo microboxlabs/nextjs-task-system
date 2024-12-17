@@ -11,13 +11,14 @@ import { usePaginate } from "../hooks/usePaginate";
 import { ModalDelete } from "./modalDelete";
 import { ModalForm } from "./modal";
 import { UserContexts } from "../contexts/userContexts";
+import { Notification } from "./toast";
 
 
 
-export function CardTasks() {
+export function CardTasks({ filters }: any) {
     const { state: stateUser } = useContext(AuthContexts);
-    const { state: stateTask, getTasks,updateTask } = useContext(TaskContexts);
-    const { state: stateUsers, getUsers, getGroups } = useContext(UserContexts);
+    const { state: stateTask, getTasks, updateTask, getTasksUser } = useContext(TaskContexts);
+    const { state: stateUsers, getUsers, getGroups, getGroupsByUser } = useContext(UserContexts);
 
     const limit = 10;
     const { offset, page, onNext, onPrev, setPage } = usePaginate(0, limit, 1);
@@ -28,12 +29,21 @@ export function CardTasks() {
     const [deletedTask, setDeletedTask] = useState({});
     const [editTask, setEditTask] = useState({});
     const [sort, setSort] = useState({ field: "", order: "" });
+    const [showNotification, setShowNotification] = useState({ active: false, msg: '' });
+    const [error, setError] = useState(false);
 
 
     useEffect(() => {
-        getTasks();
-        getUsers();
-        getGroups();
+        if (stateUser.user.rol === "admin") {
+            getTasks();
+            getUsers();
+            getGroups();
+        }
+        else {
+            getTasksUser(stateUser.user.id);
+            getGroupsByUser(stateUser.user.id);
+        }
+
     }, []);
 
     const handleSelectedTask = (task: any) => {
@@ -85,23 +95,51 @@ export function CardTasks() {
         return sorted;
     };
 
-    const sortedTasks = sortTasks(stateTask?.tasks || []);
+    const filterTasks = (tasks: any[]) => {
+        return tasks.filter((task) => {
+            
+            return (
+                (!filters.user || String(task.assigned_to_id) === filters.user && task.assigned_to_type === 'user' ) &&
+                (!filters.group || String(task.assigned_to_id) === filters.group && task.assigned_to_type === 'group' ) &&
+                (!filters.status || task.status === filters.status) &&
+                (!filters.priority || task.priority === filters.priority)
+            );
+        });
+    };
+
+    const filteredTasks = filterTasks(stateTask?.tasks || []);
+    const sortedTasks = sortTasks(filteredTasks);
     const paginatedTasks = sortedTasks.slice(offset, offset + limit);
 
-    const handleAssignTask = (taskId: string, assignedTo: string) => {
-        // assigneTask(taskId, assignedTo);
-        // setAssignedTo(assignedTo); 
+    const handleAssignTask = async (data: any) => {
+        try {
+            await updateTask(data);
+            getTasks();
+            setShowNotification({ active: true, msg: 'Task assigned successfully!' });
+            setError(false);
+        } catch (error) {
+            setShowNotification({ active: true, msg: 'Error assigned task' });
+            setError(true);
+        } finally {
+
+            setTimeout(() => setShowNotification({ active: false, msg: '' }), 3000);
+        }
     };
 
     const handleUpdateStatus = async (data: any) => {
         try {
             await updateTask(data);
             getTasks();
-
+            setShowNotification({ active: true, msg: 'Status updated successfully!' });
+            setError(false);
         } catch (error) {
-            console.error("Error updating task:", error);
-        } 
-        
+            setShowNotification({ active: true, msg: 'Error updating status' });
+            setError(true);
+        } finally {
+
+            setTimeout(() => setShowNotification({ active: false, msg: '' }), 3000);
+        }
+
     };
 
     if (stateTask.isLoading && paginatedTasks.length === 0) {
@@ -152,7 +190,7 @@ export function CardTasks() {
                                                 </div>
                                                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
                                                     <Badge size="sm" color={getStatusColor(task?.status)} className="uppercase">
-                                                        {task.status == "in_progress" ? "in progress" : task.status }
+                                                        {task.status}
                                                     </Badge>
                                                 </div>
                                             </div>
@@ -178,7 +216,7 @@ export function CardTasks() {
                                                         stateUsers.users.map((user: any) => (
                                                             <Dropdown.Item
                                                                 key={user.id}
-                                                                onClick={() => handleAssignTask(task.id, user.id)}
+                                                                onClick={() => handleAssignTask({ ...task, assigned_to: user.username, assigned_to_id: user.id, assigned_to_type: "user" })}
                                                             >
                                                                 {user.username}
                                                             </Dropdown.Item>
@@ -191,7 +229,7 @@ export function CardTasks() {
                                                         stateUsers.groups.map((group: any) => (
                                                             <Dropdown.Item
                                                                 key={group.id}
-                                                                onClick={() => handleAssignTask(task.id, group.id)}
+                                                                onClick={() => handleAssignTask({ ...task, assigned_to: group.name, assigned_to_id: group.id, assigned_to_type: "group" })}
                                                             >
                                                                 {group.name}
                                                             </Dropdown.Item>
@@ -200,9 +238,9 @@ export function CardTasks() {
                                                 }
                                             </Dropdown>
                                             <Dropdown label="Update Status" size="sm">
-                                            {task.status !== "pending" && <Dropdown.Item  onClick={() => handleUpdateStatus({...task, statusNew: "pending"})} >Pending </Dropdown.Item>}
-                                            {task.status !== "in_progress" && <Dropdown.Item  onClick={() => handleUpdateStatus({...task, statusNew: "in_progress"})}>In Progress</Dropdown.Item>}
-                                            {task.status !== "complete" && <Dropdown.Item  onClick={() => handleUpdateStatus({...task, statusNew :"complete"})}>Complete </Dropdown.Item>}
+                                                {task.status !== "pending" && <Dropdown.Item onClick={() => handleUpdateStatus({ ...task, statusNew: "pending" })} >Pending </Dropdown.Item>}
+                                                {task.status !== "in progress" && <Dropdown.Item onClick={() => handleUpdateStatus({ ...task, statusNew: "in progress" })}>In Progress</Dropdown.Item>}
+                                                {task.status !== "completed" && <Dropdown.Item onClick={() => handleUpdateStatus({ ...task, statusNew: "completed" })}>Completed </Dropdown.Item>}
                                             </Dropdown>
                                         </div>
 
@@ -216,6 +254,10 @@ export function CardTasks() {
                         {stateTask?.tasks.length > limit &&
                             <PaginationTask currentPage={page} totalPages={Math.ceil(stateTask?.tasks.length / limit)} onPageChange={handlePageChange} />
                         }
+
+                        {showNotification.active && (
+                            <Notification text={showNotification.msg} successfullyAction={!error} />
+                        )}
 
                     </div>
                 ) : (

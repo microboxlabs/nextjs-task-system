@@ -4,16 +4,23 @@ import { Button, Sidebar } from "flowbite-react";
 import { HiArrowSmRight, HiChartPie, HiUser, HiUsers } from "react-icons/hi";
 import { useContext, useEffect, useState } from "react";
 import { UserContexts } from "../contexts/userContexts";
+import { AuthContexts } from "../contexts/authContexts";
 
-export function Dashboard() {
+export function Dashboard({ filters,handleFilterChange  }: any) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const { state, getUsers, getGroups } = useContext(UserContexts);
+    const { state, getUsers, getGroups, getGroupsByUser } = useContext(UserContexts);
+    const { state: stateUser } = useContext(AuthContexts);
 
     useEffect(() => {
-        getUsers();
-        getGroups();
-
+        if (stateUser.user.rol === "admin") {
+            getUsers();
+            getGroups();
+        }
+        else {
+            getGroupsByUser(stateUser.user.id);
+        }
     }, []);
+
 
     return (
         <div className="flex">
@@ -41,14 +48,20 @@ export function Dashboard() {
                             <select
                                 id="userFilter"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:text-sm"
+                                onChange={(e) => handleFilterChange('user',e)}
                             >
                                 <option value="">All Users</option>
-                                {state.users && state.users.length > 0 &&
+                                {stateUser.user.rol === "admin" ?
+                                    state.users && state.users.length > 0 &&
                                     state.users.map((user: any) => (
                                         <option key={user.id} value={user.id}>
                                             {user.username}
                                         </option>
                                     ))
+                                    :
+                                    <option key={stateUser.user.id} value={stateUser.user.id}>
+                                        To Me
+                                    </option>
                                 }
                             </select>
                         </div>
@@ -60,6 +73,7 @@ export function Dashboard() {
                             <select
                                 id="groupFilter"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:text-sm"
+                                onChange={(e) => handleFilterChange('group',e)}
                             >
                                 <option value="">All Groups</option>
                                 {state.groups && state.groups.length > 0 &&
@@ -80,11 +94,12 @@ export function Dashboard() {
                             <select
                                 id="statusFilter"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:text-sm"
+                                onChange={(e) => handleFilterChange('status',e)}
                             >
                                 <option value="">All Status</option>
                                 <option value="pending">Pending</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="complete">Complete</option>
+                                <option value="in progress">In Progress</option>
+                                <option value="completed">Completed</option>
 
                             </select>
                         </div>
@@ -96,6 +111,7 @@ export function Dashboard() {
                             <select
                                 id="statusFilter"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 md:text-sm"
+                                onChange={(e) => handleFilterChange('priority',e)}
                             >
                                 <option value="">All Priorities</option>
                                 <option value="low">Low</option>

@@ -39,15 +39,11 @@ export default function DashboardLayout({
     <>{state.isLogged &&
       <div>
         <NavBar />
-        <div className="flex flex-col md:flex-row">
-          <div className="w-full md:max-w-xs md:w-auto ">
-            <Dashboard />
-          </div>
-          <main className="flex-1 p-4">
+        
+          <main className="flex-1">
             {children}
 
           </main>
-        </div>
         <FooterPage />
       </div>
     }
