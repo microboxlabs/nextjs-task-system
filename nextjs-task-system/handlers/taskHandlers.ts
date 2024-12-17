@@ -1,5 +1,5 @@
 import { tasksAdapter } from "@/adapters/tasksAdapter";
-import { taskSchema, updateTaskSchema } from "@/schemas/taskSchema";
+import { createTaskSchema } from "@/schemas/taskSchema";
 import {
   handleGeneralError,
   handleValidationError,
@@ -61,7 +61,7 @@ export async function createTaskHandler(request: Request) {
   const body = await request.json();
   console.log("Request body for new task:", body);
 
-  const validationError = validateInput(taskSchema, body);
+  const validationError = validateInput(createTaskSchema, body);
   if (validationError) {
     return handleValidationError(validationError);
   }
@@ -97,7 +97,7 @@ export async function updateTaskHandler(
   const body = await request.json();
   console.log("Request body for updating task:", body);
 
-  const validationError = validateInput(updateTaskSchema, body);
+  const validationError = validateInput(createTaskSchema, body);
   if (validationError) {
     return handleValidationError(validationError);
   }

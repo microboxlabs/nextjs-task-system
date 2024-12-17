@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useNotificationStore, useTasksStore } from "@/stores";
 import { TaskForm } from "@/components/TaskForm";
-import { Task } from "@/types/taskTypes";
+import { CreateTaskSchema } from "@/schemas/taskSchema";
 
 export default function CreateTaskPage() {
   const { addNotification } = useNotificationStore();
   const { createTask, loading } = useTasksStore();
   const router = useRouter();
 
-  const handleSubmit = async (task: Task) => {
+  const handleSubmit = async (task: CreateTaskSchema) => {
     try {
       await createTask(task);
       addNotification({
@@ -32,7 +32,7 @@ export default function CreateTaskPage() {
         <h2 className="mb-2 text-2xl font-semibold text-gray-900 dark:text-white md:mb-4">
           Create Task
         </h2>
-        <TaskForm onSubmit={handleSubmit} loading={loading} />
+        <TaskForm onCreate={handleSubmit} loading={loading} />
       </div>
     </div>
   );

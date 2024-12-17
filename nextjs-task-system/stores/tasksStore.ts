@@ -3,13 +3,14 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { Task } from "@/types";
 import { apiRequest } from "../utils/apiUtils";
+import { CreateTaskSchema } from "@/schemas/taskSchema";
 
 interface TasksState {
   tasks: Task[];
   loading: boolean;
   error: string | null;
   getTasks: () => Promise<void>;
-  createTask: (newTask: Omit<Task, "id">) => Promise<void>;
+  createTask: (newTask: CreateTaskSchema) => Promise<void>;
   updateTask: (id: number, updatedTask: Partial<Task>) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
 }
@@ -19,7 +20,7 @@ const fetchTasks = async (): Promise<Task[]> => {
   return apiRequest({ url: "/api/tasks", method: "GET" });
 };
 
-const postTask = async (newTask: Omit<Task, "id">): Promise<Task> => {
+const postTask = async (newTask: CreateTaskSchema): Promise<Task> => {
   return apiRequest({ url: "/api/tasks", method: "POST", body: newTask });
 };
 

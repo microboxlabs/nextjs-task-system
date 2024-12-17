@@ -1,14 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useAuthStore } from "@/stores/authStore";
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  createTaskSchema,
+  CreateTaskSchema,
+  TaskStatusType,
+} from "@/schemas/taskSchema";
+import { useAuthStore, useUsersStore } from "@/stores";
 import {
   assignTypeOptions,
   groupOptions,
   priorityOptions,
   statusOptions,
 } from "@/utils/taskUtils";
+import { Task, TaskPriority } from "@/types/taskTypes";
 import {
   Label,
   TextInput,
@@ -17,34 +25,39 @@ import {
   Button,
   Radio,
 } from "flowbite-react";
-import {
-  CreateTask,
-  Task,
-  TaskPriority,
-  TaskStatus,
-  UpdateTask,
-} from "@/types/taskTypes";
-import { useUsersStore } from "@/stores/usersStore";
 
-interface TaskFormProps {
+export interface TaskFormProps {
   task?: Task;
-  onSubmit: (task: CreateTask | UpdateTask) => void;
+  onCreate?: (newTask: CreateTaskSchema) => void;
+  onUpdate?: (updatedTask: Task) => void;
   onDelete?: (taskId: number) => void;
   loading: boolean;
 }
 
-export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
-  const [title, setTitle] = useState(task?.title || "");
-  const [description, setDescription] = useState(task?.description || "");
-  const [dueDate, setDueDate] = useState(task?.dueDate || "");
-  const [status, setStatus] = useState<TaskStatus>(task?.status || "pending");
-  const [priority, setPriority] = useState<TaskPriority>(
-    task?.priority || "medium",
-  );
-  const [assignType, setAssignType] = useState<"user" | "group">("user");
-  const [assignedToId, setAssignedToId] = useState<number>(
-    task?.assignedTo?.id || 0,
-  );
+export function TaskForm({
+  task,
+  onCreate,
+  onUpdate,
+  onDelete,
+  loading,
+}: TaskFormProps) {
+  const { control, handleSubmit, setValue, formState, getValues } = useForm({
+    defaultValues: {
+      title: task?.title || "",
+      description: task?.description || "",
+      dueDate: task?.dueDate || undefined,
+      status: task ? (task.status as TaskStatusType) : "pending",
+      priority: task ? (task.priority as TaskPriority) : "medium",
+      assignedTo: task?.assignedTo || null,
+      comments: task?.comments || [],
+    },
+    resolver: zodResolver(createTaskSchema),
+    mode: "onChange",
+  });
+
+  const assignedToType = getValues("assignedTo.type");
+
+  const { errors } = formState;
   const { user } = useAuthStore();
   const { users, getUsers, loading: usersLoading } = useUsersStore();
   const router = useRouter();
@@ -61,24 +74,18 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
     router.push("/dashboard");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  if (errors) {
+    console.log("eroors in task form", errors);
+  }
 
-    const taskValues: CreateTask = {
-      title,
-      description,
-      status,
-      dueDate,
-      priority,
-      assignedTo: {
-        type: assignType,
-        id: assignedToId,
-      },
-    };
+  const handleFormSubmit = async (data: CreateTaskSchema) => {
+    if (onCreate) {
+      onCreate(data);
+    }
 
-    task
-      ? onSubmit({ id: task.id, ...taskValues } as UpdateTask)
-      : onSubmit(taskValues);
+    if (onUpdate && task) {
+      onUpdate({ id: task.id, ...data } as Task);
+    }
   };
 
   const handleDelete = () => {
@@ -89,29 +96,43 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(handleFormSubmit)}
       className="flex w-full flex-col gap-2 md:gap-4"
     >
       <div>
         <div className="mb-2 block">
           <Label htmlFor="title" value="Title" />
         </div>
-        <TextInput
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          disabled={loading || !isAdmin}
+        <Controller
+          name="title"
+          control={control}
+          render={({ field }) => (
+            <TextInput
+              id="title"
+              {...field}
+              disabled={loading || !isAdmin}
+              color={errors.title ? "failure" : undefined}
+              helperText={errors.title?.message}
+            />
+          )}
         />
       </div>
       <div>
         <div className="mb-2 block">
           <Label htmlFor="description" value="Description" />
         </div>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          disabled={loading || !isAdmin}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              id="description"
+              {...field}
+              disabled={loading || !isAdmin}
+              color={errors.description ? "failure" : undefined}
+              helperText={errors.description?.message}
+            />
+          )}
         />
       </div>
 
@@ -121,104 +142,121 @@ export function TaskForm({ task, onSubmit, onDelete, loading }: TaskFormProps) {
             Assign To
           </legend>
           {assignTypeOptions.map((option) => (
-            <div className="flex items-center gap-2" key={option.value}>
-              <Radio
-                id={option.value}
-                name="assignType"
-                value={option.value}
-                checked={assignType === option.value}
-                onChange={() => setAssignType(option.value)}
-              />
-              <Label htmlFor={option.value}>{option.label}</Label>
-            </div>
+            <Controller
+              key={option.value}
+              name="assignedTo.type"
+              control={control}
+              render={({ field }) => (
+                <div className="flex items-center gap-2">
+                  <Radio
+                    id={option.value}
+                    value={option.value}
+                    checked={field.value === option.value}
+                    onChange={() => setValue("assignedTo.type", option.value)}
+                    disabled={loading || !isAdmin}
+                  />
+                  <Label htmlFor={option.value}>{option.label}</Label>
+                </div>
+              )}
+            />
           ))}
         </fieldset>
         <div>
           <div className="mb-2 block">
             <Label
               htmlFor="assignedToId"
-              value={assignType === "user" ? "Select User" : "Select Group"}
+              value={assignedToType === "user" ? "Select User" : "Select Group"}
             />
           </div>
-          {assignType === "user" && (
-            <Select
-              id="assignedToId"
-              value={assignedToId}
-              onChange={(e) => setAssignedToId(Number(e.target.value))}
-              disabled={loading || usersLoading || !isAdmin}
-            >
-              {users.map(({ id, username }) => (
-                <option key={id} value={id}>
-                  {username}
-                </option>
-              ))}
-            </Select>
-          )}
-          {assignType === "group" && (
-            <Select
-              id="assignedToId"
-              value={assignedToId}
-              onChange={(e) => setAssignedToId(Number(e.target.value))}
-              disabled={loading || !isAdmin}
-            >
-              {groupOptions.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-          )}
+          <Controller
+            name="assignedTo.id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                id="assignedTo.id"
+                {...field}
+                disabled={
+                  loading || usersLoading || !isAdmin || !assignedToType
+                }
+              >
+                <option value="">Select an option</option>
+                {assignedToType === "user"
+                  ? users.map(({ id, username }) => (
+                      <option key={id} value={id}>
+                        {username}
+                      </option>
+                    ))
+                  : groupOptions.map(({ value, label }) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+              </Select>
+            )}
+          />
         </div>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="dueDate" value="Due Date" />
           </div>
-          <TextInput
-            id="dueDate"
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            disabled={loading || !isAdmin}
+          <Controller
+            name="dueDate"
+            control={control}
+            render={({ field }) => (
+              <TextInput
+                id="dueDate"
+                type="date"
+                {...field}
+                disabled={loading || !isAdmin}
+                color={errors.dueDate ? "failure" : undefined}
+                helperText={errors.dueDate?.message}
+              />
+            )}
           />
         </div>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="priority" value="Priority" />
           </div>
-          <Select
-            id="priority"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as TaskPriority)}
-            disabled={loading || !isAdmin}
-          >
-            {priorityOptions.map(({ label, value }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
+          <Controller
+            name="priority"
+            control={control}
+            render={({ field }) => (
+              <Select id="priority" {...field} disabled={loading || !isAdmin}>
+                <option value="">Select an option</option>
+                {priorityOptions.map(({ label, value }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </div>
         <div>
           <div className="mb-2 block">
             <Label htmlFor="status" value="Status" />
           </div>
-          <Select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value as TaskStatus)}
-            disabled={loading}
-          >
-            {statusOptions.map(({ label, value }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select id="status" {...field} disabled={loading}>
+                {statusOptions.map(({ label, value }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </div>
       </div>
       <div className={`mt-4 flex flex-col gap-4 md:flex-row`}>
         <div
-          className={`flex w-full ${onDelete ? "md:w-2/3" : "md:w-full"} gap-4`}
+          className={`flex w-full ${
+            isAdmin && onDelete ? "md:w-2/3" : "md:w-full"
+          } gap-4`}
         >
           <Button
             color="gray"

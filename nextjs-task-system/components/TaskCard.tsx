@@ -64,8 +64,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-2">
             {getPriorityIcon()}
-            {task.dueDate && (
-              <span className="truncate">{formatDate(task.dueDate)}</span>
+            {task.dueDate ? (
+              formatDate(task.dueDate)
+            ) : (
+              <span className="italic text-gray-500">No due date</span>
             )}
           </div>
 
