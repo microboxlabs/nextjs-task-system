@@ -6,12 +6,12 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const { title, description, assigned_to, due_date, priority, comments } = await request.json();
+  const { title, description,assigned_to, assigned_to_id,assigned_to_type, due_date, priority } = await request.json();
 
   try {
       const result = db.prepare(
-       'INSERT INTO tasks (title, description, assigned_to, due_date, priority, comments) VALUES (?, ?, ?, ?, ?, ?)'
-      ).run(title, description, assigned_to, due_date, priority || 'low', comments || '');
+       'INSERT INTO tasks (title, description, assigned_to,assigned_to_id,assigned_to_type,due_date, priority) VALUES (?, ?, ?,?, ?, ?, ?)'
+      ).run(title, description, assigned_to, assigned_to_id,assigned_to_type, due_date, priority || 'low');
     return new Response(JSON.stringify({ id: result.lastInsertRowid }), { status: 201 });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 400 });
@@ -19,13 +19,13 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-  const { id, title, description, assigned_to, due_date, status, priority, comments } = await request.json();
+  const { id,title,description,assigned_to,assigned_to_id,assigned_to_type,due_date, status, priority  } = await request.json();
 
   try {
     const result = db.prepare(
-      'UPDATE tasks SET title = ?, description = ?, assigned_to = ?, due_date = ?, status = ?, priority = ?, comments = ? WHERE id = ?'
-    ).run(title, description, assigned_to, due_date,status, priority, comments || '', id);
-    
+      'UPDATE tasks SET title = ? ,description = ?,assigned_to = ?,assigned_to_id = ?, assigned_to_type = ? ,due_date = ? ,status = ?, priority = ? WHERE id = ?'
+    ).run(title,description,assigned_to,assigned_to_id,assigned_to_type,due_date,status,priority, id);
+
     return new Response(JSON.stringify({ id }), { status: 201 });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 400 });
