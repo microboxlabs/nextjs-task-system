@@ -47,7 +47,22 @@ export const createTaskSchema = z.object({
   comments: z.array(z.string()).default([]),
 });
 
+export const updateTaskSchema = createTaskSchema
+  .extend({
+    id: z.number(),
+  })
+  .partial({
+    title: true,
+    description: true,
+    status: true,
+    priority: true,
+    assignedTo: true,
+    dueDate: true,
+    comments: true,
+  });
+
 // Export the inferred types
 export type CreateTaskSchema = z.infer<typeof createTaskSchema>;
+export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>;
 export type TaskPriorityType = z.infer<typeof TaskPriority>;
 export type TaskStatusType = z.infer<typeof TaskStatus>;
