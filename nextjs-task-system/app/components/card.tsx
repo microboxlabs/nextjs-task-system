@@ -114,7 +114,13 @@ export function CardTasks({ filters }: any) {
     const handleAssignTask = async (data: any) => {
         try {
             await updateTask(data);
-            getTasks();
+            if (stateUser.user.rol === "admin") {
+                getTasks();
+    
+            }
+            else {
+                getTasksUser(stateUser.user.id);
+            }
             setShowNotification({ active: true, msg: 'Task assigned successfully!' });
             setError(false);
         } catch (error) {
@@ -129,7 +135,13 @@ export function CardTasks({ filters }: any) {
     const handleUpdateStatus = async (data: any) => {
         try {
             await updateTask(data);
-            getTasks();
+            if (stateUser.user.rol === "admin") {
+                getTasks();
+    
+            }
+            else {
+                getTasksUser(stateUser.user.id);
+            }
             setShowNotification({ active: true, msg: 'Status updated successfully!' });
             setError(false);
         } catch (error) {
@@ -213,7 +225,7 @@ export function CardTasks({ filters }: any) {
                                         </div>
                                         <div className="flex gap-2 mt-2">
                                             <Dropdown label="Assign Task" size="sm">
-                                                {stateUsers.users && stateUsers.users.length > 0 &&
+                                                {stateUser.user.rol === "admin" && stateUsers.users && stateUsers.users.length > 0 ?
                                                     (
                                                         stateUsers.users.map((user: any) => (
                                                             <Dropdown.Item
@@ -224,7 +236,15 @@ export function CardTasks({ filters }: any) {
                                                             </Dropdown.Item>
                                                         ))
                                                     )
+                                                    : 
+                                                    <Dropdown.Item
+                                                                key={stateUser.user.id}
+                                                                onClick={() => handleAssignTask({ ...task, assigned_to: stateUser.user.username, assigned_to_id: stateUser.user.id, assigned_to_type: "user" })}
+                                                            >
+                                                                To Me
+                                                            </Dropdown.Item>
                                                 }
+
                                                 <Dropdown.Divider />
                                                 {stateUsers.groups && stateUsers.groups.length > 0 &&
                                                     (
