@@ -50,6 +50,40 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     }
 
+    const getTasksUser = async (user_id: number) => {
+
+        dispatch({
+            type: 'GET TASKS',
+            payload: {
+                ...state,
+                isLoading: true,
+            },
+        });
+        try { 
+
+            const { data } = await axiosApi.get(`/tasks/user?user_id=${user_id}`)
+
+            dispatch({
+                type: 'GET TASKS',
+                payload: {
+                    tasks: data,
+                    isLoading: false,
+                }
+            })
+
+        } catch (error) {
+            dispatch({
+                type: 'GET TASKS',
+                payload: {
+                    tasks: [],
+                    isLoading: false,
+                }
+            })
+
+        }
+
+    }
+
     const createTask = async (data: any) => {
         
         try {
@@ -59,6 +93,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     title: data.title,
                     description: data.description ?? null,
                     assigned_to: data.assigned_to  ?? null,
+                    assigned_to_id: data.assigned_to_id  ?? null,
+                    assigned_to_type: data.assigned_to_type  ?? null,
                     due_date: data.due_date  ?? null,
                     priority: data.priority  ?? null,
                     status: 'pending'
@@ -79,7 +115,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 type: 'CREATE TASK',
                 payload: {
                     isLoading: false,
-                    msg: 'Error creating task: {{error}}'
+                    msg: 'Error creating task'
                 }
             })
         }
@@ -95,6 +131,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     title: data.title,
                     description: data.description,
                     assigned_to: data.assigned_to,
+                    assigned_to_id: data.assigned_to_id,
+                    assigned_to_type: data.assigned_to_type ,
                     due_date: data.due_date,
                     priority: data.priority,
                     status: data.statusNew ? data.statusNew : data.status
@@ -102,7 +140,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
 
             dispatch({
-                type: 'UPDATED TASK',
+                type: 'UPDATE TASK',
                 payload: {
                     isLoading: false,
                     msg: 'Task updated successfully!'
@@ -112,7 +150,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
             console.log(error);
             dispatch({
-                type: 'UPDATED TASK',
+                type: 'UPDATE TASK',
                 payload: {
                     isLoading: false,
                     msg: 'Error updating task'
@@ -153,7 +191,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
 
     return (
-        <TaskContexts.Provider value={{ state, getTasks, createTask, updateTask,deleteTask }}>
+        <TaskContexts.Provider value={{ state, getTasks, createTask, updateTask,deleteTask,getTasksUser }}>
             {children}
         </TaskContexts.Provider>
     )

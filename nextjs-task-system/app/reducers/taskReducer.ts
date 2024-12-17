@@ -28,13 +28,6 @@ export const TaskReducer = (state={}, action: any) => {
                 msg: action.payload.msg
             }
 
-        case   'ASSIGN TASK':
-            return {
-                ...state,
-                isLoading: action.payload.isLoading,
-                msg: action.payload.msg
-            }
-
         default:
             return state;
     }
