@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNotificationStore, useTasksStore } from "@/stores";
 import { CommentsSection, TaskForm } from "@/components";
 import { Task } from "@/types";
+import { UpdateTaskSchema } from "@/schemas/taskSchema";
 
 interface TaskDetailsProps {
   task: Task;
@@ -16,9 +17,9 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ task }) => {
   const { updateTask, deleteTask, loading } = useTasksStore();
   const router = useRouter();
 
-  const handleUpdate = async (updatedTask: Task) => {
+  const handleUpdate = async (updatedTask: UpdateTaskSchema) => {
     try {
-      await updateTask(task.id, { ...updatedTask, comments });
+      await updateTask({ ...updatedTask, comments });
       addNotification({
         message: "Task updated successfully.",
         type: "success",
@@ -50,7 +51,7 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ task }) => {
 
   const handleAddComment = async (comment: string) => {
     try {
-      await updateTask(task.id, {
+      await updateTask({
         ...task,
         comments: [...task.comments, comment],
       });
@@ -72,7 +73,7 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({ task }) => {
       <div className="flex w-full md:max-w-sm lg:max-w-lg">
         <TaskForm
           task={task}
-          onSubmit={handleUpdate}
+          onUpdate={handleUpdate}
           onDelete={handleDelete}
           loading={loading}
         />
