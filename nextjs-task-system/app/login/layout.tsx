@@ -2,6 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContexts } from "../contexts/authContexts";
 import { redirect } from "next/navigation";
+import { Spinner } from "flowbite-react";
 
 
 export default function LoginLayout({
@@ -30,7 +31,9 @@ export default function LoginLayout({
   }, [state.isLogged, isLoading]);
 
   if (isLoading) {
-    return <div>Loading...</div>; 
+    return <div className="text-center">
+      <Spinner aria-label="Center-aligned spinner example" />
+    </div>;
   }
 
   return (

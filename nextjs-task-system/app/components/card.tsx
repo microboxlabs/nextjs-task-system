@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Card, Dropdown, Select } from "flowbite-react";
+import { Badge, Card, Dropdown, Select, Spinner } from "flowbite-react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { PaginationTask } from "./pagination";
@@ -97,10 +97,10 @@ export function CardTasks({ filters }: any) {
 
     const filterTasks = (tasks: any[]) => {
         return tasks.filter((task) => {
-            
+
             return (
-                (!filters.user || String(task.assigned_to_id) === filters.user && task.assigned_to_type === 'user' ) &&
-                (!filters.group || String(task.assigned_to_id) === filters.group && task.assigned_to_type === 'group' ) &&
+                (!filters.user || String(task.assigned_to_id) === filters.user && task.assigned_to_type === 'user') &&
+                (!filters.group || String(task.assigned_to_id) === filters.group && task.assigned_to_type === 'group') &&
                 (!filters.status || task.status === filters.status) &&
                 (!filters.priority || task.priority === filters.priority)
             );
@@ -143,7 +143,9 @@ export function CardTasks({ filters }: any) {
     };
 
     if (stateTask.isLoading && paginatedTasks.length === 0) {
-        return <div>Loading...</div>;
+        return <div className="text-center">
+            <Spinner aria-label="Center-aligned spinner example" />
+        </div>;
     }
 
     return (

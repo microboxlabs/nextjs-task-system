@@ -6,6 +6,7 @@ import { NavBar } from "../components/navBar";
 import { AuthContexts } from "../contexts/authContexts";
 import { Navigate } from "react-router";
 import { redirect } from "next/navigation";
+import { Spinner } from "flowbite-react";
 
 export default function DashboardLayout({
   children,
@@ -32,18 +33,20 @@ export default function DashboardLayout({
   }, [state.isLogged, isLoading]);
 
   if (isLoading) {
-    return <div>Loading...</div>; 
+    return <div className="text-center">
+      <Spinner aria-label="Center-aligned spinner example" />
+    </div>;
   }
 
   return (
     <>{state.isLogged &&
       <div>
         <NavBar />
-        
-          <main className="flex-1">
-            {children}
 
-          </main>
+        <main className="flex-1">
+          {children}
+
+        </main>
         <FooterPage />
       </div>
     }
