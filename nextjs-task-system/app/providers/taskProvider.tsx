@@ -8,6 +8,7 @@ import { TaskContexts } from '../contexts/taskContexts';
 
 const initialValues = {
     tasks: [],
+    comments: [],
     msg: '',
     isLoading: true,
 }
@@ -82,6 +83,77 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
         }
 
+    }
+
+    const getCommentsTask = async (task_id: number) => {
+
+        dispatch({
+            type: 'COMMENTS TASKS',
+            payload: {
+                ...state,
+                comments: [],
+                isLoading: true,
+            },
+        });
+        try { 
+
+            const { data } = await axiosApi.get(`/tasks/comments?task_id=${task_id}`);
+            
+
+            dispatch({
+                type: 'COMMENTS TASK',
+                payload: {
+                    comments: data,
+                    isLoading: false,
+                }
+            })
+
+            
+
+        } catch (error) {
+            dispatch({
+                type: 'COMMENTS TASK',
+                payload: {
+                    comments: [],
+                    isLoading: false,
+                }
+            })
+
+        }
+
+    }
+
+
+    const addCommentTask = async (data: any) => {
+        try {
+
+            await axiosApi.post('/tasks/comments',
+                {
+                    task_id: data.task_id,
+                    user_id: data.user_id,
+                    comment: data.comment,
+                    
+                });
+
+
+            dispatch({
+                type: 'ADD COMMENTS TASK',
+                payload: {
+                    isLoading: false,
+                    msg: 'Comment added successfully!'
+                }
+            });
+
+        } catch (error) {
+            console.log(error);
+            dispatch({
+                type: 'ADD COMMENTS TASK',
+                payload: {
+                    isLoading: false,
+                    msg: 'Error adding comment'
+                }
+            })
+        }
     }
 
     const createTask = async (data: any) => {
@@ -191,7 +263,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
 
     return (
-        <TaskContexts.Provider value={{ state, getTasks, createTask, updateTask,deleteTask,getTasksUser }}>
+        <TaskContexts.Provider value={{ state, getTasks, createTask, updateTask,deleteTask,getTasksUser,getCommentsTask,addCommentTask }}>
             {children}
         </TaskContexts.Provider>
     )
