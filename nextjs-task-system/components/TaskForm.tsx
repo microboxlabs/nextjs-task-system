@@ -8,6 +8,8 @@ import {
   createTaskSchema,
   CreateTaskSchema,
   TaskStatusType,
+  updateTaskSchema,
+  UpdateTaskSchema,
 } from "@/schemas/taskSchema";
 import { useAuthStore, useUsersStore } from "@/stores";
 import {
@@ -29,7 +31,7 @@ import {
 export interface TaskFormProps {
   task?: Task;
   onCreate?: (newTask: CreateTaskSchema) => void;
-  onUpdate?: (updatedTask: Task) => void;
+  onUpdate?: (updatedTask: UpdateTaskSchema) => void;
   onDelete?: (taskId: number) => void;
   loading: boolean;
 }
@@ -41,8 +43,9 @@ export function TaskForm({
   onDelete,
   loading,
 }: TaskFormProps) {
-  const { control, handleSubmit, setValue, formState, getValues } = useForm({
+  const { control, handleSubmit, setValue, formState, watch } = useForm({
     defaultValues: {
+      id: task?.id || undefined,
       title: task?.title || "",
       description: task?.description || "",
       dueDate: task?.dueDate || undefined,
@@ -51,11 +54,12 @@ export function TaskForm({
       assignedTo: task?.assignedTo || null,
       comments: task?.comments || [],
     },
-    resolver: zodResolver(createTaskSchema),
+    resolver: zodResolver(task ? updateTaskSchema : createTaskSchema),
     mode: "onChange",
   });
 
-  const assignedToType = getValues("assignedTo.type");
+  const assignedToType = watch("assignedTo.type");
+  const assignedToId = watch("assignedTo.id");
 
   const { errors } = formState;
   const { user } = useAuthStore();
@@ -74,17 +78,15 @@ export function TaskForm({
     router.push("/dashboard");
   };
 
-  if (errors) {
-    console.log("eroors in task form", errors);
-  }
-
-  const handleFormSubmit = async (data: CreateTaskSchema) => {
+  const handleFormSubmit = async (
+    data: CreateTaskSchema | UpdateTaskSchema,
+  ) => {
     if (onCreate) {
-      onCreate(data);
+      onCreate(data as CreateTaskSchema);
     }
 
     if (onUpdate && task) {
-      onUpdate({ id: task.id, ...data } as Task);
+      onUpdate(data as UpdateTaskSchema);
     }
   };
 
@@ -175,19 +177,30 @@ export function TaskForm({
               <Select
                 id="assignedTo.id"
                 {...field}
+                onChange={(e) => {
+                  setValue("assignedTo.id", Number(e.target.value));
+                }}
                 disabled={
                   loading || usersLoading || !isAdmin || !assignedToType
                 }
+                color={errors.assignedTo?.id ? "failure" : undefined}
+                helperText={
+                  errors.assignedTo?.id?.message || errors.assignedTo
+                    ? "Please select an option"
+                    : undefined
+                }
               >
-                <option value="">Select an option</option>
+                <option value="" disabled>
+                  Select an option
+                </option>
                 {assignedToType === "user"
                   ? users.map(({ id, username }) => (
-                      <option key={id} value={id}>
+                      <option key={id} value={Number(id)}>
                         {username}
                       </option>
                     ))
                   : groupOptions.map(({ value, label }) => (
-                      <option key={value} value={value}>
+                      <option key={value} value={Number(value)}>
                         {label}
                       </option>
                     ))}
@@ -223,7 +236,9 @@ export function TaskForm({
             control={control}
             render={({ field }) => (
               <Select id="priority" {...field} disabled={loading || !isAdmin}>
-                <option value="">Select an option</option>
+                <option value="" disabled>
+                  Select an option
+                </option>
                 {priorityOptions.map(({ label, value }) => (
                   <option key={value} value={value}>
                     {label}
