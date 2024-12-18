@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "title": "Implement Feature A",
-    "description": "Details about feature A.",
+    "title": "Implement User Authentication System",
+    "description": "Details about implementing a secure user authentication system.",
     "status": "completed",
     "dueDate": "2024-12-20",
     "assignedTo": {
@@ -10,7 +10,11 @@
       "id": 1
     },
     "priority": "high",
-    "comments": [],
+    "comments": [
+      "Initial implementation completed.",
+      "Reviewed by the security team.",
+      "Deployment scheduled for next week."
+    ],
     "createdAt": "2024-12-01T12:00:00Z"
   },
   {
@@ -24,7 +28,11 @@
       "id": 2
     },
     "priority": "medium",
-    "comments": [],
+    "comments": [
+      "Identified the root cause of the bug.",
+      "Working on a fix.",
+      "Testing the solution before deployment."
+    ],
     "createdAt": "2024-12-02T12:00:00Z"
   },
   {
@@ -38,7 +46,11 @@
       "id": 3
     },
     "priority": "low",
-    "comments": [],
+    "comments": [
+      "Started updating the documentation.",
+      "Need feedback from the development team.",
+      "Final review scheduled for next week."
+    ],
     "createdAt": "2024-12-03T12:00:00Z"
   },
   {
@@ -52,7 +64,11 @@
       "id": 2
     },
     "priority": "high",
-    "comments": [],
+    "comments": [
+      "Gathering content for the slides.",
+      "Design template selected.",
+      "Draft presentation ready for review."
+    ],
     "createdAt": "2024-12-04T12:00:00Z"
   },
   {
@@ -66,7 +82,11 @@
       "id": 3
     },
     "priority": "medium",
-    "comments": [],
+    "comments": [
+      "Analyzing current performance metrics.",
+      "Identifying bottlenecks in the system.",
+      "Plan for optimization strategies in progress."
+    ],
     "createdAt": "2024-12-05T12:00:00Z"
   },
   {
@@ -80,7 +100,11 @@
       "id": 1
     },
     "priority": "high",
-    "comments": [],
+    "comments": [
+      "Deployment checklist being prepared.",
+      "All features tested in staging.",
+      "Deployment window scheduled for New Year's Eve."
+    ],
     "createdAt": "2024-12-06T12:00:00Z"
   }
 ]

@@ -46,12 +46,14 @@ export const createTaskSchema = z.object({
       message: "Invalid date format",
     })
     .optional(),
-  comments: z.array(z.string()).default([]),
+  comments: z
+    .array(z.string().min(1, { message: "Comment cannot be empty" }))
+    .default([]),
 });
 
 export const updateTaskSchema = createTaskSchema
   .extend({
-    id: z.number(),
+    id: z.number().optional(),
   })
   .partial({
     title: true,

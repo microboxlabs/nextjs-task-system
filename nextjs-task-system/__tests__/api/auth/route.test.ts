@@ -4,7 +4,7 @@ import { usersAdapter } from "@/adapters/usersAdapter";
 // Helper function to create a valid user credentials
 const createValidCredentials = () => ({
   username: "admin",
-  password: "adminPass",
+  password: "admin123",
 });
 
 // Mock the usersAdapter for testing
