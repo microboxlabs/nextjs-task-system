@@ -9,6 +9,7 @@ This project is a Task Management System designed to help users efficiently crea
 - Next.js 14
 - Flowbite React
 - Tailwind CSS
+- Zustand for global state management
 
 ## Features
 
@@ -54,7 +55,53 @@ This project is a Task Management System designed to help users efficiently crea
    - The application includes a navbar for navigation and a dashboard page for viewing and filtering tasks.
 
 7. **Basic Authorization**
+
    - Admin users can access task creation and management pages, while regular users can only access their assigned task list.
+
+8. **Form Validation**
+
+   - Integrated form validation for login, task creation, and task editing, ensuring data integrity and user feedback on errors.
+
+### Technical Overview
+
+#### Frontend
+
+- **Framework**: React with TypeScript.
+- **State Management**: Zustand, with a centralized store (`tasksStore`) for managing tasks, loading states, errors, authenticated users, registered users, and notifications.
+- **Components**:
+  - **Navbar**: Responsive navigation with theme switching, user information display, and logout functionality.
+  - **TaskCard**: Displays key task details, including title, priority, due date, and assignee.
+  - **TaskList**: Organizes tasks by status (Pending, In Progress, Completed).
+  - **TaskForm**: Reusable form for task creation and editing, with integrated validation.
+  - **CommentsSection**: Allows users to view and add comments to tasks.
+  - **TaskDetails**: Combines task details and comments section for comprehensive task management.
+  - **Toast**: Displays success and error notifications.
+  - **LoginForm**: Handles user authentication with validation.
+- **Pages**:
+  - **Dashboard**: Displays tasks categorized by state, with filtering and sorting options.
+  - **Login**: Redirects users to the dashboard upon successful login.
+  - **CreateTaskPage**: Includes the validated task creation form.
+  - **TaskDetailsPage**: Displays task details and allows editing and commenting.
+- **Styling**: Tailwind CSS ensures a modern, responsive design adaptable to various devices.
+
+#### Backend
+
+- **API Routes**: Implemented using Next.js for CRUD operations and authentication:
+  - **GET /api/tasks**: Fetch all tasks.
+  - **GET /api/tasks/[id]**: Fetch a task by ID.
+  - **POST /api/tasks**: Create a new task with validation.
+  - **PUT /api/tasks/:id**: Update an existing task with validation.
+  - **DELETE /api/tasks/:id**: Delete a task by ID.
+  - **GET /api/users**: Fetch all users.
+  - **POST /api/auth**: Handle user authentication.
+- **Handlers and Adapters**: Used to encapsulate logic and normalize responses, ensuring reusability and maintainability.
+
+#### Utilities
+
+- **Helper Functions**: For making API requests with error handling and dynamic parameters.
+- **Error Management**: Utilities for validating data and handling exceptions in tasks and users.
+- **Validation**: Robust logic to ensure data integrity in forms and API requests.
+- **Task Utilities**: Contains functions for filtering and sorting tasks, as well as managing task-related data.
 
 ## Collaborators
 
@@ -92,7 +139,6 @@ To run the application, follow these steps:
 
 ## Next Steps
 
-- **Form Validation**: Implement validation for task creation and editing forms to ensure data integrity.
 - **SQLite Database**: Integrate SQLite as the database for persistent task storage.
 - **Real-Time Updates**: Add functionality for real-time updates using WebSockets to notify users when new tasks are assigned.
 - **Drag-and-Drop Task Management**: Implement a feature that allows users to change task status using drag-and-drop functionality.
