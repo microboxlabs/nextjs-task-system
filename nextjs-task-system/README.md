@@ -62,6 +62,9 @@ This project is a Task Management System designed to help users efficiently crea
 
    - Integrated form validation for login, task creation, and task editing, ensuring data integrity and user feedback on errors.
 
+9. **Route Protection and Authentication Middleware**
+   - Implemented middleware to protect routes and handle user authentication, ensuring that only authenticated users can access certain pages and that users are redirected appropriately based on their authentication status and roles.
+
 ### Technical Overview
 
 #### Frontend
@@ -94,6 +97,7 @@ This project is a Task Management System designed to help users efficiently crea
   - **DELETE /api/tasks/:id**: Delete a task by ID.
   - **GET /api/users**: Fetch all users.
   - **POST /api/auth**: Handle user authentication.
+- **Middleware**: Used for route protection and user authentication, ensuring secure access to sensitive routes based on user roles and authentication status.
 - **Handlers and Adapters**: Used to encapsulate logic and normalize responses, ensuring reusability and maintainability.
 
 #### Utilities
@@ -101,6 +105,7 @@ This project is a Task Management System designed to help users efficiently crea
 - **Helper Functions**: For making API requests with error handling and dynamic parameters.
 - **Error Management**: Utilities for validating data and handling exceptions in tasks and users.
 - **Validation**: Robust logic to ensure data integrity in forms and API requests.
+- **Cookie Management**: Utility functions for handling cookies, including setting, getting, and removing cookie values to manage user authentication state across sessions.
 - **Task Utilities**: Contains functions for filtering and sorting tasks, as well as managing task-related data.
 
 ## Collaborators
