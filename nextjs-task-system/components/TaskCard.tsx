@@ -71,12 +71,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
             )}
           </div>
 
-          {task.assignedTo && (
-            <div className="flex items-center gap-2 truncate">
-              <FaUser className="ml-2" />
-              <span className="truncate">{assignedName}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 truncate">
+            <FaUser className="ml-2" />
+            <span className="truncate">{assignedName}</span>
+          </div>
         </div>
       </Card>
     </Link>

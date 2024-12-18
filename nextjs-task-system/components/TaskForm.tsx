@@ -59,7 +59,6 @@ export function TaskForm({
   });
 
   const assignedToType = watch("assignedTo.type");
-  const assignedToId = watch("assignedTo.id");
 
   const { errors } = formState;
   const { user } = useAuthStore();
@@ -139,7 +138,7 @@ export function TaskForm({
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <fieldset className="flex gap-4">
+        <fieldset className="flex items-baseline gap-4">
           <legend className="mb-4 text-sm text-gray-900 dark:text-white">
             Assign To
           </legend>
@@ -166,7 +165,7 @@ export function TaskForm({
         <div>
           <div className="mb-2 block">
             <Label
-              htmlFor="assignedToId"
+              htmlFor="assignedTo.id"
               value={assignedToType === "user" ? "Select User" : "Select Group"}
             />
           </div>
@@ -177,13 +176,19 @@ export function TaskForm({
               <Select
                 id="assignedTo.id"
                 {...field}
+                value={field.value ?? ""}
                 onChange={(e) => {
-                  setValue("assignedTo.id", Number(e.target.value));
+                  const value = e.target.value;
+                  setValue("assignedTo.id", value ? Number(value) : null);
                 }}
                 disabled={
                   loading || usersLoading || !isAdmin || !assignedToType
                 }
-                color={errors.assignedTo?.id ? "failure" : undefined}
+                color={
+                  errors.assignedTo?.id || errors.assignedTo
+                    ? "failure"
+                    : undefined
+                }
                 helperText={
                   errors.assignedTo?.id?.message || errors.assignedTo
                     ? "Please select an option"
@@ -193,17 +198,18 @@ export function TaskForm({
                 <option value="" disabled>
                   Select an option
                 </option>
-                {assignedToType === "user"
-                  ? users.map(({ id, username }) => (
-                      <option key={id} value={Number(id)}>
-                        {username}
-                      </option>
-                    ))
-                  : groupOptions.map(({ value, label }) => (
-                      <option key={value} value={Number(value)}>
-                        {label}
-                      </option>
-                    ))}
+                {assignedToType === "user" &&
+                  users.map(({ id, username }) => (
+                    <option key={id} value={Number(id)}>
+                      {username}
+                    </option>
+                  ))}
+                {assignedToType === "group" &&
+                  groupOptions.map(({ value, label }) => (
+                    <option key={value} value={Number(value)}>
+                      {label}
+                    </option>
+                  ))}
               </Select>
             )}
           />

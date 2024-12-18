@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { Task } from "@/types";
 import { apiRequest } from "../utils/apiUtils";
-import { CreateTaskSchema } from "@/schemas/taskSchema";
+import { CreateTaskSchema, UpdateTaskSchema } from "@/schemas/taskSchema";
 
 interface TasksState {
   tasks: Task[];
@@ -11,7 +11,7 @@ interface TasksState {
   error: string | null;
   getTasks: () => Promise<void>;
   createTask: (newTask: CreateTaskSchema) => Promise<void>;
-  updateTask: (id: number, updatedTask: Partial<Task>) => Promise<void>;
+  updateTask: (updatedTask: UpdateTaskSchema) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
 }
 
@@ -24,12 +24,9 @@ const postTask = async (newTask: CreateTaskSchema): Promise<Task> => {
   return apiRequest({ url: "/api/tasks", method: "POST", body: newTask });
 };
 
-const putTask = async (
-  id: number,
-  updatedTask: Partial<Task>,
-): Promise<Task> => {
+const putTask = async (updatedTask: UpdateTaskSchema): Promise<Task> => {
   return apiRequest({
-    url: `/api/tasks/${id}`,
+    url: `/api/tasks/${updatedTask.id}`,
     method: "PUT",
     body: updatedTask,
   });
@@ -74,13 +71,13 @@ export const useTasksStore = create<TasksState>()(
     },
 
     // Update an existing task using the API and update the store
-    updateTask: async (id, updatedTask) => {
+    updateTask: async (updatedTask) => {
       set({ loading: true, error: null });
       try {
-        const updated = await putTask(id, updatedTask);
+        const updated = await putTask(updatedTask);
         set((state) => ({
           tasks: state.tasks.map((task) =>
-            task.id === id ? { ...task, ...updated } : task,
+            task.id === updatedTask.id ? { ...task, ...updated } : task,
           ),
           loading: false,
         }));

@@ -1,8 +1,9 @@
+// schemas/taskSchema.ts
 import { z } from "zod";
 
-const TaskAssignedToType = z.enum(["user", "group"]);
 const TaskPriority = z.enum(["low", "medium", "high"]);
 const TaskStatus = z.enum(["pending", "inProgress", "completed"]);
+const TaskAssignedToType = z.enum(["user", "group"]);
 
 export const assignedToSchema = z
   .object({
@@ -11,15 +12,16 @@ export const assignedToSchema = z
   })
   .refine(
     (data) => {
-      if (data.type === null || data.type === undefined) {
-        return data.id === null || data.id === undefined;
+      if (data.type) {
+        return typeof data.id === "number";
       }
-      return data.id !== null && data.id !== undefined;
+      return true;
     },
     {
       message: "AssignedTo.id is required when assignedTo.type is selected",
     },
   )
+  .transform((data) => (!data.type ? null : data))
   .nullable();
 
 export const createTaskSchema = z.object({
@@ -40,7 +42,7 @@ export const createTaskSchema = z.object({
   assignedTo: assignedToSchema,
   dueDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
+    .refine((date) => date === "" || !isNaN(Date.parse(date)), {
       message: "Invalid date format",
     })
     .optional(),
@@ -66,3 +68,5 @@ export type CreateTaskSchema = z.infer<typeof createTaskSchema>;
 export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>;
 export type TaskPriorityType = z.infer<typeof TaskPriority>;
 export type TaskStatusType = z.infer<typeof TaskStatus>;
+export type TaskAssignedToType = z.infer<typeof TaskAssignedToType>;
+export type AssignedToSchema = z.infer<typeof assignedToSchema>;

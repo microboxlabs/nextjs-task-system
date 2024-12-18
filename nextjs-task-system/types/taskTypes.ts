@@ -2,8 +2,8 @@ export type TaskPriority = "low" | "medium" | "high";
 export type TaskStatus = "pending" | "inProgress" | "completed";
 
 export interface AssignedTo {
-  type: "user" | "group";
-  id: number;
+  type?: "user" | "group" | null;
+  id?: number | null;
 }
 
 export interface Task {

@@ -1,6 +1,11 @@
 import { Task } from "@/types/taskTypes";
 import * as path from "path";
 import * as fs from "fs";
+import {
+  AssignedToSchema,
+  CreateTaskSchema,
+  UpdateTaskSchema,
+} from "@/schemas/taskSchema";
 
 const storageFilePath = path.resolve(
   process.cwd(),
@@ -43,7 +48,7 @@ export const tasksAdapter = {
     let tasks = readTasksFromStorage();
     if (tasks.length === 0) {
       // Initialize storage with the default JSON (this is redundant with initializeStorage)
-      tasks = [...require("../data/tasks_seed.json")]; // Cargamos desde tasks_seed.json
+      tasks = [...require("../data/tasks_seed.json")];
       writeTasksToStorage(tasks);
     }
     return tasks.map(formatTaskFromDB);
@@ -60,17 +65,16 @@ export const tasksAdapter = {
     return formatTaskFromDB(task);
   },
 
-  createTask: async (newTask: Omit<Task, "id">): Promise<Task> => {
+  createTask: async (newTask: CreateTaskSchema): Promise<Task> => {
     const tasks = readTasksFromStorage();
     const nextId =
       tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1;
 
-    const task = {
+    const task: Task = {
       id: nextId,
       ...newTask,
       createdAt: new Date().toISOString(),
       dueDate: newTask.dueDate || "",
-      assignedTo: newTask.assignedTo || "",
     };
 
     tasks.push(task);
@@ -79,8 +83,11 @@ export const tasksAdapter = {
     return formatTaskFromDB(task);
   },
 
-  updateTask: async (id: number, updatedTask: Partial<Task>): Promise<Task> => {
-    const tasks = readTasksFromStorage();
+  updateTask: async (
+    id: number,
+    updatedTask: UpdateTaskSchema,
+  ): Promise<Task> => {
+    const tasks: Task[] = readTasksFromStorage();
     const taskIndex = tasks.findIndex((task) => task.id === id);
 
     if (taskIndex === -1) {
