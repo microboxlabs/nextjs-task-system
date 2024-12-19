@@ -1,10 +1,27 @@
 ## Nextjs - Task System
 
-Install all dependencies
+
+### Environment variables and dependencies
+
+`.env.local` - NextJS variables
+```bash
+AUTH_SECRET=yourKey
+AUTH_GITHUB_ID="GITHUB AUTH ID"
+AUTH_GITHUB_SECRET="GITHUB SECRET"
+NEXTAUTH_URL=http://localhost:3000
+SIGNIN_ERROR_URL=http://localhost:3000/login/error
+```
+
+By default, `Prisma` uses the `.env` file. 
+```bash
+DATABASE_URL="file:./dev.db"
+```
+
+Install all dependencies:
 ```bash
 npm run i
 ```
-Generate Database:
+### Generate Database:
 ```bash
 npm prisma migrate dev --name init
 ```
@@ -12,10 +29,19 @@ Create admin and user accounts:
 ```bash
 npx prisma db seed
 ```
-Run the development server:
+### Run the development server:
+
+Nextjs without `Socket.io`
 ```bash
 npm run dev
 ```
+or  
+
+Custom server with `Socket.io`
+```bash
+npm run dev:socket
+```
+
 Test
 ```bash
 npm run test
