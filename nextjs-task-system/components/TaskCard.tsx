@@ -8,7 +8,7 @@ import {
   HiChevronDoubleDown,
 } from "react-icons/hi";
 import { FaUser } from "react-icons/fa";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Link from "next/link";
 import { useUsersStore } from "@/stores/usersStore";
 import { getAssignedName } from "@/utils/taskUtils";
@@ -25,7 +25,8 @@ const customCardTheme: CustomFlowbiteTheme["card"] = {
 };
 
 const formatDate = (date: string) => {
-  return format(new Date(date), "d MMM");
+  const parsedDate = parseISO(date);
+  return format(parsedDate, "d MMM");
 };
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
@@ -44,11 +45,26 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task }) => {
   const getPriorityIcon = () => {
     switch (task.priority) {
       case "high":
-        return <HiChevronDoubleUp className="text-red-500" />;
+        return (
+          <HiChevronDoubleUp
+            className="text-red-500"
+            aria-label="High priority"
+          />
+        );
       case "medium":
-        return <HiMenuAlt4 className="text-yellow-500" />;
+        return (
+          <HiMenuAlt4
+            className="text-yellow-500"
+            aria-label="Medium priority"
+          />
+        );
       case "low":
-        return <HiChevronDoubleDown className="text-green-500" />;
+        return (
+          <HiChevronDoubleDown
+            className="text-green-500"
+            aria-label="Low priority"
+          />
+        );
       default:
         return null;
     }
