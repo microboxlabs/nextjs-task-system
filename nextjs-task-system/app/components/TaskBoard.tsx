@@ -234,8 +234,44 @@ const TaskBoard: React.FC = () => {
     setSort((prev) => ({ ...prev, direction }));
   };
 
-  /*   if (session === null || !session?.user || status !== "authenticated")
-    return null; */
+  const handleDelete = async () => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this task?",
+    );
+    if (!confirm) return;
+
+    try {
+      if (workingTask === null) return;
+      const status = workingTask.status as TaskStatus;
+
+      const response = await fetch(`/api/tasks/${workingTask.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete task");
+      }
+
+      const updatedColumnTasks = data.columns[status].tasks.filter(
+        (t) => t.id !== workingTask.id,
+      );
+      setWorkingTask(null);
+      setData({
+        ...data,
+        columns: {
+          ...data.columns,
+          [status]: { name: status, tasks: updatedColumnTasks },
+        },
+      });
+
+      alert("Task deleted successfully!");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      // setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -275,6 +311,7 @@ const TaskBoard: React.FC = () => {
           openModal={openModal}
           setOpenModal={setOpenModal}
           updateTaskField={updateTaskField}
+          deleteTask={handleDelete}
         />
       )}
     </div>

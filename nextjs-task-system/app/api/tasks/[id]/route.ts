@@ -69,3 +69,36 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  const { id } = params;
+
+  try {
+    const taskId = parseInt(id, 10);
+
+    if (isNaN(taskId)) {
+      return NextResponse.json({ error: "Invalid task ID" }, { status: 400 });
+    }
+
+    const deletedTask = await prisma.task.delete({
+      where: { id: taskId },
+    });
+
+    return NextResponse.json(
+      { message: "Task deleted successfully", deletedTask },
+      { status: 200 },
+    );
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      // prisma code when task if not found
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
