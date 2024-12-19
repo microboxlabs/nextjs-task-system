@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "jest --silent",
+    "test:ui": "jest -c jest.config.ui.js",
+    "test:api": "jest --silent -c jest.config.api.js",
+    "test": "npm run test:api && npm run test:ui",
     "format": "prettier . --write",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
