@@ -135,7 +135,6 @@ export async function GET(req: Request) {
             },
           },
           group: {
-            // Include group information
             select: {
               id: true,
               name: true,

@@ -129,7 +129,7 @@ const TaskBoard: React.FC = () => {
   };
 
   const updateTaskField =
-    (key: keyof TaskWithAssignments) => async (value: string) => {
+    (key: keyof TaskWithAssignments | "assignedTo") => async (value: any) => {
       await updateTask({ [key]: value });
     };
 
@@ -148,10 +148,13 @@ const TaskBoard: React.FC = () => {
       if (!response.ok) {
         throw new Error("Failed to update task");
       }
+      const taskUpdated = await response.json();
+
       const updatedColumnTasks = data.columns[status].tasks.map((t) =>
-        t.id === workingTask.id ? { ...t, ...task } : t,
+        t.id === workingTask.id ? taskUpdated : t,
       );
-      setWorkingTask({ ...workingTask, ...task });
+
+      setWorkingTask(taskUpdated);
       setData({
         ...data,
         columns: {

@@ -15,14 +15,15 @@ import { PriorityBadge, PriorityTask } from "./PriorityBadge";
 import AddComment from "./AddComment";
 import { TaskComments } from "./TaskComments";
 import OutsideClickDetector from "./OutsideClickDetector";
+import { UserAndGroupSelect } from "./UserAndGroupSelect";
 
 interface TaskModalProps {
   openModal: boolean;
   setOpenModal: (openModal: boolean) => void;
   task: TaskWithAssignments;
   updateTaskField: (
-    field: keyof TaskWithAssignments,
-  ) => (value: string) => void;
+    field: keyof TaskWithAssignments | "assignedTo",
+  ) => (value: any) => void;
   deleteTask: () => void;
 }
 
@@ -40,6 +41,7 @@ export function TaskModal({
   const [title, setTitle] = useState(task.title);
   const [isUpdateDescription, setIsUpdateDescription] = useState(false);
   const [description, setDescription] = useState(task.description);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -91,7 +93,7 @@ export function TaskModal({
           </OutsideClickDetector>
         ) : (
           <button
-            className={title ? "" : "text-gray-400"}
+            className={`focus:outline-none ${title ? "" : "text-gray-400"}`}
             onClick={() => {
               setIsUpdateTitle(true);
             }}
@@ -103,9 +105,47 @@ export function TaskModal({
       <Modal.Body>
         <div className="space-y-6">
           <div className="flex justify-between">
-            <div>
+            <div className="flex flex-col">
               <label className="text-xs dark:text-gray-300">Assigned to</label>
-              <AvatarGroup assignments={task.assignments} />
+              <Popover
+                aria-labelledby="groups-users-popover"
+                open={open}
+                onOpenChange={setOpen}
+                content={
+                  <div className="h-[93.6px] w-64 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="absolute h-[93.6px] w-full px-3 py-2">
+                      {open && (
+                        <UserAndGroupSelect
+                          values={task.assignments.map((a) =>
+                            a.group
+                              ? {
+                                  label: a.group.name,
+                                  value: `group-${a.group.id}`,
+                                }
+                              : {
+                                  label: a.user!.name,
+                                  value: `user-${a.user!.id}`,
+                                },
+                          )}
+                          onChange={(assignedTo) =>
+                            updateTaskField("assignedTo")(assignedTo)
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                }
+              >
+                <button>
+                  {task.assignments.length ? (
+                    <AvatarGroup assignments={task.assignments} />
+                  ) : (
+                    <p className="text-gray-500 dark:text-gray-50">
+                      No Assigned yet
+                    </p>
+                  )}
+                </button>
+              </Popover>
             </div>
             <div className="flex flex-col">
               <label className="text-xs dark:text-gray-300">Priority</label>

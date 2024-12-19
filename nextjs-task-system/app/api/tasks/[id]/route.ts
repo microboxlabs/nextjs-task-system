@@ -23,12 +23,20 @@ export async function PUT(
       );
     }
 
-    // if (!Array.isArray(assignedTo) || assignedTo.length === 0) {
-    //   return NextResponse.json(
-    //     { error: "AssignedTo must be a non-empty array of user IDs" },
-    //     { status: 400 },
-    //   );
-    // }
+    if (
+      !Array.isArray(assignedTo) ||
+      assignedTo.some(
+        (item) =>
+          !(item.type === "user" || item.type === "group") ||
+          (item.type === "user" && typeof item.userId === "undefined") ||
+          (item.type === "group" && typeof item.groupId === "undefined"),
+      )
+    ) {
+      return NextResponse.json(
+        { error: "Invalid assignedTo format" },
+        { status: 400 },
+      );
+    }
 
     const taskIdInt = parseInt(params.id);
 
@@ -41,22 +49,72 @@ export async function PUT(
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
     }
 
+    const currentAssignments = task.assignments;
+
+    const toDelete = currentAssignments.filter(
+      (assignment) =>
+        !assignedTo.some(
+          (newAssignment) =>
+            (assignment.userId === newAssignment.userId &&
+              newAssignment.type === "user") ||
+            (assignment.groupId === newAssignment.groupId &&
+              newAssignment.type === "group"),
+        ),
+    );
+
+    const toAdd = assignedTo.filter(
+      (newAssignment) =>
+        !currentAssignments.some(
+          (assignment) =>
+            (assignment.userId === newAssignment.userId &&
+              newAssignment.type === "user") ||
+            (assignment.groupId === newAssignment.groupId &&
+              newAssignment.type === "group"),
+        ),
+    );
+
+    await prisma.taskAssignment.deleteMany({
+      where: { id: { in: toDelete.map((assignment) => assignment.id) } },
+    });
+
+    await prisma.taskAssignment.createMany({
+      data: toAdd.map((newAssignment) => ({
+        taskId: taskIdInt,
+        userId:
+          newAssignment.type === "user" ? newAssignment.userId : undefined,
+        groupId:
+          newAssignment.type === "group" ? newAssignment.groupId : undefined,
+      })),
+    });
+
     const updatedTask = await prisma.task.update({
       where: { id: taskIdInt },
       data: {
-        status,
         title,
         description,
         dueDate: dueDate ? new Date(dueDate) : undefined,
         priority,
-        // assignments: {
-        //   deleteMany: {}, // delete all assigments
-        //   //@ts-ignore
-        //   create: assignedTo.map((userId: string) => ({ userId })),
-        // },
+        status,
       },
       include: {
-        assignments: true,
+        assignments: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+              },
+            },
+            group: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
