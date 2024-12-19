@@ -45,10 +45,10 @@ export async function PUT(
       where: { id: taskIdInt },
       data: {
         status,
-        // title,
-        // description,
-        // dueDate: new Date(dueDate),
-        // priority,
+        title,
+        description,
+        dueDate: dueDate ? new Date(dueDate) : undefined,
+        priority,
         // assignments: {
         //   deleteMany: {}, // delete all assigments
         //   //@ts-ignore

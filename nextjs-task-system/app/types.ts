@@ -1,5 +1,7 @@
 import { Comment, Group, Task, User } from "@prisma/client";
 
+export type TaskStatus = "Pending" | "InProgress" | "Completed";
+
 export interface UserPartial
   extends Pick<User, "id" | "name" | "email" | "role"> {}
 
@@ -9,7 +11,7 @@ export interface Column {
 }
 
 export interface BoardData {
-  columns: Record<string, Column>;
+  columns: Record<TaskStatus, Column>;
 }
 
 export interface Assignment {

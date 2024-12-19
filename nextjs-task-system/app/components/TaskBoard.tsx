@@ -2,13 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import TaskColumn from "./TaskColumn";
-import { BoardData, TaskWithAssignments } from "../types";
+import { BoardData, TaskStatus, TaskWithAssignments } from "../types";
 import Filters from "./Filters";
 import Sort from "./Sort";
 import { useSession } from "next-auth/react";
 import { TaskModal } from "./TaskModal";
-
-type TaskStatus = "Pending" | "InProgress" | "Completed";
 
 const initialData: BoardData = {
   columns: {
@@ -130,13 +128,51 @@ const TaskBoard: React.FC = () => {
     }
   };
 
+  const updateTaskField =
+    (key: keyof TaskWithAssignments) => async (value: string) => {
+      await updateTask({ [key]: value });
+    };
+
+  const updateTask = async (task: Partial<TaskWithAssignments>) => {
+    try {
+      if (workingTask === null) return;
+      const status = workingTask.status as TaskStatus;
+      const response = await fetch(`/api/tasks/${workingTask.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update task");
+      }
+      const updatedColumnTasks = data.columns[status].tasks.map((t) =>
+        t.id === workingTask.id ? { ...t, ...task } : t,
+      );
+      setWorkingTask({ ...workingTask, ...task });
+      setData({
+        ...data,
+        columns: {
+          ...data.columns,
+          [status]: { name: status, tasks: updatedColumnTasks },
+        },
+      });
+    } catch (error) {
+      console.error("Error updating task:", error);
+      throw new Error("Failed to update task");
+    }
+  };
+
   const onDragEnd = async (result: DropResult): Promise<void> => {
     const { source, destination } = result;
 
     if (!destination) return;
 
-    const sourceColumn = data.columns[source.droppableId];
-    const destinationColumn = data.columns[destination.droppableId];
+    const sourceColumn = data.columns[source.droppableId as TaskStatus];
+    const destinationColumn =
+      data.columns[destination.droppableId as TaskStatus];
 
     const sourceTasks = [...sourceColumn.tasks];
     let [movedTask] = sourceTasks.splice(source.index, 1);
@@ -238,6 +274,7 @@ const TaskBoard: React.FC = () => {
           task={workingTask}
           openModal={openModal}
           setOpenModal={setOpenModal}
+          updateTaskField={updateTaskField}
         />
       )}
     </div>

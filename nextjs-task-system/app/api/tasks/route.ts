@@ -21,8 +21,6 @@ export async function GET(req: Request) {
   const sortBy = url.searchParams.get("sortBy") || "createdAt";
   const direction = url.searchParams.get("direction") || "desc";
 
-  console.log(userIdOrGroupId, "userIdOrGroupId");
-
   // validate userId
   const [type, id] = userIdOrGroupId?.split(",") || ["", ""];
   const userIdInt = type === "user" && id ? parseInt(id, 10) : undefined;

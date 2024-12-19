@@ -158,7 +158,6 @@ export const CreateTask = () => {
           </div>
           <div>
             <Label htmlFor="priority">Priority</Label>
-
             <Select
               id="priority"
               className="select select-bordered w-full pb-4"

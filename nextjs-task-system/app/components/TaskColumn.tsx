@@ -23,7 +23,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
           className="min-h-[400px] w-[320px] rounded-lg bg-gray-100 p-2.5"
         >
           <h2 className="pb-4 text-center font-semibold">{column.name}</h2>
-          {column.tasks.map((task, index) => (
+          {column.tasks?.map((task, index) => (
             <TaskCard
               key={task.id}
               task={task}
