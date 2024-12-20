@@ -108,6 +108,11 @@ This project is a Task Management System designed to help users efficiently crea
 - **Cookie Management**: Utility functions for handling cookies, including setting, getting, and removing cookie values to manage user authentication state across sessions.
 - **Task Utilities**: Contains functions for filtering and sorting tasks, as well as managing task-related data.
 
+#### Testing
+
+- **Unit Tests**: Simple unit tests for API routes to ensure correct data handling and response.
+- **UI Tests**: Basic UI tests for task viewing and management, verifying that components render correctly and user interactions work as expected.
+
 ## Collaborators
 
 - @korutx
@@ -123,6 +128,8 @@ To run the application, follow these steps:
    git clone https://github.com/Jonlle/nextjs-task-system
    cd nextjs-task-system/nextjs-task-system
    ```
+
+````
 
 2. Install dependencies:
 
@@ -142,6 +149,34 @@ To run the application, follow these steps:
    npm run dev
    ```
 
+## Running Tests
+
+This project uses Jest for testing both the UI and API components. Below are the available scripts to run the tests:
+
+### Run All Tests
+
+To run both UI and API tests, use the following command:
+
+```bash
+npm test
+```
+
+### Run UI Tests
+
+To run only the UI tests, use the following command:
+
+```bash
+npm run test:ui
+```
+
+### Run API Tests
+
+To run only the API tests, use the following command:
+
+```bash
+npm run test:api
+```
+
 ## Next Steps
 
 - **SQLite Database**: Integrate SQLite as the database for persistent task storage.
@@ -153,3 +188,5 @@ To run the application, follow these steps:
 This project is licensed under the terms of the [MIT License](./LICENSE).
 
 **Note**: This is a completed technical challenge. Contributions are closed.
+
+````
