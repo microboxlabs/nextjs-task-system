@@ -8,7 +8,7 @@ export interface UserGroup {
 export interface User {
   id: number;
   username: string;
-  password: string;
+  password?: string;
   name: string;
   role: UserRole;
   group: UserGroup;

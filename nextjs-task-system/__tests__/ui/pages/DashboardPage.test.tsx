@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DashboardPage from "@/app/dashboard/page";
-import "@testing-library/jest-dom";
 import { useAuthStore, useTasksStore } from "@/stores";
-import { TaskPriority, TaskStatus, AssignedTo } from "@/types/taskTypes";
+import { AssignedTo } from "@/types/taskTypes";
+import "@testing-library/jest-dom";
 
 // Mock the useAuthStore and useTasksStore hooks
 jest.mock("@/stores", () => ({
