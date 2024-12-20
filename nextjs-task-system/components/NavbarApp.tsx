@@ -7,8 +7,12 @@ export default async function NavbarApp() {
 
     const desconectar = async () => {
         "use server"
-        await signOut()
-        redirect(`/auth/login`)
+        try {
+            await signOut()
+            redirect(`/auth/login`)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
