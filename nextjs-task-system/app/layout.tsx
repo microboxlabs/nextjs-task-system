@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
 import "./globals.css";
+import { SessionWrapper } from "./components/SessionWrapper";
+import { Navbar } from "./components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,11 +18,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <ThemeModeScript />
-      </head>
-      <body className={inter.className}>{children}</body>
-    </html>
+    <SessionWrapper>
+      <html lang="en">
+        <head>
+          <ThemeModeScript />
+        </head>
+        <body
+          className={`${inter.className} flex min-h-screen flex-col dark:bg-gray-800`}
+        >
+          <Navbar />
+          {children}
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }

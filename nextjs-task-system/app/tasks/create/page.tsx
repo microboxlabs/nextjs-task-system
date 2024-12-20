@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import TaskBoard from "./components/TaskBoard";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/authOptions";
+import { CreateTask } from "./CreateTask";
 
-export default async function Home() {
+export default async function CreateTaskPage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -12,7 +12,7 @@ export default async function Home() {
 
   return (
     <main className="p-2">
-      <TaskBoard />
+      <CreateTask />
     </main>
   );
 }
