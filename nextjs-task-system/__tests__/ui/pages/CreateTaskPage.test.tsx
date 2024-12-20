@@ -1,13 +1,13 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import CreateTaskPage from "@/app/tasks/create/page";
-import "@testing-library/jest-dom";
 import { useRouter } from "next/navigation";
 import {
+  useAuthStore,
   useNotificationStore,
   useTasksStore,
-  useAuthStore,
   useUsersStore,
 } from "@/stores";
+import "@testing-library/jest-dom";
 
 // Mock the hooks
 jest.mock("next/navigation", () => ({
@@ -50,7 +50,6 @@ describe("CreateTaskPage Component", () => {
   it("should render the task creation form", () => {
     render(<CreateTaskPage />);
 
-    // Check if the form and inputs are rendered
     expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/due date/i)).toBeInTheDocument();
@@ -60,20 +59,73 @@ describe("CreateTaskPage Component", () => {
     expect(screen.getByText(/cancel/i)).toBeInTheDocument();
   });
 
-  it("should display validation errors when form is submitted empty", async () => {
+  it("should call handleSubmit when the form is submitted", async () => {
+    const mockCreateTask = jest.fn();
+    const mockPush = jest.fn();
+    const mockAddNotification = jest.fn();
+
+    mockUseTasksStore.mockReturnValue({
+      createTask: mockCreateTask,
+      loading: false,
+    });
+    mockUseRouter.mockReturnValue({ push: mockPush });
+    mockUseNotificationStore.mockReturnValue({
+      addNotification: mockAddNotification,
+    });
+
     render(<CreateTaskPage />);
 
-    // Click the save button without filling the form
-    fireEvent.click(screen.getByText(/save/i));
+    fireEvent.change(screen.getByLabelText(/title/i), {
+      target: { value: "Test Title" },
+    });
+    fireEvent.change(screen.getByLabelText(/description/i), {
+      target: { value: "Test Description" },
+    });
+    fireEvent.submit(screen.getByText(/save/i));
 
-    // Wait for validation errors to appear
     await waitFor(() => {
-      expect(
-        screen.getByText(/title is a required field/i),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/description is a required field/i),
-      ).toBeInTheDocument();
+      expect(mockCreateTask).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "Test Title",
+          description: "Test Description",
+        }),
+      );
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
+      expect(mockAddNotification).toHaveBeenCalledWith({
+        message: "Task created successfully.",
+        type: "success",
+      });
+    });
+  });
+
+  it("should display an error notification when task creation fails", async () => {
+    const errorMessage = "Error creating task.";
+    const mockCreateTask = jest.fn().mockRejectedValue(new Error(errorMessage));
+    const mockAddNotification = jest.fn();
+
+    mockUseTasksStore.mockReturnValue({
+      createTask: mockCreateTask,
+      loading: false,
+    });
+    mockUseNotificationStore.mockReturnValue({
+      addNotification: mockAddNotification,
+    });
+
+    render(<CreateTaskPage />);
+
+    fireEvent.change(screen.getByLabelText(/title/i), {
+      target: { value: "Test Title" },
+    });
+    fireEvent.change(screen.getByLabelText(/description/i), {
+      target: { value: "Test Description" },
+    });
+    fireEvent.submit(screen.getByText(/save/i));
+
+    await waitFor(() => {
+      expect(mockAddNotification).toHaveBeenCalledWith({
+        message: errorMessage + " Please try again.",
+        type: "error",
+      });
     });
   });
 });
