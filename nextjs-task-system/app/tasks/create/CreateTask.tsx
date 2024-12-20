@@ -13,6 +13,7 @@ import {
 import MultiSelect, { Option } from "@/app/components/MultiSelect";
 import { Group, Task } from "@prisma/client";
 import { CreateUserOrGroup, UserOrGroup, UserPartial } from "@/app/types";
+import { formatToDateTimeLocal } from "@/app/utils/formatToDateTimeLocal";
 
 interface TaskForm extends Pick<Task, "title" | "description" | "priority"> {
   assignedTo: CreateUserOrGroup[];
@@ -24,7 +25,7 @@ export const CreateTask = () => {
     title: "",
     description: "",
     assignedTo: [],
-    dueDate: "",
+    dueDate: formatToDateTimeLocal(new Date()), // today
     priority: "Medium",
   });
 
@@ -153,7 +154,9 @@ export const CreateTask = () => {
               type="datetime-local"
               className="input input-bordered w-full dark:fill-white"
               value={task.dueDate}
-              onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
+              onChange={(e) => {
+                setTask({ ...task, dueDate: e.target.value });
+              }}
             />
           </div>
           <div>

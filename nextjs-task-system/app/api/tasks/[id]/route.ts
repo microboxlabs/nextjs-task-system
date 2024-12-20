@@ -23,8 +23,9 @@ export async function PUT(
       );
     }
 
+    const isArrayAssignedTo = Array.isArray(assignedTo);
     if (
-      !Array.isArray(assignedTo) ||
+      isArrayAssignedTo &&
       assignedTo.some(
         (item) =>
           !(item.type === "user" || item.type === "group") ||
@@ -51,41 +52,47 @@ export async function PUT(
 
     const currentAssignments = task.assignments;
 
-    const toDelete = currentAssignments.filter(
-      (assignment) =>
-        !assignedTo.some(
-          (newAssignment) =>
-            (assignment.userId === newAssignment.userId &&
-              newAssignment.type === "user") ||
-            (assignment.groupId === newAssignment.groupId &&
-              newAssignment.type === "group"),
-        ),
-    );
-
-    const toAdd = assignedTo.filter(
-      (newAssignment) =>
-        !currentAssignments.some(
+    const toDelete = isArrayAssignedTo
+      ? currentAssignments.filter(
           (assignment) =>
-            (assignment.userId === newAssignment.userId &&
-              newAssignment.type === "user") ||
-            (assignment.groupId === newAssignment.groupId &&
-              newAssignment.type === "group"),
-        ),
-    );
+            !assignedTo.some(
+              (newAssignment) =>
+                (assignment.userId === newAssignment.userId &&
+                  newAssignment.type === "user") ||
+                (assignment.groupId === newAssignment.groupId &&
+                  newAssignment.type === "group"),
+            ),
+        )
+      : [];
 
-    await prisma.taskAssignment.deleteMany({
-      where: { id: { in: toDelete.map((assignment) => assignment.id) } },
-    });
+    const toAdd = isArrayAssignedTo
+      ? assignedTo.filter(
+          (newAssignment) =>
+            !currentAssignments.some(
+              (assignment) =>
+                (assignment.userId === newAssignment.userId &&
+                  newAssignment.type === "user") ||
+                (assignment.groupId === newAssignment.groupId &&
+                  newAssignment.type === "group"),
+            ),
+        )
+      : [];
 
-    await prisma.taskAssignment.createMany({
-      data: toAdd.map((newAssignment) => ({
-        taskId: taskIdInt,
-        userId:
-          newAssignment.type === "user" ? newAssignment.userId : undefined,
-        groupId:
-          newAssignment.type === "group" ? newAssignment.groupId : undefined,
-      })),
-    });
+    if (isArrayAssignedTo) {
+      await prisma.taskAssignment.deleteMany({
+        where: { id: { in: toDelete.map((assignment) => assignment.id) } },
+      });
+
+      await prisma.taskAssignment.createMany({
+        data: toAdd.map((newAssignment) => ({
+          taskId: taskIdInt,
+          userId:
+            newAssignment.type === "user" ? newAssignment.userId : undefined,
+          groupId:
+            newAssignment.type === "group" ? newAssignment.groupId : undefined,
+        })),
+      });
+    }
 
     const updatedTask = await prisma.task.update({
       where: { id: taskIdInt },

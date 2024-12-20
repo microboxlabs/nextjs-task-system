@@ -16,6 +16,8 @@ import AddComment from "./AddComment";
 import { TaskComments } from "./TaskComments";
 import OutsideClickDetector from "./OutsideClickDetector";
 import { UserAndGroupSelect } from "./UserAndGroupSelect";
+import { TaskDueDate } from "./TaskDueDate";
+import { formatToDateTimeLocal } from "../utils/formatToDateTimeLocal";
 
 interface TaskModalProps {
   openModal: boolean;
@@ -41,6 +43,10 @@ export function TaskModal({
   const [title, setTitle] = useState(task.title);
   const [isUpdateDescription, setIsUpdateDescription] = useState(false);
   const [description, setDescription] = useState(task.description);
+  const [isUpdateDueDate, setIsUpdateDueDate] = useState(false);
+  const [dueDate, setDueDate] = useState(
+    formatToDateTimeLocal(new Date(task.dueDate)),
+  );
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -209,6 +215,37 @@ export function TaskModal({
             </div>
           )}
           <div>
+            <div className="flex items-end justify-between pb-4">
+              {isUpdateDueDate ? (
+                <OutsideClickDetector
+                  onOutsideClick={() => {
+                    setIsUpdateDueDate(false);
+                    if (
+                      formatToDateTimeLocal(new Date(task.dueDate)) !== dueDate
+                    ) {
+                      updateTaskField("dueDate")(dueDate);
+                    }
+                  }}
+                >
+                  <Label htmlFor="dueDate">Due Date</Label>
+                  <TextInput
+                    id="dueDate"
+                    type="datetime-local"
+                    onChange={(e) => setDueDate(e.target.value)}
+                    value={dueDate}
+                    className="w-full"
+                  />
+                </OutsideClickDetector>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsUpdateDueDate(true);
+                  }}
+                >
+                  <TaskDueDate dueDate={task.dueDate.toString()} withdarkMode />
+                </button>
+              )}
+            </div>
             <div className="flex items-end justify-between pb-4">
               <label className="block text-xs dark:text-gray-300">
                 Comments
