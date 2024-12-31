@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "title": "Implement User Authentication System",
+    "description": "Details about implementing a secure user authentication system.",
+    "status": "completed",
+    "dueDate": "2024-12-20",
+    "assignedTo": {
+      "type": "user",
+      "id": 1
+    },
+    "priority": "high",
+    "comments": [
+      "Initial implementation completed.",
+      "Reviewed by the security team.",
+      "Deployment scheduled for next week."
+    ],
+    "createdAt": "2024-12-01T12:00:00Z"
+  },
+  {
+    "id": 2,
+    "title": "Fix Bug in Frontend",
+    "description": "Resolve the issue with the login form.",
+    "status": "inProgress",
+    "dueDate": "2024-12-15",
+    "assignedTo": {
+      "type": "group",
+      "id": 2
+    },
+    "priority": "medium",
+    "comments": [
+      "Identified the root cause of the bug.",
+      "Working on a fix.",
+      "Testing the solution before deployment."
+    ],
+    "createdAt": "2024-12-02T12:00:00Z"
+  },
+  {
+    "id": 3,
+    "title": "Update API Documentation",
+    "description": "Ensure all endpoints are documented.",
+    "status": "inProgress",
+    "dueDate": "2024-12-25",
+    "assignedTo": {
+      "type": "user",
+      "id": 3
+    },
+    "priority": "low",
+    "comments": [
+      "Started updating the documentation.",
+      "Need feedback from the development team.",
+      "Final review scheduled for next week."
+    ],
+    "createdAt": "2024-12-03T12:00:00Z"
+  },
+  {
+    "id": 4,
+    "title": "Prepare Presentation for Client",
+    "description": "Create slides for the upcoming client meeting.",
+    "status": "pending",
+    "dueDate": "2024-12-18",
+    "assignedTo": {
+      "type": "user",
+      "id": 2
+    },
+    "priority": "high",
+    "comments": [
+      "Gathering content for the slides.",
+      "Design template selected.",
+      "Draft presentation ready for review."
+    ],
+    "createdAt": "2024-12-04T12:00:00Z"
+  },
+  {
+    "id": 5,
+    "title": "Backend Optimization",
+    "description": "Improve the performance of the backend services.",
+    "status": "pending",
+    "dueDate": "2024-12-30",
+    "assignedTo": {
+      "type": "group",
+      "id": 3
+    },
+    "priority": "medium",
+    "comments": [
+      "Analyzing current performance metrics.",
+      "Identifying bottlenecks in the system.",
+      "Plan for optimization strategies in progress."
+    ],
+    "createdAt": "2024-12-05T12:00:00Z"
+  },
+  {
+    "id": 6,
+    "title": "Deploy to Production",
+    "description": "Deploy the application to the production environment.",
+    "status": "pending",
+    "dueDate": "2024-12-31",
+    "assignedTo": {
+      "type": "group",
+      "id": 1
+    },
+    "priority": "high",
+    "comments": [
+      "Deployment checklist being prepared.",
+      "All features tested in staging.",
+      "Deployment window scheduled for New Year's Eve."
+    ],
+    "createdAt": "2024-12-06T12:00:00Z"
+  }
+]
