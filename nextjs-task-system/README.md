@@ -129,8 +129,6 @@ To run the application, follow these steps:
    cd nextjs-task-system/nextjs-task-system
    ```
 
-````
-
 2. Install dependencies:
 
    ```bash
